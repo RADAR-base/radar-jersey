@@ -4,6 +4,17 @@ Library to facilitate OAuth 2.0 integration with a Jersey-based REST API.
 
 # Usage
 
+Add this library to your project using the following Gradle configuration:
+```gradle
+repositories {
+    maven { url "https://dl.bintray.com/radar-base/org.radarbase" }
+}
+
+dependencies {
+    api("org.radarbase:radar-auth-jersey:0.1.0")
+}
+```
+
 Any path or resource that should be authenticated against the ManagementPortal, should be annotated with `@Authenticated`. Specific authorization can be checked by adding a `@NeedsPermission` annotation. An `Auth` object can be injected to get app-specific information. Examples:
 
 ```kotlin
@@ -34,7 +45,7 @@ class Users(@Context projectService: ProjectService) {
 }
 ```
 
-These APIs can be activated by implementing the `ProjectService` that ensures that a project exists and by running, during ResourceConfig setup:
+These APIs are activated by adding `JerseyResourceEnhancer` implementations to your resource definition:
 ```kotlin
 val authConfig = AuthConfig(
         managementPortalUrl = "http://...",
@@ -57,6 +68,8 @@ resourceConfig.register(object : AbstractBinder() {
     }
 })
 ```
+
+Ensure that a class implementing `org.radarbase.auth.jersey.ProjectService` is added to the binder.
 
 ## Error handling
 

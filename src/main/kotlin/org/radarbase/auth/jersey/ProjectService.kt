@@ -9,6 +9,15 @@
 
 package org.radarbase.auth.jersey
 
+import org.radarbase.auth.jersey.exception.HttpApplicationException
+
+/**
+ * Service to keep track of active projects.
+ */
 interface ProjectService {
+    /**
+     * Ensure that given project ID is valid.
+     * @throws HttpApplicationException if the project ID is not a valid project ID.
+     */
     fun ensureProject(projectId: String)
 }
