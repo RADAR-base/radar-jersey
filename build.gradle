@@ -6,7 +6,7 @@ plugins {
 
 description = 'Library for authentication and authorization with the RADAR platform using Jersey'
 group = 'org.radarbase'
-version = '0.1.0'
+version = '0.1.1-SNAPSHOT'
 
 ext {
     githubRepoName = 'RADAR-base/ManagementPortal'
