@@ -43,5 +43,5 @@ class JwtAuth(project: String?, private val jwt: DecodedJWT) : Auth {
 
     override fun hasRole(projectId: String, role: String) = projectId == defaultProject
 
-    override fun getClaim(name: String) = jwt.getClaim(name).`as`(JsonNode::class.java)
+    override fun getClaim(name: String): JsonNode = jwt.getClaim(name).`as`(JsonNode::class.java)
 }
