@@ -22,12 +22,14 @@ import javax.inject.Singleton
  */
 class ManagementPortalResourceEnhancer : JerseyResourceEnhancer {
     override fun enhance(binder: AbstractBinder) {
-        binder.bindFactory(TokenValidatorFactory::class.java)
-                .to(TokenValidator::class.java)
-                .`in`(Singleton::class.java)
+        binder.apply {
+            bindFactory(TokenValidatorFactory::class.java)
+                    .to(TokenValidator::class.java)
+                    .`in`(Singleton::class.java)
 
-        binder.bind(ManagementPortalTokenValidator::class.java)
-                .to(AuthValidator::class.java)
-                .`in`(Singleton::class.java)
+            bind(ManagementPortalTokenValidator::class.java)
+                    .to(AuthValidator::class.java)
+                    .`in`(Singleton::class.java)
+        }
     }
 }
