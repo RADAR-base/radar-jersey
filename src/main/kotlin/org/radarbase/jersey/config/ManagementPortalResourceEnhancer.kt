@@ -17,9 +17,8 @@ import org.radarcns.auth.authentication.TokenValidator
 import javax.inject.Singleton
 
 /**
- * Registration for authorization against a ManagementPortal.
- *
- * It requires managementPortalUrl and jwtResourceName to be set in the AuthConfig.
+ * Registration for authorization against a ManagementPortal. It requires managementPortalUrl and
+ * jwtResourceName to be set in the AuthConfig.
  */
 class ManagementPortalResourceEnhancer : JerseyResourceEnhancer {
     override fun enhanceBinder(binder: AbstractBinder) {
