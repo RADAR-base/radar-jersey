@@ -45,6 +45,7 @@ class OAuthHelper {
 
             override fun getPublicKeys(): List<String> = emptyList()
         }
+        @Suppress("DEPRECATION")
         tokenValidator = object : TokenValidator(verifiers, validatorConfig) {
             override fun refresh() {
                 // do nothing

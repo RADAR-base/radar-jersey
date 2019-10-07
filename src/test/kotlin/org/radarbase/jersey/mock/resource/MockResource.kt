@@ -9,9 +9,9 @@
 
 package org.radarbase.jersey.mock.resource
 
-import org.radarbase.auth.jersey.Auth
-import org.radarbase.auth.jersey.Authenticated
-import org.radarbase.auth.jersey.NeedsPermission
+import org.radarbase.jersey.auth.Auth
+import org.radarbase.jersey.auth.Authenticated
+import org.radarbase.jersey.auth.NeedsPermission
 import org.radarcns.auth.authorization.Permission
 import javax.annotation.Resource
 import javax.ws.rs.*

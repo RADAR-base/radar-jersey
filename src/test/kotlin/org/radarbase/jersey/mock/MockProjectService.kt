@@ -9,14 +9,13 @@
 
 package org.radarbase.jersey.mock
 
-import org.radarbase.auth.jersey.ProjectService
-import org.radarbase.auth.jersey.exception.HttpApplicationException
-import javax.ws.rs.core.Response
+import org.radarbase.jersey.auth.ProjectService
+import org.radarbase.jersey.exception.HttpNotFoundException
 
 class MockProjectService(private val projects: List<String>) : ProjectService {
     override fun ensureProject(projectId: String) {
         if (projectId !in projects) {
-            throw HttpApplicationException(Response.Status.NOT_FOUND, "project_not_found")
+            throw HttpNotFoundException("project_not_found", "Project $projectId not found.")
         }
     }
 }

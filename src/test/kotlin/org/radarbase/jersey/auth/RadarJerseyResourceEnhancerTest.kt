@@ -13,20 +13,16 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import org.glassfish.grizzly.http.server.HttpServer
 import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory
-import org.glassfish.jersey.internal.inject.AbstractBinder
-import org.glassfish.jersey.server.ResourceConfig
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.*
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.radarbase.jersey.config.ManagementPortalResourceEnhancer
-import org.radarbase.jersey.config.RadarJerseyResourceEnhancer
-import org.radarbase.jersey.mock.MockProjectService
-import org.radarcns.auth.authentication.TokenValidator
+import org.radarbase.jersey.auth.OAuthHelper.Companion.bearerHeader
+import org.radarbase.jersey.config.*
+import org.radarbase.jersey.mock.MockResourceEnhancer
 import java.net.URI
-import javax.inject.Singleton
 
 internal class RadarJerseyResourceEnhancerTest {
     private lateinit var client: OkHttpClient
@@ -38,31 +34,14 @@ internal class RadarJerseyResourceEnhancerTest {
                 managementPortalUrl = "http://localhost:8080",
                 jwtResourceName = "res_ManagementPortal")
 
-        val radarEnhancer = RadarJerseyResourceEnhancer(authConfig)
-        val mpEnhancer = ManagementPortalResourceEnhancer()
+        val enhancers = listOf(
+                MockResourceEnhancer(),
+                RadarJerseyResourceEnhancer(authConfig),
+                ManagementPortalResourceEnhancer(),
+                HttpExceptionResourceEnhancer(),
+                GeneralExceptionResourceEnhancer())
 
-        val resourceConfig = object : ResourceConfig() {
-            init {
-                packages("org.radarbase.auth.jersey.mock.resource")
-                packages(*radarEnhancer.packages)
-                packages(*mpEnhancer.packages)
-            }
-        }
-
-        resourceConfig.register(object : AbstractBinder() {
-            override fun configure() {
-                bind(MockProjectService(listOf("a", "b")))
-                        .to(ProjectService::class.java)
-                        .`in`(Singleton::class.java)
-
-                bindFactory { oauthHelper.tokenValidator }
-                        .to(TokenValidator::class.java)
-
-                radarEnhancer.enhance(this)
-                mpEnhancer.enhance(this)
-            }
-        })
-
+        val resourceConfig = RadarResourceConfigFactory().resources(enhancers)
         server =  GrizzlyHttpServerFactory.createHttpServer(URI.create("http://localhost:9091"), resourceConfig)
         server.start()
 
@@ -152,7 +131,7 @@ internal class RadarJerseyResourceEnhancerTest {
 
             assertThat(response.isSuccessful, `is`(false))
             assertThat(response.code, `is`(404))
-            assertThat(response.body?.string(), equalTo("{\"error\":\"project_not_found\",\"error_description\":null}"))
+            assertThat(response.body?.string(), equalTo("{\"error\":\"project_not_found\",\"error_description\":\"Project c not found.\"}"))
         }
     }
 
