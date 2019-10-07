@@ -46,12 +46,28 @@ class Users(
 }
 ```
 
-These APIs are activated by adding `JerseyResourceEnhancer` implementations to your resource definition:
+These APIs are activated by adding an `EnhancerFactory` implementation to your resource definition:
 ```kotlin
-val resourceConfig = RadarResourceConfigFactory().resources(listOf(
-    // My own resource configuration
-    object : JerseyResourceEnhancer {
+class MyEnhancerFactory(private val config: MyConfigClass): EnhancerFactory {
+    override fun createEnhancers() = listOf(
+            // My own resource configuration
+            MyResourceEnhancer(),
+            // RADAR OAuth2 enhancement
+            RadarJerseyResourceEnhancer(AuthConfig(
+                    managementPortalUrl = "http://...",
+                    jwtResourceName = "res_MyResource")),
+            // Use ManagementPortal OAuth implementation
+            ManagementPortalResourceEnhancer(),
+            // HttpApplicationException handling
+            HttpExceptionResourceEnhancer(),
+            // General error handling (WebApplicationException and any other Exception)
+            GeneralExceptionResourceEnhancer())
+
+    class MyResourceEnhancer: JerseyResourceEnhancer {
         override fun enhanceBinder(binder: AbstractBinder) {
+            binder.bind(config)
+                  .to(MyConfigClass::class.java)
+
             binder.bind(MyProjectService::class.java)
                   .to(ProjectService::class.java)
                   .`in`(Singleton::class.java)
@@ -61,23 +77,23 @@ val resourceConfig = RadarResourceConfigFactory().resources(listOf(
                   .`in`(Singleton::class.java)
         }
     }
-    // RADAR OAuth2 enhancement
-    RadarJerseyResourceEnhancer(AuthConfig(
-            managementPortalUrl = "http://...",
-            jwtResourceName = "res_MyResource")),
-    // Use ManagementPortal OAuth implementation
-    ManagementPortalResourceEnhancer(),
-    // HttpApplicationException handling
-    HttpExceptionResourceEnhancer(),
-    // General error handling (WebApplicationException and any other Exception)
-    GeneralExceptionResourceEnhancer()
-))
+}
 ```
-
 Ensure that a class implementing `org.radarbase.jersey.auth.ProjectService` is added to the binder.
+
+This factory can then be specified in your main method, by adding it to your `MyConfigClass` definition:
+```kotlin
+fun main(args: Array<String>) {
+    val config: MyConfigClass = ConfigLoader.loadConfig("my-config-name.yml", args)
+    val resources = ConfigLoader.loadResources(config.resourceConfig, config)
+    val server = GrizzlyServer(config.baseUri, resources, config.isJmxEnabled)
+    // Listen until JVM shutdown
+    server.listen()
+}
+```
 
 ## Error handling
 
-This package adds some error handling. Specifically, `org.radarbase.auth.jersey.exception.HttpApplicationException` can be used and extended to serve detailed error messages with customized logging and HTML templating. They can be thrown from any resource.
+This package adds some error handling. Specifically, `org.radarbase.jersey.exception.HttpApplicationException` and its subclasses can be used and extended to serve detailed error messages with customized logging and HTML templating. They can be thrown from any resource.
 
 To serve custom HTML error messages for error codes 400 to 599, add a Mustache template to the classpath in directory `org/radarbase/jersey/exception/mapper/<code>.html`. You can use special cases `4xx.html` and `5xx.html` as a catch-all template. The templates can use variables `status` for the HTTP status code, `code` for short-hand code for the specific error, and an optional `detailedMessage` for a human-readable message.
