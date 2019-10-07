@@ -1,6 +1,6 @@
-# radar-auth-jersey
+# radar-jersey
 
-Library to facilitate OAuth 2.0 integration with a Jersey-based REST API.
+Library to facilitate using with a Jersey-based REST API. This includes OAuth 2.0 integration, exception handling and resource configuration.
 
 # Usage
 
@@ -11,17 +11,18 @@ repositories {
 }
 
 dependencies {
-    api("org.radarbase:radar-auth-jersey:0.1.0")
+    api("org.radarbase:radar-jersey:0.2.0")
 }
 ```
 
-Any path or resource that should be authenticated against the ManagementPortal, should be annotated with `@Authenticated`. Specific authorization can be checked by adding a `@NeedsPermission` annotation. An `Auth` object can be injected to get app-specific information. Examples:
+Any path or resource that should be authenticated against the ManagementPortal, should be annotated with `@Authenticated`. Specific authorization can be checked by adding a `@NeedsPermission` annotation. An `Auth` object can be injected to get app-specific information. For reliable injection, constructor or method injection, not class parameter injection. Examples:
 
 ```kotlin
 @Path("/projects")
 @Authenticated
-class Users(@Context projectService: ProjectService) {
-
+class Users(
+        @Context projectService: MyProjectService
+) {
     @GET
     @NeedsPermission(PROJECT, READ)
     fun getProjects(@Context auth: Auth): List<Project> {
@@ -47,32 +48,36 @@ class Users(@Context projectService: ProjectService) {
 
 These APIs are activated by adding `JerseyResourceEnhancer` implementations to your resource definition:
 ```kotlin
-val authConfig = AuthConfig(
-        managementPortalUrl = "http://...",
-        jwtResourceName = "res_MyResource")
+val resourceConfig = RadarResourceConfigFactory().resources(listOf(
+    // My own resource configuration
+    object : JerseyResourceEnhancer {
+        override fun enhanceBinder(binder: AbstractBinder) {
+            binder.bind(MyProjectService::class.java)
+                  .to(ProjectService::class.java)
+                  .`in`(Singleton::class.java)
 
-val enhancers = listOf(
-    RadarJerseyResourceEnhancer(authConfig)
-    ManagementPortalResourceEnhancer())
-
-val resourceConfig = ResourceConfig()
-enhancers.forEach { resourceConfig.packages(*it.packages) }
-
-resourceConfig.register(object : AbstractBinder() {
-    override fun configure() {
-        bind(MyProjectService::class.java)
-                .to(ProjectService::class.java)
-                .`in`(Singleton::class.java)
-
-        enhancers.forEach { it.enhance(this) }
+            binder.bind(MyProjectService::class.java)
+                  .to(MyProjectService::class.java)
+                  .`in`(Singleton::class.java)
+        }
     }
-})
+    // RADAR OAuth2 enhancement
+    RadarJerseyResourceEnhancer(AuthConfig(
+            managementPortalUrl = "http://...",
+            jwtResourceName = "res_MyResource")),
+    // Use ManagementPortal OAuth implementation
+    ManagementPortalResourceEnhancer(),
+    // HttpApplicationException handling
+    HttpExceptionResourceEnhancer(),
+    // General error handling (WebApplicationException and any other Exception)
+    GeneralExceptionResourceEnhancer()
+))
 ```
 
-Ensure that a class implementing `org.radarbase.auth.jersey.ProjectService` is added to the binder.
+Ensure that a class implementing `org.radarbase.jersey.auth.ProjectService` is added to the binder.
 
 ## Error handling
 
 This package adds some error handling. Specifically, `org.radarbase.auth.jersey.exception.HttpApplicationException` can be used and extended to serve detailed error messages with customized logging and HTML templating. They can be thrown from any resource.
 
-To serve custom HTML error messages for error codes 400 to 599, add a Mustache template to the classpath in directory `org/radarbase/auth/jersey/exception/<code>.html`. You can use special cases `4xx.html` and `5xx.html` as a catch-all template. The templates can use variables `status` for the HTTP status code, `code` for short-hand code for the specific error, and an optional `detailedMessage` for a human-readable message.
+To serve custom HTML error messages for error codes 400 to 599, add a Mustache template to the classpath in directory `org/radarbase/jersey/exception/mapper/<code>.html`. You can use special cases `4xx.html` and `5xx.html` as a catch-all template. The templates can use variables `status` for the HTTP status code, `code` for short-hand code for the specific error, and an optional `detailedMessage` for a human-readable message.
