@@ -6,14 +6,18 @@ import org.slf4j.LoggerFactory
 import java.lang.IllegalStateException
 import java.net.URI
 
-class GrizzlyServer(private val baseUri: URI, resources: ResourceConfig) {
+class GrizzlyServer(private val baseUri: URI, resources: ResourceConfig, enableJmx: Boolean = false) {
     private val server = GrizzlyHttpServerFactory.createHttpServer(baseUri, resources)
+            .also { it.serverConfiguration.isJmxEnabled = enableJmx }
 
     private val shutdownHook = Thread(Runnable {
         logger.info("Stopping server..")
         server.shutdown()
     }, "shutdownHook")
 
+    fun start() {
+        server.start()
+    }
 
     fun listen() {
         // register shutdown hook
