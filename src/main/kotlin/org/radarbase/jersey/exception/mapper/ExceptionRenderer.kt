@@ -11,6 +11,6 @@ package org.radarbase.jersey.exception.mapper
 
 import org.radarbase.jersey.exception.HttpApplicationException
 
-interface ExceptionHtmlRenderer {
+interface ExceptionRenderer {
     fun render(exception: HttpApplicationException): String
 }

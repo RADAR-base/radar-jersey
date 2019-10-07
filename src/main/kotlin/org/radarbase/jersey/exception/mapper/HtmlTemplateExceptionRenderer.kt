@@ -17,7 +17,10 @@ import java.io.ByteArrayOutputStream
 import java.io.IOException
 import java.io.OutputStreamWriter
 
-class DefaultExceptionHtmlRenderer: ExceptionHtmlRenderer {
+/**
+ * Render an exception using a Mustache HTML document.
+ */
+class HtmlTemplateExceptionRenderer: ExceptionRenderer {
     private val errorTemplates: Map<Int, Mustache>
 
     private val template4xx: Mustache
@@ -67,6 +70,6 @@ class DefaultExceptionHtmlRenderer: ExceptionHtmlRenderer {
     }
 
     companion object {
-        private val logger = LoggerFactory.getLogger(DefaultExceptionHtmlRenderer::class.java)
+        private val logger = LoggerFactory.getLogger(HtmlTemplateExceptionRenderer::class.java)
     }
 }
