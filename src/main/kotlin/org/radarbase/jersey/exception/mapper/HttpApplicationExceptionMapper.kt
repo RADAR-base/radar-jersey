@@ -10,8 +10,8 @@
 package org.radarbase.jersey.inject
 
 import com.fasterxml.jackson.core.util.BufferRecyclers
-import org.radarbase.jersey.exception.mapper.ExceptionHtmlRenderer
 import org.radarbase.jersey.exception.HttpApplicationException
+import org.radarbase.jersey.exception.mapper.ExceptionHtmlRenderer
 import org.slf4j.LoggerFactory
 import javax.inject.Singleton
 import javax.ws.rs.container.ContainerRequestContext

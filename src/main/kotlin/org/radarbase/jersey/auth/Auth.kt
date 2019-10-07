@@ -14,7 +14,6 @@ import org.radarbase.jersey.exception.HttpBadRequestException
 import org.radarbase.jersey.exception.HttpForbiddenException
 import org.radarcns.auth.authorization.Permission
 import org.radarcns.auth.token.RadarToken
-import javax.ws.rs.core.Response
 
 interface Auth {
     /** ID of the OAuth client. */

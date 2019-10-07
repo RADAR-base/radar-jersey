@@ -14,11 +14,9 @@ import org.glassfish.jersey.process.internal.RequestScoped
 import org.glassfish.jersey.server.ResourceConfig
 import org.radarbase.jersey.auth.Auth
 import org.radarbase.jersey.auth.AuthConfig
-import org.radarbase.jersey.auth.jwt.AuthFactory
 import org.radarbase.jersey.auth.filter.AuthenticationFilter
 import org.radarbase.jersey.auth.filter.AuthorizationFeature
-import kotlin.apply
-import kotlin.jvm.java
+import org.radarbase.jersey.auth.jwt.AuthFactory
 
 /**
  * Add RADAR auth to a Jersey project. This requires a {@link ProjectService} implementation to be
