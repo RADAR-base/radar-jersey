@@ -22,6 +22,7 @@ import org.junit.jupiter.api.Test
 import org.radarbase.jersey.auth.OAuthHelper.Companion.bearerHeader
 import org.radarbase.jersey.config.*
 import org.radarbase.jersey.mock.MockResourceEnhancer
+import org.radarbase.jersey.mock.MockResourceEnhancerFactory
 import java.net.URI
 
 internal class RadarJerseyResourceEnhancerTest {
@@ -34,15 +35,9 @@ internal class RadarJerseyResourceEnhancerTest {
                 managementPortalUrl = "http://localhost:8080",
                 jwtResourceName = "res_ManagementPortal")
 
-        val enhancers = listOf(
-                MockResourceEnhancer(),
-                RadarJerseyResourceEnhancer(authConfig),
-                ManagementPortalResourceEnhancer(),
-                HttpExceptionResourceEnhancer(),
-                GeneralExceptionResourceEnhancer())
+        val resources = ConfigLoader.loadResources(MockResourceEnhancerFactory::class.java, authConfig)
 
-        val resourceConfig = RadarResourceConfigFactory().resources(enhancers)
-        server =  GrizzlyHttpServerFactory.createHttpServer(URI.create("http://localhost:9091"), resourceConfig)
+        server =  GrizzlyHttpServerFactory.createHttpServer(URI.create("http://localhost:9091"), resources)
         server.start()
 
         client = OkHttpClient()
