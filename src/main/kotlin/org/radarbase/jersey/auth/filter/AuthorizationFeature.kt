@@ -10,6 +10,7 @@
 package org.radarbase.jersey.auth.filter
 
 import org.radarbase.jersey.auth.NeedsPermission
+import javax.inject.Singleton
 import javax.ws.rs.Priorities
 import javax.ws.rs.container.DynamicFeature
 import javax.ws.rs.container.ResourceInfo
@@ -18,6 +19,7 @@ import javax.ws.rs.ext.Provider
 
 /** Authorization for different auth tags. */
 @Provider
+@Singleton
 class AuthorizationFeature : DynamicFeature {
     override fun configure(resourceInfo: ResourceInfo, context: FeatureContext) {
         val resourceMethod = resourceInfo.resourceMethod

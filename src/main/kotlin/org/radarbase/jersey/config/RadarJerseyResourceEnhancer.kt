@@ -25,12 +25,9 @@ import org.radarbase.jersey.auth.jwt.AuthFactory
 class RadarJerseyResourceEnhancer(
         private val config: AuthConfig
 ): JerseyResourceEnhancer {
-    override fun enhanceResources(resourceConfig: ResourceConfig) {
-        resourceConfig.registerClasses(
-                AuthenticationFilter::class.java,
-                AuthorizationFeature::class.java
-        )
-    }
+    override val classes = arrayOf(
+            AuthenticationFilter::class.java,
+            AuthorizationFeature::class.java)
 
     override fun enhanceBinder(binder: AbstractBinder) {
         binder.apply {

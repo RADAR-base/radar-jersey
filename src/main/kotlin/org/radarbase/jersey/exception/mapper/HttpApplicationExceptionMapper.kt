@@ -7,12 +7,10 @@
  * See the file LICENSE in the root of this repository.
  */
 
-package org.radarbase.jersey.inject
+package org.radarbase.jersey.exception.mapper
 
-import com.fasterxml.jackson.core.util.BufferRecyclers
 import org.glassfish.hk2.api.IterableProvider
 import org.radarbase.jersey.exception.HttpApplicationException
-import org.radarbase.jersey.exception.mapper.ExceptionRenderer
 import org.slf4j.LoggerFactory
 import javax.inject.Singleton
 import javax.ws.rs.container.ContainerRequestContext
@@ -22,7 +20,6 @@ import javax.ws.rs.core.Response
 import javax.ws.rs.core.UriInfo
 import javax.ws.rs.ext.ExceptionMapper
 import javax.ws.rs.ext.Provider
-import kotlin.text.Charsets.UTF_8
 
 @Provider
 @Singleton
@@ -37,7 +34,7 @@ class HttpApplicationExceptionMapper(
                 .takeIf { it != MediaType.WILDCARD_TYPE }
                 ?: MediaType.TEXT_PLAIN_TYPE
 
-        logger.error("[{}] {} <{}> - {}: {}", exception.status, uriInfo.absolutePath, mediaType, exception.code, exception.detailedMessage)
+        logger.error("[{}] {} - {}: {}", exception.status, uriInfo.absolutePath, exception.code, exception.detailedMessage)
 
         val renderer = renderers.named(mediaType.toString()).firstOrNull()
 

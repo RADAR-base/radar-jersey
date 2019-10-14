@@ -1,0 +1,25 @@
+<configuration>
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>
+                %-4relative [%thread] %-5level - %msg
+            </pattern>
+        </encoder>
+    </appender>
+
+    <appender name="WEB" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>
+                %msg
+            </pattern>
+        </encoder>
+    </appender>
+
+    <logger name="org.radarbase.jersey.filter.ResponseLoggerFilter" level="INFO" additivity="false">
+        <appender-ref ref="WEB" />
+    </logger>
+
+    <root level="INFO">
+        <appender-ref ref="STDOUT" />
+    </root>
+</configuration>

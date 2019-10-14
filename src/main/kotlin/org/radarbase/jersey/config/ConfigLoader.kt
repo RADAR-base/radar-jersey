@@ -4,6 +4,9 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory
 import org.glassfish.jersey.internal.inject.AbstractBinder
 import org.glassfish.jersey.server.ResourceConfig
+import org.radarbase.jersey.auth.AuthConfig
+import org.radarbase.jersey.filter.CorsFilter
+import org.radarbase.jersey.filter.ResponseLoggerFilter
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.io.File
@@ -30,13 +33,7 @@ object ConfigLoader {
         return createResourceConfig(enhancerFactory.createEnhancers())
     }
 
-    /**
-     * Load a configuration from YAML file. The filename is searched in the current working
-     * directory. This exits with a usage information message if the file cannot be loaded.
-     *
-     * @throws IllegalArgumentException if a file matching configFileName cannot be found
-     */
-    inline fun <reified T> loadConfig(fileName: String, args: Array<String>): T {
+    fun <T> loadConfig(fileName: String, args: Array<String>, clazz: Class<T>): T {
         val configFileName = when {
             args.size == 1 -> args[0]
             Files.exists(Paths.get(fileName)) -> fileName
@@ -48,7 +45,7 @@ object ConfigLoader {
         logger.info("Reading configuration from ${configFile.absolutePath}")
         try {
             val mapper = ObjectMapper(YAMLFactory())
-            return mapper.readValue(configFile, T::class.java)
+            return mapper.readValue(configFile, clazz)
         } catch (ex: IOException) {
             logger.error("Usage: <command> [$fileName]")
             logger.error("Failed to read config file $configFile: ${ex.message}")
@@ -57,13 +54,26 @@ object ConfigLoader {
     }
 
     /**
+     * Load a configuration from YAML file. The filename is searched in the current working
+     * directory. This exits with a usage information message if the file cannot be loaded.
+     *
+     * @throws IllegalArgumentException if a file matching configFileName cannot be found
+     */
+    inline fun <reified T> loadConfig(fileName: String, args: Array<String>): T =
+        loadConfig(fileName, args, T::class.java)
+
+    /**
      * Create a resourceConfig based on the provided resource enhancers. This method also disables
      * the WADL since it may be identified as a security risk.
      */
     fun createResourceConfig(enhancers: List<JerseyResourceEnhancer>): ResourceConfig {
         val resources = ResourceConfig()
         resources.property("jersey.config.server.wadl.disableWadl", true)
-        enhancers.forEach { it.enhanceResources(resources) }
+        enhancers.forEach { enhancer ->
+            resources.packages(*enhancer.packages)
+            resources.registerClasses(*enhancer.classes)
+            enhancer.enhanceResources(resources)
+        }
 
         resources.register(object : AbstractBinder() {
             override fun configure() {
@@ -74,4 +84,16 @@ object ConfigLoader {
     }
 
     val logger: Logger = LoggerFactory.getLogger(ConfigLoader::class.java)
+
+    object Filters {
+        val cors = CorsFilter::class.java
+        val logResponse = ResponseLoggerFilter::class.java
+    }
+    object Enhancers {
+        fun radar(config: AuthConfig) = RadarJerseyResourceEnhancer(config)
+        val managementPortal = ManagementPortalResourceEnhancer()
+        val ecdsa = EcdsaResourceEnhancer()
+        val httpException = HttpExceptionResourceEnhancer()
+        val generalException = GeneralExceptionResourceEnhancer()
+    }
 }
