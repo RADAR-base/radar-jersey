@@ -23,14 +23,20 @@ interface JerseyResourceEnhancer {
     val packages: Array<String>
         get() = emptyArray()
 
+    val enhanceBinder: AbstractBinder.() -> Unit
+        get() = {}
+
+    val enhanceResources: ResourceConfig.() -> Unit
+        get() = {}
+
     /**
      * Enhance the ResourceConfig directly. Use this for classes with Jersey-recognized classes like
      * {@code @Resource}, {@code @Provider} or {@code ContextResolver}.
      */
-    fun enhanceResources(resourceConfig: ResourceConfig) = Unit
+    fun enhanceResources(resourceConfig: ResourceConfig) = resourceConfig.enhanceResources()
 
     /**
      * Enhance an AbstractBinder. Use this for app-specific bindings.
      */
-    fun enhanceBinder(binder: AbstractBinder) = Unit
+    fun enhanceBinder(binder: AbstractBinder) = binder.enhanceBinder()
 }

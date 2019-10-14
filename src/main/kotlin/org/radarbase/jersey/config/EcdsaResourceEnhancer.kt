@@ -22,8 +22,8 @@ import javax.inject.Singleton
  * and jwtKeystoreAlias. If jwtIssuer is set, the issuer of the JWT will also be validated.
  */
 class EcdsaResourceEnhancer : JerseyResourceEnhancer {
-    override fun enhanceBinder(binder: AbstractBinder) {
-        binder.bind(EcdsaJwtTokenValidator::class.java)
+    override val enhanceBinder: AbstractBinder.() -> Unit = {
+        bind(EcdsaJwtTokenValidator::class.java)
                 .to(AuthValidator::class.java)
                 .`in`(Singleton::class.java)
     }
