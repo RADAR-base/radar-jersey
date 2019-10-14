@@ -12,7 +12,6 @@ package org.radarbase.jersey
 import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory
 import org.glassfish.jersey.server.ResourceConfig
 import org.slf4j.LoggerFactory
-import java.lang.IllegalStateException
 import java.net.URI
 
 /**

@@ -10,21 +10,13 @@
 package org.radarbase.jersey.filter
 
 import org.slf4j.LoggerFactory
-import java.time.Instant
 import java.time.LocalDateTime
 import java.time.ZoneOffset
-import java.time.chrono.IsoChronology
 import java.time.format.DateTimeFormatter
-import java.time.format.DateTimeFormatter.ISO_LOCAL_DATE
-import java.time.format.DateTimeFormatterBuilder
-import java.time.format.ResolverStyle
-import java.time.temporal.ChronoField
 import javax.inject.Singleton
 import javax.ws.rs.container.ContainerRequestContext
 import javax.ws.rs.container.ContainerResponseContext
 import javax.ws.rs.container.ContainerResponseFilter
-import javax.ws.rs.core.Context
-import javax.ws.rs.core.UriInfo
 import javax.ws.rs.ext.Provider
 
 @Provider

@@ -15,12 +15,12 @@ class MockResourceEnhancer : JerseyResourceEnhancer {
     override val packages: Array<String> = arrayOf(
             "org.radarbase.jersey.mock.resource")
 
-    override fun enhanceBinder(binder: AbstractBinder) {
-        binder.bind(MockProjectService(listOf("a", "b")))
+    override val enhanceBinder: AbstractBinder.() -> Unit = {
+        bind(MockProjectService(listOf("a", "b")))
                 .to(ProjectService::class.java)
                 .`in`(Singleton::class.java)
 
-        binder.bindFactory { RadarJerseyResourceEnhancerTest.oauthHelper.tokenValidator }
+        bindFactory { RadarJerseyResourceEnhancerTest.oauthHelper.tokenValidator }
                 .to(TokenValidator::class.java)
     }
 }
