@@ -1,4 +1,13 @@
-package org.radarbase.appconfig.exception
+/*
+ * Copyright (c) 2019. The Hyve
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ *
+ * See the file LICENSE in the root of this repository.
+ */
+
+package org.radarbase.jersey.exception.mapper
 
 import org.slf4j.LoggerFactory
 import javax.inject.Singleton
@@ -14,7 +23,6 @@ import javax.ws.rs.ext.Provider
 class UnhandledExceptionMapper(
         @Context private val uriInfo: UriInfo
 ) : ExceptionMapper<Throwable> {
-
 
     override fun toResponse(exception: Throwable): Response {
         logger.error("[500] {}", uriInfo.absolutePath, exception)

@@ -17,6 +17,12 @@ import org.glassfish.jersey.server.ResourceConfig
  * {@code @Context}.
  */
 interface JerseyResourceEnhancer {
+    val classes: Array<Class<*>>
+        get() = emptyArray()
+
+    val packages: Array<String>
+        get() = emptyArray()
+
     /**
      * Enhance the ResourceConfig directly. Use this for classes with Jersey-recognized classes like
      * {@code @Resource}, {@code @Provider} or {@code ContextResolver}.

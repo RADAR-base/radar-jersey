@@ -4,6 +4,9 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory
 import org.glassfish.jersey.internal.inject.AbstractBinder
 import org.glassfish.jersey.server.ResourceConfig
+import org.radarbase.jersey.auth.AuthConfig
+import org.radarbase.jersey.filter.CorsFilter
+import org.radarbase.jersey.filter.ResponseLoggerFilter
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.io.File
@@ -66,7 +69,11 @@ object ConfigLoader {
     fun createResourceConfig(enhancers: List<JerseyResourceEnhancer>): ResourceConfig {
         val resources = ResourceConfig()
         resources.property("jersey.config.server.wadl.disableWadl", true)
-        enhancers.forEach { it.enhanceResources(resources) }
+        enhancers.forEach { enhancer ->
+            resources.packages(*enhancer.packages)
+            resources.registerClasses(*enhancer.classes)
+            enhancer.enhanceResources(resources)
+        }
 
         resources.register(object : AbstractBinder() {
             override fun configure() {
@@ -77,4 +84,16 @@ object ConfigLoader {
     }
 
     val logger: Logger = LoggerFactory.getLogger(ConfigLoader::class.java)
+
+    object Filters {
+        val cors = CorsFilter::class.java
+        val logResponse = ResponseLoggerFilter::class.java
+    }
+    object Enhancers {
+        fun radar(config: AuthConfig) = RadarJerseyResourceEnhancer(config)
+        val managementPortal = ManagementPortalResourceEnhancer()
+        val ecdsa = EcdsaResourceEnhancer()
+        val httpException = HttpExceptionResourceEnhancer()
+        val generalException = GeneralExceptionResourceEnhancer()
+    }
 }

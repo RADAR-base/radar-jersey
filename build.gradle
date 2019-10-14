@@ -68,7 +68,7 @@ dependencies {
     testImplementation 'org.hamcrest:hamcrest-all:1.3'
     testImplementation("com.squareup.okhttp3:okhttp:$okhttpVersion")
 
-    testRuntime 'org.slf4j:slf4j-simple:1.7.26'
+    testRuntimeOnly("ch.qos.logback:logback-classic:1.2.3")
 }
 
 tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {

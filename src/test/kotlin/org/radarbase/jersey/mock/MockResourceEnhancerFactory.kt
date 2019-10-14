@@ -6,8 +6,8 @@ import org.radarbase.jersey.config.*
 class MockResourceEnhancerFactory(private val config: AuthConfig) : EnhancerFactory {
     override fun createEnhancers(): List<JerseyResourceEnhancer> = listOf(
             MockResourceEnhancer(),
-            RadarJerseyResourceEnhancer(config),
-            ManagementPortalResourceEnhancer(),
-            HttpExceptionResourceEnhancer(),
-            GeneralExceptionResourceEnhancer())
+            ConfigLoader.Enhancers.radar(config),
+            ConfigLoader.Enhancers.managementPortal,
+            ConfigLoader.Enhancers.httpException,
+            ConfigLoader.Enhancers.generalException)
 }

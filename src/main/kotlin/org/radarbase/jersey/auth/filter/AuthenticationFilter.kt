@@ -15,6 +15,7 @@ import org.radarbase.jersey.exception.HttpUnauthorizedException
 import org.radarcns.auth.exception.TokenValidationException
 import org.slf4j.LoggerFactory
 import javax.annotation.Priority
+import javax.inject.Singleton
 import javax.ws.rs.Priorities
 import javax.ws.rs.container.ContainerRequestContext
 import javax.ws.rs.container.ContainerRequestFilter
@@ -27,6 +28,7 @@ import javax.ws.rs.ext.Provider
 @Provider
 @Authenticated
 @Priority(Priorities.AUTHENTICATION)
+@Singleton
 class AuthenticationFilter(
         @Context private val validator: AuthValidator
 ) : ContainerRequestFilter {

@@ -53,17 +53,21 @@ class MyEnhancerFactory(private val config: MyConfigClass): EnhancerFactory {
             // My own resource configuration
             MyResourceEnhancer(),
             // RADAR OAuth2 enhancement
-            RadarJerseyResourceEnhancer(AuthConfig(
+            ConfigLoader.Enhancers.radar(AuthConfig(
                     managementPortalUrl = "http://...",
                     jwtResourceName = "res_MyResource")),
             // Use ManagementPortal OAuth implementation
-            ManagementPortalResourceEnhancer(),
+            ConfigLoader.Enhancers.managementPortal,
             // HttpApplicationException handling
-            HttpExceptionResourceEnhancer(),
+            ConfigLoader.Enhancers.httpException,
             // General error handling (WebApplicationException and any other Exception)
-            GeneralExceptionResourceEnhancer())
+            ConfigLoader.Enhancers.generalException)
 
     class MyResourceEnhancer: JerseyResourceEnhancer {
+        override val classes: Array<Class<*>> = arrayOf(
+	            ConfigLoader.Filters.logResponse,
+		        ConfigLoader.Filters.cors)
+
         override fun enhanceBinder(binder: AbstractBinder) {
             binder.bind(config)
                   .to(MyConfigClass::class.java)
