@@ -10,7 +10,7 @@ class HttpExceptionResourceEnhancer: JerseyResourceEnhancer {
     override val classes: Array<Class<*>> = arrayOf(
             HttpApplicationExceptionMapper::class.java)
 
-    override val enhanceBinder: AbstractBinder.() -> Unit = {
+    override fun AbstractBinder.enhance() {
         bind(HtmlTemplateExceptionRenderer::class.java)
                 .to(ExceptionRenderer::class.java)
                 .named("text/html")

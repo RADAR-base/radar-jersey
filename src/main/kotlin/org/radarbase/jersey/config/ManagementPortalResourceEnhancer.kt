@@ -21,7 +21,7 @@ import javax.inject.Singleton
  * jwtResourceName to be set in the AuthConfig.
  */
 class ManagementPortalResourceEnhancer : JerseyResourceEnhancer {
-    override val enhanceBinder: AbstractBinder.() -> Unit = {
+    override fun AbstractBinder.enhance() {
         bindFactory(TokenValidatorFactory::class.java)
                 .to(TokenValidator::class.java)
                 .`in`(Singleton::class.java)

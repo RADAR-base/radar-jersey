@@ -28,7 +28,7 @@ class RadarJerseyResourceEnhancer(
             AuthenticationFilter::class.java,
             AuthorizationFeature::class.java)
 
-    override val enhanceBinder: AbstractBinder.() -> Unit = {
+    override fun AbstractBinder.enhance() {
         bind(config)
                 .to(AuthConfig::class.java)
 
