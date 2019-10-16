@@ -11,7 +11,7 @@ repositories {
 }
 
 dependencies {
-    api("org.radarbase:radar-jersey:0.2.1")
+    api("org.radarbase:radar-jersey:0.2.2")
 }
 ```
 
@@ -68,15 +68,15 @@ class MyEnhancerFactory(private val config: MyConfigClass): EnhancerFactory {
 	            ConfigLoader.Filters.logResponse,
 		        ConfigLoader.Filters.cors)
 
-        override fun enhanceBinder(binder: AbstractBinder) {
-            binder.bind(config)
+        override fun AbstractBinder.enhance() {
+            bind(config)
                   .to(MyConfigClass::class.java)
 
-            binder.bind(MyProjectService::class.java)
+            bind(MyProjectService::class.java)
                   .to(ProjectService::class.java)
                   .`in`(Singleton::class.java)
 
-            binder.bind(MyProjectService::class.java)
+            bind(MyProjectService::class.java)
                   .to(MyProjectService::class.java)
                   .`in`(Singleton::class.java)
         }

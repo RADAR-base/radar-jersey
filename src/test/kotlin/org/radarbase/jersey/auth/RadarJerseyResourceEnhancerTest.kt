@@ -20,8 +20,7 @@ import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.radarbase.jersey.auth.OAuthHelper.Companion.bearerHeader
-import org.radarbase.jersey.config.*
-import org.radarbase.jersey.mock.MockResourceEnhancer
+import org.radarbase.jersey.config.ConfigLoader
 import org.radarbase.jersey.mock.MockResourceEnhancerFactory
 import java.net.URI
 

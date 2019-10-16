@@ -11,7 +11,6 @@ package org.radarbase.jersey.config
 
 import org.glassfish.jersey.internal.inject.AbstractBinder
 import org.glassfish.jersey.process.internal.RequestScoped
-import org.glassfish.jersey.server.ResourceConfig
 import org.radarbase.jersey.auth.Auth
 import org.radarbase.jersey.auth.AuthConfig
 import org.radarbase.jersey.auth.filter.AuthenticationFilter
@@ -29,17 +28,15 @@ class RadarJerseyResourceEnhancer(
             AuthenticationFilter::class.java,
             AuthorizationFeature::class.java)
 
-    override fun enhanceBinder(binder: AbstractBinder) {
-        binder.apply {
-            bind(config)
-                    .to(AuthConfig::class.java)
+    override fun AbstractBinder.enhance() {
+        bind(config)
+                .to(AuthConfig::class.java)
 
-            // Bind factories.
-            bindFactory(AuthFactory::class.java)
-                    .proxy(true)
-                    .proxyForSameScope(false)
-                    .to(Auth::class.java)
-                    .`in`(RequestScoped::class.java)
-        }
+        // Bind factories.
+        bindFactory(AuthFactory::class.java)
+                .proxy(true)
+                .proxyForSameScope(false)
+                .to(Auth::class.java)
+                .`in`(RequestScoped::class.java)
     }
 }

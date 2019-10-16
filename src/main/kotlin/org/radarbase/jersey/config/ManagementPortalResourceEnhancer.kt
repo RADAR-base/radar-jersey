@@ -21,15 +21,13 @@ import javax.inject.Singleton
  * jwtResourceName to be set in the AuthConfig.
  */
 class ManagementPortalResourceEnhancer : JerseyResourceEnhancer {
-    override fun enhanceBinder(binder: AbstractBinder) {
-        binder.apply {
-            bindFactory(TokenValidatorFactory::class.java)
-                    .to(TokenValidator::class.java)
-                    .`in`(Singleton::class.java)
+    override fun AbstractBinder.enhance() {
+        bindFactory(TokenValidatorFactory::class.java)
+                .to(TokenValidator::class.java)
+                .`in`(Singleton::class.java)
 
-            bind(ManagementPortalTokenValidator::class.java)
-                    .to(AuthValidator::class.java)
-                    .`in`(Singleton::class.java)
-        }
+        bind(ManagementPortalTokenValidator::class.java)
+                .to(AuthValidator::class.java)
+                .`in`(Singleton::class.java)
     }
 }
