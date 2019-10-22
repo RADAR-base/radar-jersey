@@ -52,7 +52,7 @@ dependencies {
 
     runtimeOnly("org.glassfish.jersey.media:jersey-media-json-jackson:$jerseyVersion")
 
-    runtimeOnly("com.fasterxml.jackson.module:jackson-module-kotlin:$jacksonVersion")
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:$jacksonVersion")
     runtimeOnly("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jacksonVersion")
     runtimeOnly("com.fasterxml.jackson.datatype:jackson-datatype-jdk8:$jacksonVersion")
 
