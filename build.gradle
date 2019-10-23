@@ -5,7 +5,7 @@ plugins {
 
 description = 'Library for Jersey authorization, exception handling and configuration with the RADAR platform'
 group = 'org.radarbase'
-version = '0.2.2'
+version = '0.2.2.1'
 
 ext {
     githubRepoName = 'RADAR-base/radar-jersey'
@@ -52,7 +52,7 @@ dependencies {
 
     runtimeOnly("org.glassfish.jersey.media:jersey-media-json-jackson:$jerseyVersion")
 
-    runtimeOnly("com.fasterxml.jackson.module:jackson-module-kotlin:$jacksonVersion")
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:$jacksonVersion")
     runtimeOnly("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jacksonVersion")
     runtimeOnly("com.fasterxml.jackson.datatype:jackson-datatype-jdk8:$jacksonVersion")
 
