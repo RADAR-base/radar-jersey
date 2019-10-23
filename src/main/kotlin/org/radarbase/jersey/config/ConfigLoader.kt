@@ -34,7 +34,8 @@ object ConfigLoader {
         return createResourceConfig(enhancerFactory.createEnhancers())
     }
 
-    fun <T> loadConfig(fileName: String, args: Array<String>, clazz: Class<T>): T {
+    @JvmOverloads
+    fun <T> loadConfig(fileName: String, args: Array<String>, clazz: Class<T>, mapper: ObjectMapper? = null): T {
         val configFileName = when {
             args.size == 1 -> args[0]
             Files.exists(Paths.get(fileName)) -> fileName
@@ -45,9 +46,9 @@ object ConfigLoader {
         val configFile = File(configFileName)
         logger.info("Reading configuration from ${configFile.absolutePath}")
         try {
-            val mapper = ObjectMapper(YAMLFactory())
+            val localMapper = mapper ?: ObjectMapper(YAMLFactory())
                     .registerModule(KotlinModule())
-            return mapper.readValue(configFile, clazz)
+            return localMapper.readValue(configFile, clazz)
         } catch (ex: IOException) {
             logger.error("Usage: <command> [$fileName]")
             logger.error("Failed to read config file $configFile: ${ex.message}")
@@ -61,8 +62,8 @@ object ConfigLoader {
      *
      * @throws IllegalArgumentException if a file matching configFileName cannot be found
      */
-    inline fun <reified T> loadConfig(fileName: String, args: Array<String>): T =
-        loadConfig(fileName, args, T::class.java)
+    inline fun <reified T> loadConfig(fileName: String, args: Array<String>, mapper: ObjectMapper? = null): T =
+        loadConfig(fileName, args, T::class.java, mapper)
 
     /**
      * Create a resourceConfig based on the provided resource enhancers. This method also disables
