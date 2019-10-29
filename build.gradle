@@ -5,7 +5,7 @@ plugins {
 
 description = 'Library for Jersey authorization, exception handling and configuration with the RADAR platform'
 group = 'org.radarbase'
-version = '0.2.2.3'
+version = '0.2.3-SNAPSHOT'
 
 ext {
     githubRepoName = 'RADAR-base/radar-jersey'
