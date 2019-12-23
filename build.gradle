@@ -19,8 +19,8 @@ ext {
     jakartaAnnotationVersion = "1.3.5"
     jerseyVersion = "2.29.1"
     grizzlyVersion = "2.4.4"
-    jacksonVersion = "2.9.10.1"
-    jacksonModuleVersion = "2.9.10"
+    jacksonVersion = "2.10.1"
+    jacksonModuleVersion = "2.10.1"
     okhttpVersion = "4.2.0"
 }
 
