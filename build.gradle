@@ -20,6 +20,7 @@ ext {
     jerseyVersion = "2.29.1"
     grizzlyVersion = "2.4.4"
     jacksonVersion = "2.9.10.1"
+    jacksonModuleVersion = "2.9.10"
     okhttpVersion = "4.2.0"
 }
 
@@ -40,7 +41,7 @@ dependencies {
     api("com.fasterxml.jackson.core:jackson-databind:$jacksonVersion")
 
     implementation("org.glassfish.jersey.containers:jersey-container-grizzly2-http:$jerseyVersion")
-    implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:$jacksonVersion")
+    implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:$jacksonModuleVersion")
 
     // exception template rendering
     implementation 'com.github.spullara.mustache.java:compiler:0.9.6'
@@ -52,9 +53,9 @@ dependencies {
 
     runtimeOnly("org.glassfish.jersey.media:jersey-media-json-jackson:$jerseyVersion")
 
-    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:$jacksonVersion")
-    runtimeOnly("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jacksonVersion")
-    runtimeOnly("com.fasterxml.jackson.datatype:jackson-datatype-jdk8:$jacksonVersion")
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:$jacksonModuleVersion")
+    runtimeOnly("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jacksonModuleVersion")
+    runtimeOnly("com.fasterxml.jackson.datatype:jackson-datatype-jdk8:$jacksonModuleVersion")
 
     runtimeOnly 'javax.xml.bind:jaxb-api:2.2.11'
     runtimeOnly 'com.sun.xml.bind:jaxb-core:2.2.11'
