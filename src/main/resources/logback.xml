@@ -2,7 +2,7 @@
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
             <pattern>
-                %-4relative [%thread] %-5level - %msg
+                %-4relative [%thread] %-5level - %msg%n
             </pattern>
         </encoder>
     </appender>
