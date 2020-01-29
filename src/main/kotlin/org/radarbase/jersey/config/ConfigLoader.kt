@@ -11,10 +11,8 @@ import org.radarbase.jersey.filter.ResponseLoggerFilter
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.io.BufferedInputStream
-import java.io.File
 import java.io.IOException
 import java.nio.file.Files
-import java.nio.file.Path
 import java.nio.file.Paths
 import kotlin.system.exitProcess
 
@@ -70,6 +68,15 @@ object ConfigLoader {
      */
     inline fun <reified T> loadConfig(fileName: String, args: Array<String>, mapper: ObjectMapper? = null): T =
         loadConfig(listOf(fileName), args, T::class.java, mapper)
+
+    /**
+     * Load a configuration from YAML file. The filename is searched in the current working
+     * directory. This exits with a usage information message if the file cannot be loaded.
+     *
+     * @throws IllegalArgumentException if a file matching configFileName cannot be found
+     */
+    inline fun <reified T> loadConfig(fileNames: List<String>, args: Array<String>, mapper: ObjectMapper? = null): T =
+            loadConfig(fileNames, args, T::class.java, mapper)
 
     /**
      * Create a resourceConfig based on the provided resource enhancers. This method also disables
