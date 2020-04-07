@@ -9,7 +9,7 @@
 
 package org.radarbase.jersey.exception.mapper
 
-import com.fasterxml.jackson.core.util.BufferRecyclers
+import com.fasterxml.jackson.core.io.JsonStringEncoder
 import org.radarbase.jersey.exception.HttpApplicationException
 
 /**
@@ -17,7 +17,7 @@ import org.radarbase.jersey.exception.HttpApplicationException
  */
 class DefaultJsonExceptionRenderer: ExceptionRenderer {
     override fun render(exception: HttpApplicationException): String {
-        val stringEncoder = BufferRecyclers.getJsonStringEncoder()
+        val stringEncoder = JsonStringEncoder.getInstance()
         val quotedError = stringEncoder.quoteAsUTF8(exception.code).toString(Charsets.UTF_8)
         val quotedDescription = exception.detailedMessage?.let {
             '"' + stringEncoder.quoteAsUTF8(it).toString(Charsets.UTF_8) + '"'

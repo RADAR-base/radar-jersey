@@ -5,7 +5,7 @@ plugins {
 
 description = 'Library for Jersey authorization, exception handling and configuration with the RADAR platform'
 group = 'org.radarbase'
-version = '0.2.2.4'
+version = '0.2.3'
 
 ext {
     githubRepoName = 'RADAR-base/radar-jersey'
@@ -17,11 +17,14 @@ ext {
     managementPortalVersion = "0.5.8"
     jakartaWsRsVersion = "2.1.6"
     jakartaAnnotationVersion = "1.3.5"
-    jerseyVersion = "2.29.1"
+    jerseyVersion = "2.30.1"
     grizzlyVersion = "2.4.4"
-    jacksonVersion = "2.9.10.1"
-    jacksonModuleVersion = "2.9.10"
-    okhttpVersion = "4.2.0"
+    jacksonVersion = "2.10.3"
+    jacksonModuleVersion = "2.10.3"
+    okhttpVersion = "4.5.0"
+    slf4jVersion = "1.7.30"
+    javaxXmlBind = "2.2.11"
+    javaxActivation = "1.1.1"
 }
 
 repositories {
@@ -47,7 +50,7 @@ dependencies {
     implementation 'com.github.spullara.mustache.java:compiler:0.9.6'
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
-    implementation "org.slf4j:slf4j-api:1.7.26"
+    implementation "org.slf4j:slf4j-api:$slf4jVersion"
 
     implementation("org.glassfish.jersey.inject:jersey-hk2:$jerseyVersion")
 
@@ -57,10 +60,10 @@ dependencies {
     runtimeOnly("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jacksonModuleVersion")
     runtimeOnly("com.fasterxml.jackson.datatype:jackson-datatype-jdk8:$jacksonModuleVersion")
 
-    runtimeOnly 'javax.xml.bind:jaxb-api:2.2.11'
-    runtimeOnly 'com.sun.xml.bind:jaxb-core:2.2.11'
-    runtimeOnly 'com.sun.xml.bind:jaxb-impl:2.2.11'
-    runtimeOnly 'javax.activation:activation:1.1.1'
+    runtimeOnly "javax.xml.bind:jaxb-api:$javaxXmlBind"
+    runtimeOnly "com.sun.xml.bind:jaxb-core:$javaxXmlBind"
+    runtimeOnly "com.sun.xml.bind:jaxb-impl:$javaxXmlBind"
+    runtimeOnly "javax.activation:activation:$javaxActivation"
 
     testRuntimeOnly("org.glassfish.grizzly:grizzly-http-server:$grizzlyVersion")
     testRuntimeOnly("org.glassfish.jersey.containers:jersey-container-grizzly2-servlet:$jerseyVersion")

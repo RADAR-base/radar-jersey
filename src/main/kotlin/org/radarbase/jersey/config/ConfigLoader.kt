@@ -10,7 +10,7 @@ import org.radarbase.jersey.filter.CorsFilter
 import org.radarbase.jersey.filter.ResponseLoggerFilter
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import java.io.File
+import java.io.BufferedInputStream
 import java.io.IOException
 import java.nio.file.Files
 import java.nio.file.Paths
@@ -35,22 +35,26 @@ object ConfigLoader {
     }
 
     @JvmOverloads
-    fun <T> loadConfig(fileName: String, args: Array<String>, clazz: Class<T>, mapper: ObjectMapper? = null): T {
-        val configFileName = when {
-            args.size == 1 -> args[0]
-            Files.exists(Paths.get(fileName)) -> fileName
-            else -> null
-        }
-        requireNotNull(configFileName) { "Configuration not provided." }
+    fun <T> loadConfig(fileName: String, args: Array<String>, clazz: Class<T>, mapper: ObjectMapper? = null): T =
+            loadConfig(listOf(fileName), args, clazz, mapper)
 
-        val configFile = File(configFileName)
-        logger.info("Reading configuration from ${configFile.absolutePath}")
+    @JvmOverloads
+    fun <T> loadConfig(fileNames: List<String>, args: Array<String>, clazz: Class<T>, mapper: ObjectMapper? = null): T {
+        val configFile = if (args.size == 1) Paths.get(args[0])
+                else fileNames.map { Paths.get(it) }.find { Files.exists(it) }
+        requireNotNull(configFile) { "Configuration not provided." }
+
+        logger.info("Reading configuration from {}", configFile.toAbsolutePath())
         try {
             val localMapper = mapper ?: ObjectMapper(YAMLFactory())
                     .registerModule(KotlinModule())
-            return localMapper.readValue(configFile, clazz)
+            return Files.newInputStream(configFile).use { input ->
+                BufferedInputStream(input).use { bufInput ->
+                    localMapper.readValue(bufInput, clazz)
+                }
+            }
         } catch (ex: IOException) {
-            logger.error("Usage: <command> [$fileName]")
+            logger.error("Usage: <command> [$configFile]")
             logger.error("Failed to read config file $configFile: ${ex.message}")
             exitProcess(1)
         }
@@ -63,7 +67,16 @@ object ConfigLoader {
      * @throws IllegalArgumentException if a file matching configFileName cannot be found
      */
     inline fun <reified T> loadConfig(fileName: String, args: Array<String>, mapper: ObjectMapper? = null): T =
-        loadConfig(fileName, args, T::class.java, mapper)
+        loadConfig(listOf(fileName), args, T::class.java, mapper)
+
+    /**
+     * Load a configuration from YAML file. The filename is searched in the current working
+     * directory. This exits with a usage information message if the file cannot be loaded.
+     *
+     * @throws IllegalArgumentException if a file matching configFileName cannot be found
+     */
+    inline fun <reified T> loadConfig(fileNames: List<String>, args: Array<String>, mapper: ObjectMapper? = null): T =
+            loadConfig(fileNames, args, T::class.java, mapper)
 
     /**
      * Create a resourceConfig based on the provided resource enhancers. This method also disables
