@@ -14,16 +14,17 @@ import org.radarbase.jersey.exception.HttpBadRequestException
 import org.radarbase.jersey.exception.HttpForbiddenException
 import org.radarcns.auth.authorization.Permission
 import org.radarcns.auth.token.RadarToken
+import org.slf4j.LoggerFactory
 
 interface Auth {
-    /** ID of the OAuth client. */
-    // TODO: parse client ID from RADAR token. Pending MP 0.5.7.
-    val clientId: String?
-        get() = getClaim("client_id").let { if (it.isTextual) it.asText() else null }
     /** Default project to apply operations to. */
     val defaultProject: String?
 
     val token: RadarToken
+
+    /** ID of the OAuth client. */
+    val clientId: String?
+        get() = token.clientId
 
     /** User ID, if set in the authentication. This may be null if a client credentials grant type is used. */
     val userId: String?
@@ -40,9 +41,12 @@ interface Auth {
                         projectId ?: throw HttpBadRequestException("project_id_missing", "Missing project ID in request"),
                         userId ?: throw HttpBadRequestException("user_id_missing", "Missing user ID in request")
                         )) {
-            throw HttpForbiddenException("permission_mismatch", "No permission to create measurement for " +
+            logPermission(false, permission, projectId, userId)
+            throw HttpForbiddenException("permission_mismatch", "No permission '$permission' " +
                     "project $projectId with user $userId")
         }
+
+        logPermission(true, permission, projectId, userId)
     }
 
     /**
@@ -55,9 +59,11 @@ interface Auth {
         if (!token.hasPermissionOnProject(permission,
                         projectId ?: throw HttpBadRequestException("project_id_missing", "Missing project ID in request")
                         )) {
-            throw HttpForbiddenException("permission_mismatch", "No permission to create measurement for " +
+            logPermission(false, permission, projectId)
+            throw HttpForbiddenException("permission_mismatch", "No permission '$permission' for " +
                     "project $projectId")
         }
+        logPermission(true, permission, projectId)
     }
 
     /**
@@ -71,9 +77,11 @@ interface Auth {
                         projectId ?: throw HttpBadRequestException("project_id_missing", "Missing project ID in request"),
                         userId ?: throw HttpBadRequestException("user_id_missing", "Missing user ID in request"),
                         sourceId ?: throw HttpBadRequestException("source_id_missing", "Missing source ID in request"))) {
-            throw HttpForbiddenException("permission_mismatch", "No permission to create measurement for " +
+            logPermission(false, permission, projectId, userId, sourceId)
+            throw HttpForbiddenException("permission_mismatch", "No permission '$permission' for " +
                     "project $projectId with user $userId and source $sourceId")
         }
+        logPermission(true, permission, projectId, userId, sourceId)
     }
 
     /**
@@ -85,4 +93,48 @@ interface Auth {
      * Whether the current authentication is for a user with a role in given project.
      */
     fun hasRole(projectId: String, role: String): Boolean
+
+    fun logPermission(isAuthorized: Boolean, permission: Permission, projectId: String? = null, userId: String? = null, sourceId: String? = null) {
+        if (!logger.isInfoEnabled) {
+            return
+        }
+
+        logger.info(StringBuilder(100).apply {
+            append("Authorization ")
+            if (token.isClientCredentials) {
+                append("of client '")
+                append(clientId)
+            } else {
+                append("of user '")
+                append(this@Auth.userId)
+            }
+            append("' for permission '")
+            append(permission)
+            append('\'')
+
+            if (projectId != null) {
+                append(" on project '")
+                append(projectId)
+                append('\'')
+
+                if (userId != null) {
+                    append(" and subject '")
+                    append(userId)
+                    append('\'')
+
+                    if (sourceId != null) {
+                        append(" and source '")
+                        append(sourceId)
+                        append('\'')
+                    }
+                }
+            }
+            append(": ")
+            append(if (isAuthorized) "GRANTED" else "DENIED")
+        }.toString())
+    }
+
+    companion object {
+        private val logger = LoggerFactory.getLogger(Auth::class.java)
+    }
 }

@@ -45,13 +45,15 @@ class PermissionFilter(
                 ?.let { uriInfo.pathParameters[it] }
                 ?.firstOrNull()
 
-        val isAuthenticated = when {
+        val isAuthorized = when {
             userId != null -> projectId != null && auth.token.hasPermissionOnSubject(permission, projectId, userId)
             projectId != null -> auth.token.hasPermissionOnProject(permission, projectId)
             else -> auth.token.hasPermission(permission)
         }
 
-        if (!isAuthenticated) {
+        auth.logPermission(isAuthorized, permission, projectId, userId)
+
+        if (!isAuthorized) {
             val message = "$permission permission not given."
             throw HttpForbiddenException("insufficient_scope", message, additionalHeaders = listOf(
                     "WWW-Authenticate" to (AuthenticationFilter.BEARER_REALM
