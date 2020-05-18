@@ -51,7 +51,8 @@ class PermissionFilter(
             else -> auth.token.hasPermission(permission)
         }
 
-        auth.logPermission(isAuthorized, permission, projectId, userId)
+        val location = "${requestContext.method} ${requestContext.uriInfo.absolutePath}"
+        auth.logPermission(isAuthorized, permission, location, projectId, userId)
 
         if (!isAuthorized) {
             val message = "$permission permission not given."
