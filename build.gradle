@@ -23,7 +23,9 @@ ext {
     jacksonModuleVersion = "2.11.2"
     okhttpVersion = "4.8.1"
     slf4jVersion = "1.7.30"
-    javaxXmlBind = "2.3.1"
+    javaxXmlBindVersion = "2.3.1"
+    javaxJaxbCoreVersion = "2.3.0.1"
+    javaxJaxbRuntimeVersion = "2.3.3"
     javaxActivation = "1.1.1"
     junitVersion = "5.6.2"
 }
@@ -61,9 +63,9 @@ dependencies {
     runtimeOnly("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jacksonModuleVersion")
     runtimeOnly("com.fasterxml.jackson.datatype:jackson-datatype-jdk8:$jacksonModuleVersion")
 
-    runtimeOnly "javax.xml.bind:jaxb-api:$javaxXmlBind"
-    runtimeOnly "com.sun.xml.bind:jaxb-core:$javaxXmlBind"
-    runtimeOnly "com.sun.xml.bind:jaxb-impl:$javaxXmlBind"
+    runtimeOnly "javax.xml.bind:jaxb-api:$javaxXmlBindVersion"
+    runtimeOnly "org.glassfish.jaxb:jaxb-core:$javaxJaxbCoreVersion"
+    runtimeOnly "org.glassfish.jaxb:jaxb-runtime:$javaxJaxbRuntimeVersion"
     runtimeOnly "javax.activation:activation:$javaxActivation"
 
     testRuntimeOnly("org.glassfish.grizzly:grizzly-http-server:$grizzlyVersion")
