@@ -17,14 +17,15 @@ ext {
     managementPortalVersion = "0.5.8"
     jakartaWsRsVersion = "2.1.6"
     jakartaAnnotationVersion = "1.3.5"
-    jerseyVersion = "2.30.1"
+    jerseyVersion = "2.31"
     grizzlyVersion = "2.4.4"
-    jacksonVersion = "2.11.0"
-    jacksonModuleVersion = "2.11.0"
-    okhttpVersion = "4.6.0"
+    jacksonVersion = "2.11.2"
+    jacksonModuleVersion = "2.11.2"
+    okhttpVersion = "4.8.1"
     slf4jVersion = "1.7.30"
-    javaxXmlBind = "2.2.11"
+    javaxXmlBind = "2.3.1"
     javaxActivation = "1.1.1"
+    junitVersion = "5.6.2"
 }
 
 repositories {
@@ -68,7 +69,7 @@ dependencies {
     testRuntimeOnly("org.glassfish.grizzly:grizzly-http-server:$grizzlyVersion")
     testRuntimeOnly("org.glassfish.jersey.containers:jersey-container-grizzly2-servlet:$jerseyVersion")
 
-    testImplementation("org.junit.jupiter:junit-jupiter:5.5.2")
+    testImplementation("org.junit.jupiter:junit-jupiter:$junitVersion")
     testImplementation 'org.hamcrest:hamcrest-all:1.3'
     testImplementation("com.squareup.okhttp3:okhttp:$okhttpVersion")
 
@@ -89,7 +90,7 @@ test {
 }
 
 wrapper {
-    gradleVersion = "6.4.1"
+    gradleVersion = "6.6"
 }
 
 apply from: "gradle/publishing.gradle"
