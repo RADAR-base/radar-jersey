@@ -36,7 +36,7 @@ internal class RadarJerseyResourceEnhancerTest {
 
         val resources = ConfigLoader.loadResources(MockResourceEnhancerFactory::class.java, authConfig)
 
-        server =  GrizzlyHttpServerFactory.createHttpServer(URI.create("http://localhost:9091"), resources)
+        server = GrizzlyHttpServerFactory.createHttpServer(URI.create("http://localhost:9091"), resources)
         server.start()
 
         client = OkHttpClient()

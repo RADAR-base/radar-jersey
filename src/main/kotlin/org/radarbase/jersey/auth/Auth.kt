@@ -14,16 +14,17 @@ import org.radarbase.jersey.exception.HttpBadRequestException
 import org.radarbase.jersey.exception.HttpForbiddenException
 import org.radarcns.auth.authorization.Permission
 import org.radarcns.auth.token.RadarToken
+import org.slf4j.LoggerFactory
 
 interface Auth {
-    /** ID of the OAuth client. */
-    // TODO: parse client ID from RADAR token. Pending MP 0.5.7.
-    val clientId: String?
-        get() = getClaim("client_id").let { if (it.isTextual) it.asText() else null }
     /** Default project to apply operations to. */
     val defaultProject: String?
 
     val token: RadarToken
+
+    /** ID of the OAuth client. */
+    val clientId: String?
+        get() = token.clientId
 
     /** User ID, if set in the authentication. This may be null if a client credentials grant type is used. */
     val userId: String?
@@ -35,14 +36,17 @@ interface Auth {
      * @throws HttpBadRequestException if a parameter is null
      * @throws HttpForbiddenException if the current authentication does not authorize for the permission.
      */
-    fun checkPermissionOnSubject(permission: Permission, projectId: String?, userId: String?) {
+    fun checkPermissionOnSubject(permission: Permission, projectId: String?, userId: String?, location: String? = null) {
         if (!token.hasPermissionOnSubject(permission,
                         projectId ?: throw HttpBadRequestException("project_id_missing", "Missing project ID in request"),
                         userId ?: throw HttpBadRequestException("user_id_missing", "Missing user ID in request")
                         )) {
-            throw HttpForbiddenException("permission_mismatch", "No permission to create measurement for " +
+            logPermission(false, permission, location, projectId, userId)
+            throw HttpForbiddenException("permission_mismatch", "No permission '$permission' " +
                     "project $projectId with user $userId")
         }
+
+        logPermission(true, permission, location, projectId, userId)
     }
 
     /**
@@ -51,13 +55,15 @@ interface Auth {
      * @throws HttpBadRequestException if a parameter is null
      * @throws HttpForbiddenException if the current authentication does not authorize for the permission.
      */
-    fun checkPermissionOnProject(permission: Permission, projectId: String?) {
+    fun checkPermissionOnProject(permission: Permission, projectId: String?, location: String? = null) {
         if (!token.hasPermissionOnProject(permission,
                         projectId ?: throw HttpBadRequestException("project_id_missing", "Missing project ID in request")
                         )) {
-            throw HttpForbiddenException("permission_mismatch", "No permission to create measurement for " +
+            logPermission(false, permission, location, projectId)
+            throw HttpForbiddenException("permission_mismatch", "No permission '$permission' for " +
                     "project $projectId")
         }
+        logPermission(true, permission, location, projectId)
     }
 
     /**
@@ -66,14 +72,16 @@ interface Auth {
      * @throws HttpBadRequestException if a parameter is null
      * @throws HttpForbiddenException if the current authentication does not authorize for the permission.
      */
-    fun checkPermissionOnSource(permission: Permission, projectId: String?, userId: String?, sourceId: String?) {
+    fun checkPermissionOnSource(permission: Permission, projectId: String?, userId: String?, sourceId: String?, location: String? = null) {
         if (!token.hasPermissionOnSource(permission,
                         projectId ?: throw HttpBadRequestException("project_id_missing", "Missing project ID in request"),
                         userId ?: throw HttpBadRequestException("user_id_missing", "Missing user ID in request"),
                         sourceId ?: throw HttpBadRequestException("source_id_missing", "Missing source ID in request"))) {
-            throw HttpForbiddenException("permission_mismatch", "No permission to create measurement for " +
+            logPermission(false, permission, location, projectId, userId, sourceId)
+            throw HttpForbiddenException("permission_mismatch", "No permission '$permission' for " +
                     "project $projectId with user $userId and source $sourceId")
         }
+        logPermission(true, permission, location, projectId, userId, sourceId)
     }
 
     /**
@@ -85,4 +93,55 @@ interface Auth {
      * Whether the current authentication is for a user with a role in given project.
      */
     fun hasRole(projectId: String, role: String): Boolean
+
+    fun logPermission(isAuthorized: Boolean, permission: Permission, location: String? = null, projectId: String? = null, userId: String? = null, sourceId: String? = null) {
+        if (!logger.isInfoEnabled) {
+            return
+        }
+
+        logger.info(StringBuilder(150).apply {
+            append("[AUTHORIZATION] ")
+            append(location ?: findCallerMethod())
+            if (token.isClientCredentials) {
+                append(" - Client '")
+                append(clientId)
+            } else {
+                append(" - User '")
+                append(this@Auth.userId)
+            }
+            append("' - ")
+
+            sequenceOf(
+                    "project" to projectId,
+                    "subject" to userId,
+                    "source" to sourceId)
+                    .mapNotNull { (key, value) ->
+                        value?.let { "$key=$it" }
+                    }
+                    .joinTo(this, separator = ", ")
+            append(" - ")
+            append(if (isAuthorized) "GRANTED " else "DENIED ")
+            append(permission.scopeName())
+        }.toString())
+    }
+
+    companion object {
+        private val stackWalker = StackWalker
+                .getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE)
+
+        private fun findCallerMethod(): String = stackWalker.walk { stream -> stream
+                    .skip(2) // this method and logPermission
+                    .filter { stackElement ->
+                        val declaringClass = stackElement.declaringClass
+                        !declaringClass.isInstance(Auth::class.java)
+                                && !declaringClass.isAnonymousClass
+                                && !declaringClass.isLocalClass
+                    }
+                    .findFirst()
+                    .map { "${it.declaringClass.simpleName}.${it.methodName}" }
+                    .orElse("unknown method")
+        }
+
+        private val logger = LoggerFactory.getLogger(Auth::class.java)
+    }
 }

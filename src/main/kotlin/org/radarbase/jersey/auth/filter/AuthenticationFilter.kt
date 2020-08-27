@@ -13,7 +13,6 @@ import org.radarbase.jersey.auth.AuthValidator
 import org.radarbase.jersey.auth.Authenticated
 import org.radarbase.jersey.exception.HttpUnauthorizedException
 import org.radarcns.auth.exception.TokenValidationException
-import org.slf4j.LoggerFactory
 import javax.annotation.Priority
 import javax.inject.Singleton
 import javax.ws.rs.Priorities
@@ -35,43 +34,30 @@ class AuthenticationFilter(
 
     override fun filter(requestContext: ContainerRequestContext) {
         val rawToken = validator.getToken(requestContext)
-
-        if (rawToken == null) {
-            logger.warn("[401] {}: No token bearer header provided in the request",
-                    requestContext.uriInfo.path)
-            throw HttpUnauthorizedException(
-                    code = "token_missing",
-                    detailedMessage = "No bearer token is provided in the request.",
-                    additionalHeaders = listOf("WWW-Authenticate" to BEARER_REALM))
-        }
+                ?: throw HttpUnauthorizedException(
+                        code = "token_missing",
+                        detailedMessage = "No bearer token is provided in the request.",
+                        additionalHeaders = listOf("WWW-Authenticate" to BEARER_REALM))
 
         val radarToken = try {
             validator.verify(rawToken, requestContext)
         } catch (ex: TokenValidationException) {
-            logger.warn("[401] {}: {}", requestContext.uriInfo.path, ex.toString())
             throw HttpUnauthorizedException(
                     code = "token_unverified",
                     detailedMessage = "Cannot verify token. It may have been rendered invalid.",
                     additionalHeaders = listOf("WWW-Authenticate" to BEARER_REALM
                             + " error=\"invalid_token\""
                             + " error_description=\"${ex.message}\""))
-        }
+        } ?: throw HttpUnauthorizedException(
+                code = "token_invalid",
+                detailedMessage = "Bearer token is not a valid JWT.",
+                additionalHeaders = listOf("WWW-Authenticate" to BEARER_REALM))
 
-        if (radarToken == null) {
-            logger.warn("[401] {}: Bearer token invalid",
-                    requestContext.uriInfo.path)
-            throw HttpUnauthorizedException(
-                    code = "token_invalid",
-                    detailedMessage = "Bearer token is not a valid JWT.",
-                    additionalHeaders = listOf("WWW-Authenticate" to BEARER_REALM))
-        } else {
-            requestContext.securityContext = RadarSecurityContext(radarToken)
-        }
+
+        requestContext.securityContext = RadarSecurityContext(radarToken)
     }
 
     companion object {
-        private val logger = LoggerFactory.getLogger(AuthenticationFilter::class.java)
-
         const val BEARER_REALM: String = "Bearer realm=\"Kafka REST Proxy\""
         const val BEARER = "Bearer "
     }
