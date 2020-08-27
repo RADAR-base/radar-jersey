@@ -30,7 +30,7 @@ class GrizzlyServer(
     private val server = GrizzlyHttpServerFactory.createHttpServer(baseUri, resources)
             .also { it.serverConfiguration.isJmxEnabled = enableJmx }
 
-    private val shutdownHook = Thread(Runnable {
+    private val shutdownHook = Thread({
         logger.info("Stopping HTTP server...")
         server.shutdown()
     }, "shutdownHook")
