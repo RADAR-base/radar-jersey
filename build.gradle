@@ -1,5 +1,5 @@
 plugins {
-    id 'org.jetbrains.kotlin.jvm' version '1.4.0'
+    id 'org.jetbrains.kotlin.jvm' version "1.4.0"
     id 'com.jfrog.bintray' version '1.8.5' apply false
 }
 
@@ -52,6 +52,7 @@ dependencies {
     // exception template rendering
     implementation 'com.github.spullara.mustache.java:compiler:0.9.6'
 
+    implementation "org.jetbrains.kotlin:kotlin-reflect"
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
     implementation "org.slf4j:slf4j-api:$slf4jVersion"
 
