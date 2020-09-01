@@ -100,38 +100,28 @@ interface Auth {
         }
 
         logger.info(StringBuilder(150).apply {
-            append("Authorization from ")
+            append("[AUTHORIZATION] ")
             append(location ?: findCallerMethod())
             if (token.isClientCredentials) {
-                append(" of client '")
+                append(" - Client '")
                 append(clientId)
             } else {
-                append(" of user '")
+                append(" - User '")
                 append(this@Auth.userId)
             }
-            append("' for permission '")
-            append(permission)
-            append('\'')
+            append("' - ")
 
-            if (projectId != null) {
-                append(" on project '")
-                append(projectId)
-                append('\'')
-
-                if (userId != null) {
-                    append(" and subject '")
-                    append(userId)
-                    append('\'')
-
-                    if (sourceId != null) {
-                        append(" and source '")
-                        append(sourceId)
-                        append('\'')
+            sequenceOf(
+                    "project" to projectId,
+                    "subject" to userId,
+                    "source" to sourceId)
+                    .mapNotNull { (key, value) ->
+                        value?.let { "$key=$it" }
                     }
-                }
-            }
-            append(": ")
-            append(if (isAuthorized) "GRANTED" else "DENIED")
+                    .joinTo(this, separator = ", ")
+            append(" - ")
+            append(if (isAuthorized) "GRANTED " else "DENIED ")
+            append(permission.scopeName())
         }.toString())
     }
 
