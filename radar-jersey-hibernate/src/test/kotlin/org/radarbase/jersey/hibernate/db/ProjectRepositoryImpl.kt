@@ -1,6 +1,6 @@
 package org.radarbase.jersey.hibernate.db
 
-import org.radarbase.jersey.hibernate.config.HibernateRepository
+import org.radarbase.jersey.hibernate.HibernateRepository
 import javax.inject.Provider
 import javax.persistence.EntityManager
 import javax.ws.rs.core.Context
