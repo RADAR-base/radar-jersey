@@ -7,7 +7,7 @@ import javax.persistence.EntityManager
 import javax.persistence.EntityTransaction
 
 open class HibernateRepository(
-        protected val em: Provider<EntityManager>
+        protected val entityManager: Provider<EntityManager>
 ) {
     /**
      * Run a transaction and commit it. If an exception occurs, the transaction is rolled back.
@@ -20,7 +20,7 @@ open class HibernateRepository(
      * Start a transaction without committing it. If an exception occurs, the transaction is rolled back.
      */
     private fun <T> createTransaction(transactionOperation: EntityManager.(CloseableTransaction) -> T): T {
-        val entityManager = em.get()
+        val entityManager = entityManager.get()
         val currentTransaction = entityManager.transaction
                 ?: throw HttpInternalServerException("transaction_not_found", "Cannot find a transaction from EntityManager")
 

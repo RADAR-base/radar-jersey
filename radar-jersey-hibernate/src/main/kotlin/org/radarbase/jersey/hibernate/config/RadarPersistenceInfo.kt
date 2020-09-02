@@ -72,9 +72,7 @@ class RadarPersistenceInfo(
 
     override fun getNewTempClassLoader(): ClassLoader? = null
 
-    override fun toString(): String {
-        return "RadarPersistenceInfo(properties=$properties)"
-    }
+    override fun toString() = "RadarPersistenceInfo(managedClasses=$managedClasses, properties=$properties)"
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -83,7 +81,8 @@ class RadarPersistenceInfo(
         other as RadarPersistenceInfo
 
         return properties == other.properties
+                && managedClasses == other.managedClasses
     }
 
-    override fun hashCode(): Int = properties.hashCode()
+    override fun hashCode(): Int = Objects.hash(properties, managedClasses)
 }
