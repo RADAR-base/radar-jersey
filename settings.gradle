@@ -1,1 +1,3 @@
 rootProject.name = "radar-jersey"
+
+include(":radar-jersey-hibernate")
