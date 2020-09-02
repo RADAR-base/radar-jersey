@@ -1,19 +1,17 @@
 package org.radarbase.jersey.hibernate
 
-import okhttp3.MediaType
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody
 import okio.BufferedSink
-import org.glassfish.grizzly.http.server.HttpServer
-import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.`is`
 import org.hamcrest.Matchers.equalTo
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.radarbase.jersey.GrizzlyServer
 import org.radarbase.jersey.auth.AuthConfig
 import org.radarbase.jersey.config.ConfigLoader
 import org.radarbase.jersey.hibernate.config.DatabaseConfig
@@ -24,7 +22,7 @@ import java.net.URI
 internal class HibernateTest {
     internal class DisabledAuthorizationResourceEnhancerTest {
         private lateinit var client: OkHttpClient
-        private lateinit var server: HttpServer
+        private lateinit var server: GrizzlyServer
 
         @BeforeEach
         fun setUp() {
@@ -39,7 +37,7 @@ internal class HibernateTest {
 
             val resources = ConfigLoader.loadResources(MockResourceEnhancerFactory::class.java, authConfig, databaseConfig)
 
-            server = GrizzlyHttpServerFactory.createHttpServer(URI.create("http://localhost:9091"), resources)
+            server = GrizzlyServer(URI.create("http://localhost:9091"), resources)
             server.start()
 
             client = OkHttpClient()

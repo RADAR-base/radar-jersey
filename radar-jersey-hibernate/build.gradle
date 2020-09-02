@@ -2,6 +2,8 @@ plugins {
     id("kotlin")
 }
 
+description = 'Library for Jersey with Hibernate with the RADAR platform'
+
 repositories {
     jcenter()
     maven { url = "https://dl.bintray.com/radar-cns/org.radarcns" }
@@ -10,16 +12,9 @@ repositories {
 ext.extra = [
         "hibernateVersion": "5.4.20.Final",
         "liquibaseVersion": "3.10.2",
-        "postgresVersion": "42.2.16"
+        "postgresVersion": "42.2.16",
+        "h2Version": "1.4.200",
 ]
-
-ext {
-    jerseyVersion = "2.31"
-    grizzlyVersion = "2.4.4"
-    junitVersion = "5.6.2"
-    okhttpVersion = "4.8.1"
-    h2Version = "1.4.200"
-}
 
 dependencies {
     api(project(":"))
@@ -31,7 +26,7 @@ dependencies {
 
     testRuntimeOnly("org.glassfish.grizzly:grizzly-http-server:$grizzlyVersion")
     testRuntimeOnly("org.glassfish.jersey.containers:jersey-container-grizzly2-servlet:$jerseyVersion")
-    testRuntimeOnly("com.h2database:h2:$h2Version")
+    testRuntimeOnly("com.h2database:h2:${project.extra["h2Version"]}")
 
     testImplementation("org.junit.jupiter:junit-jupiter:$junitVersion")
     testImplementation 'org.hamcrest:hamcrest-all:1.3'
@@ -39,3 +34,5 @@ dependencies {
 
     testRuntimeOnly("ch.qos.logback:logback-classic:1.2.3")
 }
+
+apply from: "$rootDir/gradle/publishing.gradle"

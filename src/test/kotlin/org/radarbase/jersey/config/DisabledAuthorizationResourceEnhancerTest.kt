@@ -54,7 +54,7 @@ internal class DisabledAuthorizationResourceEnhancerTest {
     fun testAuthenticatedGet() {
         client.newCall(Request.Builder()
                 .url("http://localhost:9091/user")
-                .bearerHeader(RadarJerseyResourceEnhancerTest.oauthHelper)
+                .header("Authorization", "Bearer none")
                 .build()).execute().use { response ->
             assertThat(response.isSuccessful, `is`(true))
             assertThat(response.body?.string(), equalTo("{\"accessToken\":\"\"}"))
