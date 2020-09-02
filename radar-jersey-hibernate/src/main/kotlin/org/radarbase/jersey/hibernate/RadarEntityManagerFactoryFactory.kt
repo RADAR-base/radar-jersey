@@ -15,12 +15,12 @@ import java.util.*
 import javax.persistence.EntityManagerFactory
 import javax.ws.rs.core.Context
 
-
 class RadarEntityManagerFactoryFactory(
         @Context config: DatabaseConfig
 ) : DisposableSupplier<EntityManagerFactory> {
     private val persistenceInfo = RadarPersistenceInfo(config)
     private val persistenceProvider = HibernatePersistenceProvider()
+    private val liquibaseConfig = config.liquibase
 
     override fun get(): EntityManagerFactory {
         logger.info("Initializing EntityManagerFactory with config: $persistenceInfo")
@@ -30,13 +30,15 @@ class RadarEntityManagerFactoryFactory(
     }
 
     private fun initializeDatabase(emf: EntityManagerFactory) {
+        if (!liquibaseConfig.enable) return
+
         logger.info("Initializing Liquibase")
         val connection = emf.createEntityManager()
                 .unwrap(SessionImpl::class.java)
                 .connection()
         try {
             val database = DatabaseFactory.getInstance().findCorrectDatabaseImplementation(JdbcConnection(connection))
-            val liquibase = Liquibase("db/changelog/changes/db.changelog-master.xml", ClassLoaderResourceAccessor(), database)
+            val liquibase = Liquibase(liquibaseConfig.changelogs, ClassLoaderResourceAccessor(), database)
             liquibase.update("test")
         } catch (e: LiquibaseException) {
             logger.error("Failed to initialize database", e)

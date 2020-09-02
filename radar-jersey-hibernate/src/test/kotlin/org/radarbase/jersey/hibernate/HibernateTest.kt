@@ -31,10 +31,11 @@ internal class HibernateTest {
             val authConfig = AuthConfig(
                     jwtResourceName = "res_jerseyTest")
             val databaseConfig = DatabaseConfig(
+                    managedClasses = listOf(ProjectDao::class.qualifiedName!!),
                     driver = "org.h2.Driver",
                     url = "jdbc:h2:mem:test",
                     dialect = "org.hibernate.dialect.H2Dialect",
-                    managedClasses = listOf(ProjectDao::class.qualifiedName!!))
+            )
 
             val resources = ConfigLoader.loadResources(MockResourceEnhancerFactory::class.java, authConfig, databaseConfig)
 
