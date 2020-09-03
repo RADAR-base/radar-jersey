@@ -11,6 +11,7 @@ package org.radarbase.jersey.auth.jwt
 
 import com.auth0.jwt.interfaces.DecodedJWT
 import com.fasterxml.jackson.databind.JsonNode
+import com.fasterxml.jackson.databind.node.NullNode
 import org.radarbase.jersey.auth.Auth
 import org.radarcns.auth.authorization.Permission
 import org.radarcns.auth.authorization.Permission.Entity
@@ -44,4 +45,5 @@ class JwtAuth(project: String?, private val jwt: DecodedJWT) : Auth {
     override fun hasRole(projectId: String, role: String) = projectId == defaultProject
 
     override fun getClaim(name: String): JsonNode = jwt.getClaim(name).`as`(JsonNode::class.java)
+            ?: NullNode.instance
 }

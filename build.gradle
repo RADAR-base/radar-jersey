@@ -3,9 +3,19 @@ plugins {
     id 'com.jfrog.bintray' version '1.8.5' apply false
 }
 
+allprojects {
+    group = 'org.radarbase'
+    version = '0.2.5-SNAPSHOT'
+
+    ext {
+        jerseyVersion = "2.31"
+        grizzlyVersion = "2.4.4"
+        okhttpVersion = "4.8.1"
+        junitVersion = "5.6.2"
+    }
+}
+
 description = 'Library for Jersey authorization, exception handling and configuration with the RADAR platform'
-group = 'org.radarbase'
-version = '0.2.5-SNAPSHOT'
 
 ext {
     githubRepoName = 'RADAR-base/radar-jersey'
@@ -17,17 +27,13 @@ ext {
     managementPortalVersion = "0.5.8"
     jakartaWsRsVersion = "2.1.6"
     jakartaAnnotationVersion = "1.3.5"
-    jerseyVersion = "2.31"
-    grizzlyVersion = "2.4.4"
     jacksonVersion = "2.11.2"
     jacksonModuleVersion = "2.11.2"
-    okhttpVersion = "4.8.1"
     slf4jVersion = "1.7.30"
     javaxXmlBindVersion = "2.3.1"
     javaxJaxbCoreVersion = "2.3.0.1"
     javaxJaxbRuntimeVersion = "2.3.3"
     javaxActivation = "1.1.1"
-    junitVersion = "5.6.2"
 }
 
 repositories {

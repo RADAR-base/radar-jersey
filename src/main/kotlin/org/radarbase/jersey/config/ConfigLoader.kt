@@ -108,6 +108,7 @@ object ConfigLoader {
     object Enhancers {
         fun radar(config: AuthConfig) = RadarJerseyResourceEnhancer(config)
         val managementPortal = ManagementPortalResourceEnhancer()
+        val disabledAuthorization = DisabledAuthorizationResourceEnhancer()
         val ecdsa = EcdsaResourceEnhancer()
         val httpException = HttpExceptionResourceEnhancer()
         val generalException = GeneralExceptionResourceEnhancer()
