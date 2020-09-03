@@ -13,6 +13,7 @@ class MockResourceEnhancerFactory(private val config: AuthConfig, private val da
             ConfigLoader.Enhancers.radar(config),
             HibernateResourceEnhancer(databaseConfig),
             ConfigLoader.Enhancers.disabledAuthorization,
+            ConfigLoader.Enhancers.health,
             ConfigLoader.Enhancers.httpException,
             ConfigLoader.Enhancers.generalException)
 }

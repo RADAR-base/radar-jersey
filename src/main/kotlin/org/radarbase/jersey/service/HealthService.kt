@@ -1,7 +1,7 @@
 package org.radarbase.jersey.service
 
 interface HealthService {
-    var status: String
+    val status: Status
     val metrics: Map<String, Any>
 
     fun add(metric: Metric)
@@ -9,6 +9,7 @@ interface HealthService {
 
     abstract class Metric(val name: String) {
         abstract val metrics: Any
+        open val status: Status? = null
 
         override fun equals(other: Any?): Boolean {
             if (other === this) return true
@@ -18,5 +19,9 @@ interface HealthService {
         }
 
         override fun hashCode(): Int = name.hashCode()
+    }
+
+    enum class Status {
+        UP, DOWN
     }
 }
