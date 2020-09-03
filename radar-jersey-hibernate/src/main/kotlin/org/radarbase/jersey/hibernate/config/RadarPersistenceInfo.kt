@@ -24,16 +24,16 @@ class RadarPersistenceInfo(
         put("hibernate.c3p0.idle_test_period", "300")
         put("hibernate.c3p0.max_statements", "0")
         put("hibernate.c3p0.timeout", "100")
-        val additionalProperties: Map<String, String> = (mapOf(
+        put("hibernate.c3p0.checkoutTimeout", "5000")
+
+        putAll((mapOf(
                 "javax.persistence.jdbc.driver" to config.driver,
                 "javax.persistence.jdbc.url" to config.url,
                 "javax.persistence.jdbc.user" to config.user,
                 "javax.persistence.jdbc.password" to config.password,
                 "hibernate.dialect" to config.dialect)
                 + config.properties)
-                .filterValues { it != null } as Map<String, String>
-
-        putAll(additionalProperties)
+                .filterValues { it != null } as Map<String, String>)
     }
 
     private val managedClasses = config.managedClasses

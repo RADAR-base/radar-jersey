@@ -1,5 +1,6 @@
 package org.radarbase.jersey.hibernate
 
+import liquibase.Contexts
 import liquibase.Liquibase
 import liquibase.database.DatabaseFactory
 import liquibase.database.jvm.JdbcConnection
@@ -33,14 +34,15 @@ class RadarEntityManagerFactoryFactory(
         if (!liquibaseConfig.enable) return
 
         logger.info("Initializing Liquibase")
-        val connection = emf.createEntityManager()
-                .unwrap(SessionImpl::class.java)
-                .connection()
         try {
-            val database = DatabaseFactory.getInstance().findCorrectDatabaseImplementation(JdbcConnection(connection))
+            val database = DatabaseFactory.getInstance()
+                    .findCorrectDatabaseImplementation(
+                            JdbcConnection(emf.createEntityManager()
+                                    .unwrap(SessionImpl::class.java)
+                                    .connection()))
             val liquibase = Liquibase(liquibaseConfig.changelogs, ClassLoaderResourceAccessor(), database)
-            liquibase.update("test")
-        } catch (e: LiquibaseException) {
+            liquibase.update(null as Contexts?)
+        } catch (e: Throwable) {
             logger.error("Failed to initialize database", e)
         }
     }
