@@ -25,6 +25,8 @@ class RadarPersistenceInfo(
         put("hibernate.c3p0.max_statements", "0")
         put("hibernate.c3p0.timeout", "100")
         put("hibernate.c3p0.checkoutTimeout", "5000")
+        put("hibernate.c3p0.acquireRetryAttempts", "3")
+        put("hibernate.c3p0.breakAfterAcquireFailure", "false")
 
         putAll((mapOf(
                 "javax.persistence.jdbc.driver" to config.driver,

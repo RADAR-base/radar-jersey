@@ -12,6 +12,7 @@ import org.radarbase.jersey.hibernate.config.DatabaseConfig
 import org.radarbase.jersey.hibernate.db.ProjectDao
 import org.radarbase.jersey.hibernate.mock.MockResourceEnhancerFactory
 import java.net.URI
+import java.util.concurrent.TimeUnit
 
 internal class DatabaseHealthMetricsTest {
     @Test
@@ -38,6 +39,38 @@ internal class DatabaseHealthMetricsTest {
                     .build()).execute().use { response ->
                 MatcherAssert.assertThat(response.isSuccessful, Matchers.`is`(true))
                 MatcherAssert.assertThat(response.body?.string(), Matchers.equalTo("{\"status\":\"UP\",\"db\":{\"status\":\"UP\"}}"))
+            }
+        } finally {
+            server.shutdown()
+        }
+    }
+
+    @Test
+    fun doesNotExistTest() {
+        val authConfig = AuthConfig(
+                jwtResourceName = "res_jerseyTest")
+        val databaseConfig = DatabaseConfig(
+                managedClasses = listOf(ProjectDao::class.qualifiedName!!),
+                driver = "org.postgresql.Driver",
+                url = "jdbc:postgresql://localhost:12345/doesnotexisttest",
+                dialect = "org.hibernate.dialect.PostgreSQLDialect",
+        )
+
+        val resources = ConfigLoader.loadResources(MockResourceEnhancerFactory::class.java, authConfig, databaseConfig)
+
+        val server = GrizzlyServer(URI.create("http://localhost:9091"), resources)
+        server.start()
+
+        try {
+            val client = OkHttpClient.Builder()
+                    .readTimeout(30, TimeUnit.SECONDS)
+                    .build()
+
+            client.newCall(Request.Builder()
+                    .url("http://localhost:9091/health")
+                    .build()).execute().use { response ->
+                MatcherAssert.assertThat(response.isSuccessful, Matchers.`is`(true))
+                MatcherAssert.assertThat(response.body?.string(), Matchers.equalTo("{\"status\":\"DOWN\",\"db\":{\"status\":\"DOWN\"}}"))
             }
         } finally {
             server.shutdown()
