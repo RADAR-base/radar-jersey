@@ -3,7 +3,7 @@ package org.radarbase.jersey.hibernate.config
 
 data class DatabaseConfig(
         /** Classes that can be used in Hibernate queries. */
-        val managedClasses: List<String>,
+        val managedClasses: List<String> = emptyList(),
         val driver: String? = "org.postgresql.Driver",
         val url: String? = null,
         val user: String? = null,
