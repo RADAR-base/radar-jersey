@@ -3,6 +3,7 @@ package org.radarbase.jersey.hibernate
 import org.hibernate.internal.SessionImpl
 import org.radarbase.jersey.service.HealthService
 import org.radarbase.jersey.service.HealthService.Metric
+import java.util.concurrent.atomic.AtomicBoolean
 import javax.inject.Provider
 import javax.persistence.EntityManager
 import javax.ws.rs.core.Context
@@ -13,8 +14,7 @@ class DatabaseHealthMetrics(
     override val status: HealthService.Status
         get() = if (checkConnection()) HealthService.Status.UP else HealthService.Status.DOWN
 
-    @Volatile
-    private var isTestingConnection = false
+    private val isTestingConnection = AtomicBoolean(false)
 
     @Volatile
     private var previousTestResult = false
@@ -22,14 +22,14 @@ class DatabaseHealthMetrics(
     override val metrics: Any = mapOf("status" to status)
 
     private fun checkConnection(): Boolean {
-        if (isTestingConnection) {
-            return previousTestResult
+        return if (isTestingConnection.compareAndSet(false, true)) {
+            testConnection()
+                    .also {
+                        previousTestResult = it
+                        isTestingConnection.set(false)
+                    }
         } else {
-            Thread {
-                isTestingConnection = true
-                previousTestResult = testConnection()
-                isTestingConnection = false
-            }
+            previousTestResult
         }
     }
 
