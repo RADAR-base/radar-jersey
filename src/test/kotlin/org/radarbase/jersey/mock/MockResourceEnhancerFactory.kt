@@ -9,7 +9,7 @@ class MockResourceEnhancerFactory(private val config: AuthConfig) : EnhancerFact
     override fun createEnhancers(): List<JerseyResourceEnhancer> = listOf(
             MockResourceEnhancer(),
             ConfigLoader.Enhancers.radar(config),
-            ConfigLoader.Enhancers.managementPortal,
+            ConfigLoader.Enhancers.managementPortal(config.managementportal),
             ConfigLoader.Enhancers.httpException,
             ConfigLoader.Enhancers.generalException)
 }

@@ -9,9 +9,9 @@
 
 package org.radarbase.jersey.hibernate.mock
 
-import org.radarbase.jersey.auth.ProjectService
 import org.radarbase.jersey.exception.HttpNotFoundException
 import org.radarbase.jersey.hibernate.db.ProjectRepository
+import org.radarbase.jersey.service.ProjectService
 import javax.ws.rs.core.Context
 
 class MockProjectService(

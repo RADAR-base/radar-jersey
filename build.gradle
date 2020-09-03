@@ -52,6 +52,8 @@ dependencies {
 
     api("com.fasterxml.jackson.core:jackson-databind:$jacksonVersion")
 
+    implementation("com.squareup.okhttp3:okhttp:$okhttpVersion")
+
     implementation("org.glassfish.jersey.containers:jersey-container-grizzly2-http:$jerseyVersion")
     implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:$jacksonModuleVersion")
 
@@ -80,7 +82,6 @@ dependencies {
 
     testImplementation("org.junit.jupiter:junit-jupiter:$junitVersion")
     testImplementation 'org.hamcrest:hamcrest-all:1.3'
-    testImplementation("com.squareup.okhttp3:okhttp:$okhttpVersion")
 
     testRuntimeOnly("ch.qos.logback:logback-classic:1.2.3")
 }

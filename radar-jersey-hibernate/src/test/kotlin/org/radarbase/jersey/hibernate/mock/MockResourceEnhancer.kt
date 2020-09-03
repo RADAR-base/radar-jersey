@@ -1,11 +1,11 @@
 package org.radarbase.jersey.hibernate.mock
 
 import org.glassfish.jersey.internal.inject.AbstractBinder
-import org.radarbase.jersey.auth.ProjectService
 import org.radarbase.jersey.config.ConfigLoader
 import org.radarbase.jersey.config.JerseyResourceEnhancer
 import org.radarbase.jersey.hibernate.db.ProjectRepository
 import org.radarbase.jersey.hibernate.db.ProjectRepositoryImpl
+import org.radarbase.jersey.service.ProjectService
 import javax.inject.Singleton
 
 class MockResourceEnhancer : JerseyResourceEnhancer {

@@ -1,10 +1,10 @@
 package org.radarbase.jersey.mock
 
 import org.glassfish.jersey.internal.inject.AbstractBinder
-import org.radarbase.jersey.auth.ProjectService
 import org.radarbase.jersey.auth.RadarJerseyResourceEnhancerTest
 import org.radarbase.jersey.config.ConfigLoader
 import org.radarbase.jersey.config.JerseyResourceEnhancer
+import org.radarbase.jersey.service.ProjectService
 import org.radarcns.auth.authentication.TokenValidator
 import javax.inject.Singleton
 
