@@ -19,10 +19,16 @@ package org.radarbase.jersey.util
 import java.time.Duration
 import java.time.Instant
 
+/** Set of data that is cached for a duration of time. */
 class CachedSet<T>(
-    private val refreshDuration: Duration,
-    private val retryDuration: Duration,
-    private val supplier: () -> Iterable<T>) {
+        /** Duration after which the cache is considered stale and should be refreshed. */
+        private val refreshDuration: Duration,
+        /** Duration after which the cache may be refreshed if the cache does not fulfill a certain
+         * requirement. This should be shorter than [refreshDuration] to have effect. */
+        private val retryDuration: Duration,
+        /** How to update the cache. */
+        private val supplier: () -> Iterable<T>
+) {
     @set:Synchronized
     private var cached: Set<T> = emptySet()
         set(value) {
@@ -44,11 +50,25 @@ class CachedSet<T>(
                 now.isAfter(nextRetry))
         }
 
+    /** Force refresh of the cache. */
     private fun refresh() = supplier.invoke().toSet()
         .also { cached = it }
 
+    /** Whether the cache contains [value]. If it does not contain the value and [retryDuration]
+     * has passed since the last try, it will update the cache and try once more. */
     fun contains(value: T) = state.query({ it.contains(value) }, { it })
+    /**
+     * Find a value matching [predicate].
+     * If it does not contain the value and [retryDuration]
+     * has passed since the last try, it will update the cache and try once more.
+     * @return value if found and null otherwise
+     */
     fun find(predicate: (T) -> Boolean): T? = state.query({ it.find(predicate) }, { it != null })
+    /**
+     * Get the value.
+     * If the cache is empty and [retryDuration]
+     * has passed since the last try, it will update the cache and try once more.
+     */
     fun get(): Set<T> = state.query({ it }, { it.isNotEmpty() })
 
     private inner class State(val cache: Set<T>, val mustRefresh: Boolean, val mayRetry: Boolean) {
