@@ -17,14 +17,38 @@
 package org.radarbase.jersey.service.managementportal
 
 import org.radarbase.jersey.auth.Auth
+import org.radarbase.jersey.exception.HttpNotFoundException
 import org.radarbase.jersey.service.ProjectService
 import org.radarcns.auth.authorization.Permission
 import org.radarcns.auth.authorization.Permission.PROJECT_READ
 
 
 interface RadarProjectService : ProjectService {
+    override fun ensureProject(projectId: String) {
+        project(projectId)
+    }
+
+    /**
+     * Ensures that [projectId] exists in ManagementPortal.
+     * @throws HttpNotFoundException if the project does not exist.
+     */
     fun project(projectId: String): MPProject
+
+    /**
+     * Returns all ManagementPortal projects that the current user has access to.
+     */
     fun userProjects(auth: Auth, permission: Permission = PROJECT_READ): List<MPProject>
+
+    /**
+     * Get project with [projectId] in ManagementPortal.
+     * @throws HttpNotFoundException if the project does not exist.
+     */
     fun projectUsers(projectId: String): List<MPUser>
-    fun userByExternalId(projectId: String, externalUserId: String): MPUser?
+
+    /**
+     * Get subject with [externalUserId] from [projectId] in ManagementPortal.
+     * @throws HttpNotFoundException if the project does not exist.
+     */
+    fun userByExternalId(projectId: String, externalUserId: String): MPUser? =
+            projectUsers(projectId).find { it.externalId == externalUserId }
 }

@@ -30,19 +30,11 @@ class MPProjectService(
         @Context private val config: AuthConfig,
         @Context private val mpClient: MPClient,
 ) : RadarProjectService {
-    private val projects = CachedSet(
-        Duration.ofMinutes(config.managementPortal.syncProjectsIntervalMin),
-        Duration.ofMinutes(1)) {
+    private val projects = CachedSet(config.managementPortal.syncProjectsInterval, RETRY_INTERVAL) {
         mpClient.readProjects()
     }
 
     private val participants: ConcurrentMap<String, CachedSet<MPUser>> = ConcurrentHashMap()
-
-    override fun ensureProject(projectId: String) {
-        if (projects.find { it.id == projectId } == null) {
-            throw HttpNotFoundException("project_not_found", "Project $projectId not found in Management Portal.")
-        }
-    }
 
     override fun userProjects(auth: Auth, permission: Permission): List<MPProject> {
         return projects.get()
@@ -53,8 +45,9 @@ class MPProjectService(
         ?: throw HttpNotFoundException("project_not_found", "Project $projectId not found in Management Portal.")
 
     override fun projectUsers(projectId: String): List<MPUser> {
+        ensureProject(projectId)
         val projectParticipants = participants.computeIfAbsent(projectId) {
-            CachedSet(Duration.ofMinutes(config.managementPortal.syncParticipantsIntervalMin), Duration.ofMinutes(1)) {
+            CachedSet(config.managementPortal.syncParticipantsInterval, RETRY_INTERVAL) {
                 mpClient.readParticipants(projectId)
             }
         }
@@ -62,6 +55,7 @@ class MPProjectService(
         return projectParticipants.get().toList()
     }
 
-    override fun userByExternalId(projectId: String, externalUserId: String): MPUser? =
-        projectUsers(projectId).find { it.externalId == externalUserId }
+    companion object {
+        private val RETRY_INTERVAL = Duration.ofMinutes(1)
+    }
 }

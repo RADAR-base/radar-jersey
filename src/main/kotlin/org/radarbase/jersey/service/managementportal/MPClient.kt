@@ -56,6 +56,7 @@ class MPClient(
         return httpClient.requestJson(request, tokenReader)
     }
 
+    /** Read list of projects from ManagementPortal. */
     fun readProjects(): List<MPProject> {
         logger.debug("Requesting for projects")
         val request = Request.Builder().apply {
@@ -66,6 +67,8 @@ class MPClient(
         return httpClient.requestJson(request, projectListReader)
     }
 
+    /** Read list of participants from ManagementPortal project. The [projectId] is the name that
+     * the project is identified by. */
     fun readParticipants(projectId: String): List<MPUser> {
         val request = Request.Builder().apply {
             url(baseUrl.newBuilder()

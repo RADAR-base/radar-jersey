@@ -2,6 +2,7 @@ package org.radarbase.jersey.service.managementportal
 
 import com.fasterxml.jackson.annotation.JsonProperty
 
+/** ManagementPortal Subject DTO. */
 data class MPUser(
         /** User id, a name that identifies it uniquely. */
         @JsonProperty("login") val id: String,

@@ -16,12 +16,17 @@
 
 package org.radarbase.jersey.service.managementportal
 
+import org.radarbase.jersey.exception.HttpNotFoundException
 import org.radarbase.jersey.service.ProjectService
 import javax.inject.Provider
 import javax.ws.rs.core.Context
 
 class ProjectServiceWrapper(
-    @Context private val mpProjectService: Provider<RadarProjectService>
+    @Context private val radarProjectService: Provider<RadarProjectService>
 ) : ProjectService {
-    override fun ensureProject(projectId: String) = mpProjectService.get().ensureProject(projectId)
+    /**
+     * Ensures that [projectId] exists in RADAR project service.
+     * @throws HttpNotFoundException if the project does not exist.
+     */
+    override fun ensureProject(projectId: String) = radarProjectService.get().ensureProject(projectId)
 }
