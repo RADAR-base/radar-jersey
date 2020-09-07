@@ -6,7 +6,6 @@ import com.fasterxml.jackson.module.kotlin.KotlinModule
 import org.glassfish.jersey.internal.inject.AbstractBinder
 import org.glassfish.jersey.server.ResourceConfig
 import org.radarbase.jersey.auth.AuthConfig
-import org.radarbase.jersey.auth.MPConfig
 import org.radarbase.jersey.filter.CorsFilter
 import org.radarbase.jersey.filter.ResponseLoggerFilter
 import org.slf4j.Logger
@@ -108,7 +107,7 @@ object ConfigLoader {
     }
     object Enhancers {
         fun radar(config: AuthConfig) = RadarJerseyResourceEnhancer(config)
-        fun managementPortal(config: MPConfig) = ManagementPortalResourceEnhancer(config)
+        fun managementPortal(config: AuthConfig) = ManagementPortalResourceEnhancer(config)
         val disabledAuthorization = DisabledAuthorizationResourceEnhancer()
         val ecdsa = EcdsaResourceEnhancer()
         val httpException = HttpExceptionResourceEnhancer()

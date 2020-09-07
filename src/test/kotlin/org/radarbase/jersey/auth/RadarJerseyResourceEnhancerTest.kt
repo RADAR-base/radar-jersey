@@ -31,7 +31,7 @@ internal class RadarJerseyResourceEnhancerTest {
     @BeforeEach
     fun setUp() {
         val authConfig = AuthConfig(
-                managementportal = MPConfig(url = "http://localhost:8080"),
+                managementPortal = MPConfig(url = "http://localhost:8080"),
                 jwtResourceName = "res_ManagementPortal")
 
         val resources = ConfigLoader.loadResources(MockResourceEnhancerFactory::class.java, authConfig)

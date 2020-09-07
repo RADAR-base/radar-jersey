@@ -17,7 +17,7 @@
 package org.radarbase.jersey.service.managementportal
 
 import org.radarbase.jersey.auth.Auth
-import org.radarbase.jersey.auth.MPConfig
+import org.radarbase.jersey.auth.AuthConfig
 import org.radarbase.jersey.exception.HttpNotFoundException
 import org.radarbase.jersey.util.CachedSet
 import org.radarcns.auth.authorization.Permission
@@ -27,11 +27,11 @@ import java.util.concurrent.ConcurrentMap
 import javax.ws.rs.core.Context
 
 class MPProjectService(
-        @Context private val config: MPConfig,
+        @Context private val config: AuthConfig,
         @Context private val mpClient: MPClient,
 ) : RadarProjectService {
     private val projects = CachedSet(
-        Duration.ofMinutes(config.syncProjectsIntervalMin),
+        Duration.ofMinutes(config.managementPortal.syncProjectsIntervalMin),
         Duration.ofMinutes(1)) {
         mpClient.readProjects()
     }
@@ -54,7 +54,7 @@ class MPProjectService(
 
     override fun projectUsers(projectId: String): List<MPUser> {
         val projectParticipants = participants.computeIfAbsent(projectId) {
-            CachedSet(Duration.ofMinutes(config.syncParticipantsIntervalMin), Duration.ofMinutes(1)) {
+            CachedSet(Duration.ofMinutes(config.managementPortal.syncParticipantsIntervalMin), Duration.ofMinutes(1)) {
                 mpClient.readParticipants(projectId)
             }
         }
@@ -64,5 +64,4 @@ class MPProjectService(
 
     override fun userByExternalId(projectId: String, externalUserId: String): MPUser? =
         projectUsers(projectId).find { it.externalId == externalUserId }
-
 }

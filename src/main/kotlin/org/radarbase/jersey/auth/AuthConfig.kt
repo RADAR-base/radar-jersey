@@ -10,7 +10,7 @@
 package org.radarbase.jersey.auth
 
 data class AuthConfig(
-        val managementportal: MPConfig = MPConfig(),
+        val managementPortal: MPConfig = MPConfig(),
         val jwtResourceName: String,
         val jwtIssuer: String? = null,
         val jwtECPublicKeys: List<String>? = null,
@@ -18,8 +18,6 @@ data class AuthConfig(
         val jwtKeystorePath: String? = null,
         val jwtKeystorePassword: String? = null,
         val jwtKeystoreAlias: String? = null,
-        val clientId: String? = null,
-        val clientSecret: String? = null,
         )
 
 data class MPConfig(

@@ -10,8 +10,8 @@
 package org.radarbase.jersey.config
 
 import org.glassfish.jersey.internal.inject.AbstractBinder
+import org.radarbase.jersey.auth.AuthConfig
 import org.radarbase.jersey.auth.AuthValidator
-import org.radarbase.jersey.auth.MPConfig
 import org.radarbase.jersey.auth.managementportal.ManagementPortalTokenValidator
 import org.radarbase.jersey.auth.managementportal.TokenValidatorFactory
 import org.radarbase.jersey.service.ProjectService
@@ -26,7 +26,7 @@ import javax.inject.Singleton
  * Registration for authorization against a ManagementPortal. It requires managementPortalUrl and
  * jwtResourceName to be set in the AuthConfig.
  */
-class ManagementPortalResourceEnhancer(private val config: MPConfig) : JerseyResourceEnhancer {
+class ManagementPortalResourceEnhancer(private val config: AuthConfig) : JerseyResourceEnhancer {
     override fun AbstractBinder.enhance() {
         bindFactory(TokenValidatorFactory::class.java)
                 .to(TokenValidator::class.java)
@@ -36,9 +36,7 @@ class ManagementPortalResourceEnhancer(private val config: MPConfig) : JerseyRes
                 .to(AuthValidator::class.java)
                 .`in`(Singleton::class.java)
 
-        if (config.clientId != null) {
-            bind(config)
-                    .to(MPConfig::class.java)
+        if (config.managementPortal.clientId != null) {
             bind(MPClient::class.java)
                     .to(MPClient::class.java)
                     .`in`(Singleton::class.java)

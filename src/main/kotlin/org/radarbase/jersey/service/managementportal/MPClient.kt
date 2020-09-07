@@ -7,7 +7,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import okhttp3.*
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import org.radarbase.jersey.auth.Auth
-import org.radarbase.jersey.auth.MPConfig
+import org.radarbase.jersey.auth.AuthConfig
 import org.radarbase.jersey.util.requestJson
 import org.slf4j.LoggerFactory
 import java.net.MalformedURLException
@@ -16,53 +16,44 @@ import java.time.Instant
 import javax.ws.rs.core.Context
 
 class MPClient(
-        @Context config: MPConfig,
+        @Context config: AuthConfig,
         @Context private val objectMapper: ObjectMapper,
         @Context private val auth: Auth,
         @Context private val httpClient: OkHttpClient,
 ) {
-    private val clientId: String = config.clientId
+    private val clientId: String = config.managementPortal.clientId
             ?: throw IllegalArgumentException("Cannot configure managementportal client without client ID")
-    private val clientSecret: String = config.clientSecret
+    private val clientSecret: String = config.managementPortal.clientSecret
             ?: throw IllegalArgumentException("Cannot configure managementportal client without client secret")
-    private val baseUrl: HttpUrl = config.url?.toHttpUrlOrNull()
-            ?: throw MalformedURLException("Cannot parse base URL ${config.url} as an URL")
+    private val baseUrl: HttpUrl = config.managementPortal.url?.toHttpUrlOrNull()
+            ?: throw MalformedURLException("Cannot parse base URL ${config.managementPortal.url} as an URL")
+
     private val projectListReader = objectMapper.readerFor(object : TypeReference<List<MPProject>>() {})
     private val userListReader = objectMapper.readerFor(object : TypeReference<List<MPUser>>() {})
     private val tokenReader = objectMapper.readerFor(RestOauth2AccessToken::class.java)
 
-    private var token: String? = null
-    private var expiration: Instant? = null
+    @Volatile
+    private var token: RestOauth2AccessToken? = null
 
-    private val validToken: String?
-        get() {
-            val localToken = token ?: return null
-            expiration?.takeIf { it > Instant.now() } ?: return null
-            return localToken
-        }
+    private val validToken: RestOauth2AccessToken?
+        get() = token?.takeIf { it.isValid() }
 
-    private fun ensureToken(): String {
-        val localToken = validToken
+    private fun ensureToken(): String = (validToken
+            ?: requestToken().also { token = it })
+            .accessToken
 
-        return if (localToken != null) {
-            localToken
-        } else {
-            val request = Request.Builder().apply {
-                url(baseUrl.resolve("oauth/token")!!)
-                post(FormBody.Builder().apply {
-                    add("grant_type", "client_credentials")
-                    add("client_id", clientId)
-                    add("client_secret", clientSecret)
-                }.build())
-                header("Authorization", Credentials.basic(clientId, clientSecret))
-            }.build()
+    private fun requestToken(): RestOauth2AccessToken {
+        val request = Request.Builder().apply {
+            url(baseUrl.resolve("oauth/token")!!)
+            post(FormBody.Builder().apply {
+                add("grant_type", "client_credentials")
+                add("client_id", clientId)
+                add("client_secret", clientSecret)
+            }.build())
+            header("Authorization", Credentials.basic(clientId, clientSecret))
+        }.build()
 
-            httpClient.requestJson<RestOauth2AccessToken>(request, tokenReader).let {
-                expiration = Instant.now() + Duration.ofSeconds(it.expiresIn.toLong()) - Duration.ofMinutes(5)
-                token = it.accessToken
-                it.accessToken
-            }
-        }
+        return httpClient.requestJson(request, tokenReader)
     }
 
     fun readProjects(): List<MPProject> {
@@ -91,11 +82,14 @@ class MPClient(
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     data class RestOauth2AccessToken(
-            @JsonProperty("access_token") var accessToken: String,
-            @JsonProperty("refresh_token") var refreshToken: String? = null,
-            @JsonProperty("expires_in") var expiresIn: Int = 0,
-            @JsonProperty("token_type") var tokenType: String? = null,
-            @JsonProperty("user_id") var externalUserId: String? = null)
+            @JsonProperty("access_token") val accessToken: String,
+            @JsonProperty("refresh_token") val refreshToken: String? = null,
+            @JsonProperty("expires_in") val expiresIn: Long = 0,
+            @JsonProperty("token_type") val tokenType: String? = null,
+            @JsonProperty("user_id") val externalUserId: String? = null) {
+        private val expiration: Instant = Instant.now() + Duration.ofSeconds(expiresIn)  - Duration.ofMinutes(5)
+        fun isValid() = Instant.now() < expiration
+    }
 
     companion object {
         private val logger = LoggerFactory.getLogger(MPClient::class.java)
