@@ -18,12 +18,14 @@ import com.fasterxml.jackson.module.kotlin.KotlinModule
 import okhttp3.OkHttpClient
 import org.glassfish.jersey.internal.inject.AbstractBinder
 import org.glassfish.jersey.process.internal.RequestScoped
+import org.glassfish.jersey.server.ResourceConfig
 import org.radarbase.jersey.auth.Auth
 import org.radarbase.jersey.auth.AuthConfig
 import org.radarbase.jersey.auth.filter.AuthenticationFilter
 import org.radarbase.jersey.auth.filter.AuthorizationFeature
 import org.radarbase.jersey.auth.jwt.AuthFactory
 import java.util.concurrent.TimeUnit
+import javax.ws.rs.ext.ContextResolver
 
 /**
  * Add RADAR auth to a Jersey project. This requires a {@link ProjectService} implementation to be
@@ -36,6 +38,10 @@ class RadarJerseyResourceEnhancer(
             AuthenticationFilter::class.java,
             AuthorizationFeature::class.java)
 
+    override fun ResourceConfig.enhance() {
+        register(ContextResolver { OBJECT_MAPPER })
+    }
+
     override fun AbstractBinder.enhance() {
         bind(config)
                 .to(AuthConfig::class.java)
@@ -47,12 +53,7 @@ class RadarJerseyResourceEnhancer(
                 .build())
                 .to(OkHttpClient::class.java)
 
-        bind(ObjectMapper()
-                .setSerializationInclusion(JsonInclude.Include.NON_NULL)
-                .registerModule(JavaTimeModule())
-                .registerModule(KotlinModule())
-                .configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false)
-                .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false))
+        bind(OBJECT_MAPPER)
                 .to(ObjectMapper::class.java)
 
         // Bind factories.
@@ -61,5 +62,14 @@ class RadarJerseyResourceEnhancer(
                 .proxyForSameScope(false)
                 .to(Auth::class.java)
                 .`in`(RequestScoped::class.java)
+    }
+
+    companion object {
+        private val OBJECT_MAPPER: ObjectMapper = ObjectMapper()
+                .setSerializationInclusion(JsonInclude.Include.NON_NULL)
+                .registerModule(JavaTimeModule())
+                .registerModule(KotlinModule())
+                .configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false)
+                .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
     }
 }
