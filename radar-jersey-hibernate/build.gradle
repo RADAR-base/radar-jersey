@@ -1,5 +1,5 @@
 plugins {
-    id("kotlin")
+    id 'org.jetbrains.kotlin.jvm'
 }
 
 description = 'Library for Jersey with Hibernate with the RADAR platform'
