@@ -110,6 +110,7 @@ object ConfigLoader {
         val managementPortal = ManagementPortalResourceEnhancer()
         val disabledAuthorization = DisabledAuthorizationResourceEnhancer()
         val ecdsa = EcdsaResourceEnhancer()
+        val health = HealthResourceEnhancer()
         val httpException = HttpExceptionResourceEnhancer()
         val generalException = GeneralExceptionResourceEnhancer()
     }
