@@ -6,6 +6,13 @@ import okhttp3.Request
 import org.radarbase.jersey.exception.HttpBadGatewayException
 import org.slf4j.LoggerFactory
 
+/**
+ * Make a [request] and resolves it as JSON using given object reader. [T] is the type that the
+ * [reader] is initialized with using [com.fasterxml.jackson.databind.ObjectMapper.readerFor].
+ * @throws ClassCastException if the [reader] is not initialized for the correct class.
+ * @throws java.io.IOException if the request failed or the JSON cannot be parsed.
+ * @throws HttpBadGatewayException if the response had an unsuccessful HTTP status code.
+ */
 fun <T> OkHttpClient.requestJson(request: Request, reader: ObjectReader): T {
     return newCall(request).execute().use { response ->
         if (response.isSuccessful) {
@@ -19,6 +26,11 @@ fun <T> OkHttpClient.requestJson(request: Request, reader: ObjectReader): T {
     }
 }
 
+/**
+ * Make a [request] and checks the HTTP status code of the response.
+ * @return true if the call returned a successful HTTP status code, false otherwise.
+ * @throws java.io.IOException if the request failed
+ */
 fun OkHttpClient.request(request: Request): Boolean {
     return newCall(request).execute().use { response ->
         response.isSuccessful
