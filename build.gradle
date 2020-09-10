@@ -62,10 +62,10 @@ dependencies {
     implementation 'com.github.spullara.mustache.java:compiler:0.9.6'
 
     implementation "org.jetbrains.kotlin:kotlin-reflect:$kotlinVersion"
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlinVersion"
+    api "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlinVersion"
     implementation "org.slf4j:slf4j-api:$slf4jVersion"
 
-    implementation("org.glassfish.jersey.inject:jersey-hk2:$jerseyVersion")
+    api("org.glassfish.jersey.inject:jersey-hk2:$jerseyVersion")
 
     runtimeOnly("org.glassfish.jersey.media:jersey-media-json-jackson:$jerseyVersion")
 

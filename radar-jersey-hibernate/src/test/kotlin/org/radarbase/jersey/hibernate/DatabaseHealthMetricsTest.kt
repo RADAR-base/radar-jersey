@@ -5,6 +5,7 @@ import okhttp3.Request
 import org.hamcrest.MatcherAssert
 import org.hamcrest.Matchers
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 import org.radarbase.jersey.GrizzlyServer
 import org.radarbase.jersey.auth.AuthConfig
 import org.radarbase.jersey.config.ConfigLoader
@@ -46,14 +47,35 @@ internal class DatabaseHealthMetricsTest {
     }
 
     @Test
-    fun doesNotExistTest() {
+    fun databaseDoesNotExistTest() {
         val authConfig = AuthConfig(
                 jwtResourceName = "res_jerseyTest")
         val databaseConfig = DatabaseConfig(
                 managedClasses = listOf(ProjectDao::class.qualifiedName!!),
-                driver = "org.postgresql.Driver",
-                url = "jdbc:postgresql://localhost:12345/doesnotexisttest",
-                dialect = "org.hibernate.dialect.PostgreSQLDialect",
+                driver = "org.h2.Driver",
+                url = "jdbc:h2:tcp://localhost:9999/./test.db",
+                dialect = "org.hibernate.dialect.H2Dialect",
+        )
+
+        val resources = ConfigLoader.loadResources(MockResourceEnhancerFactory::class.java, authConfig, databaseConfig)
+
+        assertThrows<IllegalStateException> { GrizzlyServer(URI.create("http://localhost:9091"), resources) }
+    }
+
+
+    @Test
+    fun databaseIsDisabledTest() {
+        val tcp = org.h2.tools.Server.createTcpServer("-tcpPort", "9999", "-baseDir", "build/resources/test", "-ifNotExists");
+        tcp.start()
+
+        val authConfig = AuthConfig(
+                jwtResourceName = "res_jerseyTest")
+        val databaseConfig = DatabaseConfig(
+                managedClasses = listOf(ProjectDao::class.qualifiedName!!),
+                driver = "org.h2.Driver",
+                url = "jdbc:h2:tcp://localhost:9999/./test.db",
+                dialect = "org.hibernate.dialect.H2Dialect",
+                healthCheckValiditySeconds = 1L,
         )
 
         val resources = ConfigLoader.loadResources(MockResourceEnhancerFactory::class.java, authConfig, databaseConfig)
@@ -65,6 +87,18 @@ internal class DatabaseHealthMetricsTest {
             val client = OkHttpClient.Builder()
                     .readTimeout(30, TimeUnit.SECONDS)
                     .build()
+
+
+            client.newCall(Request.Builder()
+                    .url("http://localhost:9091/health")
+                    .build()).execute().use { response ->
+                MatcherAssert.assertThat(response.isSuccessful, Matchers.`is`(true))
+                MatcherAssert.assertThat(response.body?.string(), Matchers.equalTo("{\"status\":\"UP\",\"db\":{\"status\":\"UP\"}}"))
+            }
+
+            // Disable database. Connections should now fail
+            tcp.stop()
+            Thread.sleep(1_000L)
 
             client.newCall(Request.Builder()
                     .url("http://localhost:9091/health")

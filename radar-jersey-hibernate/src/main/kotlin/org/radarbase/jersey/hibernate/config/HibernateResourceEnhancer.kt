@@ -4,6 +4,7 @@ import org.glassfish.jersey.internal.inject.AbstractBinder
 import org.glassfish.jersey.process.internal.RequestScoped
 import org.radarbase.jersey.config.JerseyResourceEnhancer
 import org.radarbase.jersey.hibernate.DatabaseHealthMetrics
+import org.radarbase.jersey.hibernate.DatabaseInitialization
 import org.radarbase.jersey.hibernate.RadarEntityManagerFactory
 import org.radarbase.jersey.hibernate.RadarEntityManagerFactoryFactory
 import org.radarbase.jersey.service.HealthService
@@ -14,6 +15,8 @@ import javax.persistence.EntityManagerFactory
 class HibernateResourceEnhancer(
         private val databaseConfig: DatabaseConfig
 ) : JerseyResourceEnhancer {
+    override val classes: Array<Class<*>> = arrayOf(DatabaseInitialization::class.java)
+
     override fun AbstractBinder.enhance() {
         bind(databaseConfig)
                 .to(DatabaseConfig::class.java)

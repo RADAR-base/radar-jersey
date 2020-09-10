@@ -1,44 +1,42 @@
 package org.radarbase.jersey.hibernate
 
-import org.hibernate.internal.SessionImpl
+import liquibase.database.DatabaseFactory
+import liquibase.database.jvm.JdbcConnection
+import org.radarbase.jersey.hibernate.RadarEntityManagerFactory.Companion.connection
+import org.radarbase.jersey.hibernate.config.DatabaseConfig
 import org.radarbase.jersey.service.HealthService
 import org.radarbase.jersey.service.HealthService.Metric
-import java.util.concurrent.atomic.AtomicBoolean
+import org.radarbase.jersey.util.CachedValue
+import org.slf4j.LoggerFactory
+import java.time.Duration
 import javax.inject.Provider
 import javax.persistence.EntityManager
 import javax.ws.rs.core.Context
 
 class DatabaseHealthMetrics(
-        @Context private val entityManager: Provider<EntityManager>
+        @Context private val entityManager: Provider<EntityManager>,
+        @Context dbConfig: DatabaseConfig
 ): Metric(name = "db") {
-    override val status: HealthService.Status
-        get() = if (checkConnection()) HealthService.Status.UP else HealthService.Status.DOWN
-
-    private val isTestingConnection = AtomicBoolean(false)
-
-    @Volatile
-    private var previousTestResult = false
-
-    override val metrics: Any = mapOf("status" to status)
-
-    private fun checkConnection(): Boolean {
-        return if (isTestingConnection.compareAndSet(false, true)) {
-            testConnection()
-                    .also {
-                        previousTestResult = it
-                        isTestingConnection.set(false)
-                    }
-        } else {
-            previousTestResult
-        }
+    private val cachedStatus = CachedValue(
+            Duration.ofSeconds(dbConfig.healthCheckValiditySeconds),
+            Duration.ofSeconds(dbConfig.healthCheckValiditySeconds)) {
+        testConnection()
     }
 
-    private fun testConnection(): Boolean = try {
-        entityManager.get()
-                .unwrap(SessionImpl::class.java)
-                .connection()
-        true
+    override val status: HealthService.Status
+        get() = cachedStatus.get { it == HealthService.Status.UP }
+
+    override val metrics: Any
+        get() = mapOf("status" to status)
+
+    private fun testConnection(): HealthService.Status = try {
+        entityManager.get().connection().close()
+        HealthService.Status.UP
     } catch (ex: Throwable) {
-        false
+        HealthService.Status.DOWN
+    }
+
+    companion object {
+        private val logger = LoggerFactory.getLogger(DatabaseHealthMetrics::class.java)
     }
 }

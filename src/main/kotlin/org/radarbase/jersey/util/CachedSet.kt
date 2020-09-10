@@ -72,13 +72,13 @@ class CachedSet<T>(
     fun get(): Set<T> = state.query({ it }, { it.isNotEmpty() })
 
     private inner class State(val cache: Set<T>, val mustRefresh: Boolean, val mayRetry: Boolean) {
-        fun <S> query(method: (Set<T>) -> S, validityPredicate: (S) -> Boolean): S {
+        fun <S> query(method: (Set<T>) -> S, valueIsValid: (S) -> Boolean): S {
             var result: S
             if (mustRefresh) {
                 result = method(refresh())
             } else {
                 result = method(cache)
-                if (!validityPredicate(result) && mayRetry) {
+                if (!valueIsValid(result) && mayRetry) {
                     result = method(refresh())
                 }
             }

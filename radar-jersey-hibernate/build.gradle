@@ -26,13 +26,30 @@ dependencies {
 
     testRuntimeOnly("org.glassfish.grizzly:grizzly-http-server:$grizzlyVersion")
     testRuntimeOnly("org.glassfish.jersey.containers:jersey-container-grizzly2-servlet:$jerseyVersion")
-    testRuntimeOnly("com.h2database:h2:${project.extra["h2Version"]}")
+    testImplementation("com.h2database:h2:${project.extra["h2Version"]}")
 
     testImplementation("org.junit.jupiter:junit-jupiter:$junitVersion")
     testImplementation 'org.hamcrest:hamcrest-all:1.3'
     testImplementation("com.squareup.okhttp3:okhttp:$okhttpVersion")
 
     testRuntimeOnly("ch.qos.logback:logback-classic:1.2.3")
+}
+
+tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
+    kotlinOptions {
+        jvmTarget = "11"
+        apiVersion = "1.4"
+        languageVersion = "1.4"
+    }
+}
+
+test {
+    useJUnitPlatform()
+    testLogging {
+        events "passed", "skipped", "failed"
+        exceptionFormat "full"
+        showStandardStreams = true
+    }
 }
 
 apply from: "$rootDir/gradle/publishing.gradle"

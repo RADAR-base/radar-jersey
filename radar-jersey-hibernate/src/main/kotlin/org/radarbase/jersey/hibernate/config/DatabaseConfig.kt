@@ -11,6 +11,7 @@ data class DatabaseConfig(
         val dialect: String = "org.hibernate.dialect.PostgreSQLDialect",
         val properties: Map<String, String> = emptyMap(),
         val liquibase: LiquibaseConfig = LiquibaseConfig(),
+        val healthCheckValiditySeconds: Long = 60
 )
 
 data class LiquibaseConfig(
