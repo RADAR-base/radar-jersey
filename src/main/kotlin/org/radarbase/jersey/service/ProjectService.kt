@@ -7,7 +7,7 @@
  * See the file LICENSE in the root of this repository.
  */
 
-package org.radarbase.jersey.auth
+package org.radarbase.jersey.service
 
 import org.radarbase.jersey.exception.HttpApplicationException
 

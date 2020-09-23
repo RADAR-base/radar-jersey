@@ -11,8 +11,8 @@ package org.radarbase.jersey.auth.filter
 
 import org.radarbase.jersey.auth.Auth
 import org.radarbase.jersey.auth.NeedsPermission
-import org.radarbase.jersey.auth.ProjectService
 import org.radarbase.jersey.exception.HttpForbiddenException
+import org.radarbase.jersey.service.ProjectService
 import org.radarcns.auth.authorization.Permission
 import javax.ws.rs.container.ContainerRequestContext
 import javax.ws.rs.container.ContainerRequestFilter

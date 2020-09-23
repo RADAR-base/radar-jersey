@@ -86,7 +86,7 @@ out/
 # Gradle
 ######################
 .gradle/
-/build/
+build/
 .gradletasknamecache
 
 ######################
@@ -155,7 +155,7 @@ Desktop.ini
 .eslintcache
 
 # output directory
-/out/
+out/
 
 # don't ignore jars in /libs
-!/libs/**/*.jar
+!libs/**/*.jar

@@ -13,6 +13,7 @@ import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory
 import org.glassfish.jersey.server.ResourceConfig
 import org.slf4j.LoggerFactory
 import java.net.URI
+import java.util.concurrent.TimeUnit
 
 /**
  * Grizzly server wrapper.
@@ -69,7 +70,7 @@ class GrizzlyServer(
         } catch (ex: IllegalStateException) {
             // ignore
         }
-        server.shutdown()
+        server.shutdown(15, TimeUnit.SECONDS)
     }
 
     companion object {

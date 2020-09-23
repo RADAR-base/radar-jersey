@@ -23,7 +23,7 @@ class TokenValidatorFactory(
         TokenValidator()
     } catch (e: RuntimeException) {
         val cfg = TokenVerifierPublicKeyConfig().apply {
-            publicKeyEndpoints = listOf(URI("${config.managementPortalUrl}/oauth/token_key"))
+            publicKeyEndpoints = listOf(URI("${config.managementPortal.url}/oauth/token_key"))
             resourceName = config.jwtResourceName
         }
         TokenValidator(cfg)

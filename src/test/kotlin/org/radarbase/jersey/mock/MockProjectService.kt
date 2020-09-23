@@ -9,8 +9,8 @@
 
 package org.radarbase.jersey.mock
 
-import org.radarbase.jersey.auth.ProjectService
 import org.radarbase.jersey.exception.HttpNotFoundException
+import org.radarbase.jersey.service.ProjectService
 
 class MockProjectService(private val projects: List<String>) : ProjectService {
     override fun ensureProject(projectId: String) {
