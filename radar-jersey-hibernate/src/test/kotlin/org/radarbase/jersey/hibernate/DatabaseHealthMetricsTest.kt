@@ -3,7 +3,10 @@ package org.radarbase.jersey.hibernate
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import org.hamcrest.MatcherAssert
+import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers
+import org.hamcrest.Matchers.`is`
+import org.hamcrest.Matchers.equalTo
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.radarbase.jersey.GrizzlyServer
@@ -38,8 +41,8 @@ internal class DatabaseHealthMetricsTest {
             client.newCall(Request.Builder()
                     .url("http://localhost:9091/health")
                     .build()).execute().use { response ->
-                MatcherAssert.assertThat(response.isSuccessful, Matchers.`is`(true))
-                MatcherAssert.assertThat(response.body?.string(), Matchers.equalTo("{\"status\":\"UP\",\"db\":{\"status\":\"UP\"}}"))
+                assertThat(response.isSuccessful, `is`(true))
+                assertThat(response.body?.string(), equalTo("{\"status\":\"UP\",\"db\":{\"status\":\"UP\"}}"))
             }
         } finally {
             server.shutdown()
@@ -92,8 +95,8 @@ internal class DatabaseHealthMetricsTest {
             client.newCall(Request.Builder()
                     .url("http://localhost:9091/health")
                     .build()).execute().use { response ->
-                MatcherAssert.assertThat(response.isSuccessful, Matchers.`is`(true))
-                MatcherAssert.assertThat(response.body?.string(), Matchers.equalTo("{\"status\":\"UP\",\"db\":{\"status\":\"UP\"}}"))
+                assertThat(response.isSuccessful, `is`(true))
+                assertThat(response.body?.string(), equalTo("{\"status\":\"UP\",\"db\":{\"status\":\"UP\"}}"))
             }
 
             // Disable database. Connections should now fail
@@ -103,8 +106,8 @@ internal class DatabaseHealthMetricsTest {
             client.newCall(Request.Builder()
                     .url("http://localhost:9091/health")
                     .build()).execute().use { response ->
-                MatcherAssert.assertThat(response.isSuccessful, Matchers.`is`(true))
-                MatcherAssert.assertThat(response.body?.string(), Matchers.equalTo("{\"status\":\"DOWN\",\"db\":{\"status\":\"DOWN\"}}"))
+                assertThat(response.isSuccessful, `is`(true))
+                assertThat(response.body?.string(), equalTo("{\"status\":\"DOWN\",\"db\":{\"status\":\"DOWN\"}}"))
             }
         } finally {
             server.shutdown()
