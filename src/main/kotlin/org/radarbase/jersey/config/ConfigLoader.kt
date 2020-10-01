@@ -117,7 +117,7 @@ object ConfigLoader {
 }
 
 
-fun <T> T.letEnv(key: String, copyProperty: T.(String) -> T): T {
+inline fun <T> T.letEnv(key: String, copyProperty: T.(String) -> T): T {
     return System.getenv(key)?.let {
         copyProperty(it)
     } ?: this
