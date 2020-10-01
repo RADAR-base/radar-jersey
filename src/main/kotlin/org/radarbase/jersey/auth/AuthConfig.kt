@@ -33,10 +33,7 @@ data class AuthConfig(
 ) {
     fun combineWithEnv(): AuthConfig = this
             .letEnv("AUTH_KEYSTORE_PASSWORD") { copy(jwtKeystorePassword = it) }
-            .run { managementPortal.combineWithEnv()
-                    .takeIf { it != managementPortal }
-                    ?.let { copy(managementPortal = it) }
-                    ?: this }
+            .copy(managementPortal = managementPortal.combineWithEnv())
 }
 
 data class MPConfig(
