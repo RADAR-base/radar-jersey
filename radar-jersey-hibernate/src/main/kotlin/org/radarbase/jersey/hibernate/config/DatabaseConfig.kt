@@ -15,7 +15,7 @@ data class DatabaseConfig(
         val liquibase: LiquibaseConfig = LiquibaseConfig(),
         val healthCheckValiditySeconds: Long = 60
 ) {
-    fun combineWithEnv(): DatabaseConfig = this
+    fun withEnv(): DatabaseConfig = this
             .copyEnv("DATABASE_URL") { copy(url = it) }
             .copyEnv("DATABASE_USER") { copy(user = it) }
             .copyEnv("DATABASE_PASSWORD") { copy(password = it) }

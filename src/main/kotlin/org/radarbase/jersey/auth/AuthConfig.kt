@@ -31,9 +31,9 @@ data class AuthConfig(
         /** Key password for the key alias in the p12 keystore. */
         val jwtKeystorePassword: String? = null,
 ) {
-    fun combineWithEnv(): AuthConfig = this
+    fun withEnv(): AuthConfig = this
             .copyEnv("AUTH_KEYSTORE_PASSWORD") { copy(jwtKeystorePassword = it) }
-            .copy(managementPortal = managementPortal.combineWithEnv())
+            .copy(managementPortal = managementPortal.withEnv())
 }
 
 data class MPConfig(
@@ -55,7 +55,7 @@ data class MPConfig(
     @JsonIgnore
     val syncParticipantsInterval: Duration = Duration.ofMinutes(syncParticipantsIntervalMin)
 
-    fun combineWithEnv(): MPConfig = this
+    fun withEnv(): MPConfig = this
             .copyEnv("MANAGEMENT_PORTAL_CLIENT_ID") { copy(clientId = it) }
             .copyEnv("MANAGEMENT_PORTAL_CLIENT_SECRET") { copy(clientSecret = it) }
 }
