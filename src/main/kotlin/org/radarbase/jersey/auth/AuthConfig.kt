@@ -11,6 +11,7 @@ package org.radarbase.jersey.auth
 
 import com.fasterxml.jackson.annotation.JsonIgnore
 import org.radarbase.jersey.config.ConfigLoader.copyEnv
+import org.radarbase.jersey.config.ConfigLoader.copyOnChange
 import java.time.Duration
 
 data class AuthConfig(
@@ -32,8 +33,8 @@ data class AuthConfig(
         val jwtKeystorePassword: String? = null,
 ) {
     fun withEnv(): AuthConfig = this
+            .copyOnChange(managementPortal, { it.withEnv() }) { copy(managementPortal = it) }
             .copyEnv("AUTH_KEYSTORE_PASSWORD") { copy(jwtKeystorePassword = it) }
-            .copy(managementPortal = managementPortal.withEnv())
 }
 
 data class MPConfig(

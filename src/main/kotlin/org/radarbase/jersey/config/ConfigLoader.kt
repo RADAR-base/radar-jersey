@@ -115,9 +115,12 @@ object ConfigLoader {
         val generalException = GeneralExceptionResourceEnhancer()
     }
 
-    inline fun <T> T.copyEnv(key: String, doCopy: T.(String) -> T): T {
-        return System.getenv(key)?.let {
-            doCopy(it)
-        } ?: this
+    inline fun <T> T.copyEnv(key: String, doCopy: T.(String?) -> T): T = copyOnChange<T, String?>(null, { System.getenv(key) }, doCopy)
+
+    inline fun <T, V> T.copyOnChange(original: V, modification: (V) -> V, doCopy: T.(V) -> T): T {
+        val newValue = modification(original)
+        return if (newValue != original) {
+            doCopy(newValue)
+        } else this
     }
 }
