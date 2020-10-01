@@ -43,7 +43,7 @@ class RadarJerseyResourceEnhancer(
     }
 
     override fun AbstractBinder.enhance() {
-        bind(config)
+        bind(config.withEnv())
                 .to(AuthConfig::class.java)
 
         bind(OkHttpClient().newBuilder()
@@ -59,7 +59,7 @@ class RadarJerseyResourceEnhancer(
         // Bind factories.
         bindFactory(AuthFactory::class.java)
                 .proxy(true)
-                .proxyForSameScope(false)
+                .proxyForSameScope(true)
                 .to(Auth::class.java)
                 .`in`(RequestScoped::class.java)
     }

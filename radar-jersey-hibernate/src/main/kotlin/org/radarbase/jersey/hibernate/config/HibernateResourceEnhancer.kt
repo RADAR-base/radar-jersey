@@ -18,7 +18,7 @@ class HibernateResourceEnhancer(
     override val classes: Array<Class<*>> = arrayOf(DatabaseInitialization::class.java)
 
     override fun AbstractBinder.enhance() {
-        bind(databaseConfig)
+        bind(databaseConfig.withEnv())
                 .to(DatabaseConfig::class.java)
 
         bind(DatabaseHealthMetrics::class.java)

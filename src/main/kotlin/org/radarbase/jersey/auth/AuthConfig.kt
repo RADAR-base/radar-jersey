@@ -10,6 +10,8 @@
 package org.radarbase.jersey.auth
 
 import com.fasterxml.jackson.annotation.JsonIgnore
+import org.radarbase.jersey.config.ConfigLoader.copyEnv
+import org.radarbase.jersey.config.ConfigLoader.copyOnChange
 import java.time.Duration
 
 data class AuthConfig(
@@ -29,7 +31,11 @@ data class AuthConfig(
         val jwtKeystoreAlias: String? = null,
         /** Key password for the key alias in the p12 keystore. */
         val jwtKeystorePassword: String? = null,
-        )
+) {
+    fun withEnv(): AuthConfig = this
+            .copyOnChange(managementPortal, { it.withEnv() }) { copy(managementPortal = it) }
+            .copyEnv("AUTH_KEYSTORE_PASSWORD") { copy(jwtKeystorePassword = it) }
+}
 
 data class MPConfig(
         /** URL for the current service to find the ManagementPortal installation. */
@@ -43,10 +49,14 @@ data class MPConfig(
         /** Interval after which the list of subjects in a project should be refreshed (minutes). */
         val syncParticipantsIntervalMin: Long = 5,
 ) {
-        /** Interval after which the list of projects should be refreshed. */
-        @JsonIgnore
-        val syncProjectsInterval: Duration = Duration.ofMinutes(syncProjectsIntervalMin)
-        /** Interval after which the list of subjects in a project should be refreshed. */
-        @JsonIgnore
-        val syncParticipantsInterval: Duration = Duration.ofMinutes(syncParticipantsIntervalMin)
+    /** Interval after which the list of projects should be refreshed. */
+    @JsonIgnore
+    val syncProjectsInterval: Duration = Duration.ofMinutes(syncProjectsIntervalMin)
+    /** Interval after which the list of subjects in a project should be refreshed. */
+    @JsonIgnore
+    val syncParticipantsInterval: Duration = Duration.ofMinutes(syncParticipantsIntervalMin)
+
+    fun withEnv(): MPConfig = this
+            .copyEnv("MANAGEMENT_PORTAL_CLIENT_ID") { copy(clientId = it) }
+            .copyEnv("MANAGEMENT_PORTAL_CLIENT_SECRET") { copy(clientSecret = it) }
 }

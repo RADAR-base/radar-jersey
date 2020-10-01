@@ -28,6 +28,7 @@ import javax.inject.Singleton
  */
 class ManagementPortalResourceEnhancer(private val config: AuthConfig) : JerseyResourceEnhancer {
     override fun AbstractBinder.enhance() {
+        val config = config.withEnv()
         bindFactory(TokenValidatorFactory::class.java)
                 .to(TokenValidator::class.java)
                 .`in`(Singleton::class.java)
