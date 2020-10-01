@@ -43,7 +43,7 @@ class RadarJerseyResourceEnhancer(
     }
 
     override fun AbstractBinder.enhance() {
-        bind(config)
+        bind(config.combineWithEnv())
                 .to(AuthConfig::class.java)
 
         bind(OkHttpClient().newBuilder()

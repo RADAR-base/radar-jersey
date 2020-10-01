@@ -11,7 +11,7 @@ repositories {
 }
 
 dependencies {
-    api("org.radarbase:radar-jersey:0.2.4")
+    api("org.radarbase:radar-jersey:0.3.0")
 }
 ```
 
@@ -54,7 +54,8 @@ class MyEnhancerFactory(private val config: MyConfigClass): EnhancerFactory {
             MyResourceEnhancer(),
             // RADAR OAuth2 enhancement
             ConfigLoader.Enhancers.radar(AuthConfig(
-                    managementPortalUrl = "http://...",
+                    managementPortal = MPConfig(
+                        url = "http://..."),
                     jwtResourceName = "res_MyResource")),
             // Use ManagementPortal OAuth implementation
             ConfigLoader.Enhancers.managementPortal,
@@ -83,7 +84,15 @@ class MyEnhancerFactory(private val config: MyConfigClass): EnhancerFactory {
     }
 }
 ```
-Ensure that a class implementing `org.radarbase.jersey.auth.ProjectService` is added to the binder.
+Ensure that a class implementing `org.radarbase.jersey.auth.ProjectService` is added to the binder. This is done automatically if you configure a `MPConfig.clientId` and `MPConfig.clientSecret`. Then the projects will be fetched from ManagementPortal.
+
+The following variables will be fetched from environment variables if set:\
+`MANAGEMENT_PORTAL_CLIENT_ID` sets `AuthConfig.managementPortal.clientId`\
+`MANAGEMENT_PORTAL_CLIENT_SECRET` sets `AuthConfig.managementPortal.clientSecret`\
+`AUTH_KEYSTORE_PASSWORD` sets `AuthConfig.jwtKeystorePassword`\
+`DATABASE_URL` sets `DatabaseConfig.url`\
+`DATABASE_USER` sets `DatabaseConfig.user`\
+`DATABASE_PASSWORD` sets `DatabaseConfig.password`
 
 This factory can then be specified in your main method, by adding it to your `MyConfigClass` definition:
 ```kotlin

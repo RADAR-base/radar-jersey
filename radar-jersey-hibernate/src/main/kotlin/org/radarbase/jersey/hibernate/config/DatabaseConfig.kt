@@ -1,5 +1,7 @@
 package org.radarbase.jersey.hibernate.config
 
+import org.radarbase.jersey.config.letEnv
+
 
 data class DatabaseConfig(
         /** Classes that can be used in Hibernate queries. */
@@ -12,7 +14,12 @@ data class DatabaseConfig(
         val properties: Map<String, String> = emptyMap(),
         val liquibase: LiquibaseConfig = LiquibaseConfig(),
         val healthCheckValiditySeconds: Long = 60
-)
+) {
+    fun combineWithEnv(): DatabaseConfig = this
+            .letEnv("DATABASE_URL") { copy(url = it) }
+            .letEnv("DATABASE_USER") { copy(user = it) }
+            .letEnv("DATABASE_PASSWORD") { copy(password = it) }
+}
 
 data class LiquibaseConfig(
         val enable: Boolean = true,
