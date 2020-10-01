@@ -10,6 +10,7 @@
 package org.radarbase.jersey.auth
 
 import com.fasterxml.jackson.annotation.JsonIgnore
+import org.radarbase.jersey.config.letEnv
 import java.time.Duration
 
 data class AuthConfig(
@@ -30,17 +31,12 @@ data class AuthConfig(
         /** Key password for the key alias in the p12 keystore. */
         val jwtKeystorePassword: String? = null,
 ) {
-    fun combineWithEnv(): AuthConfig {
-        var config = this;
-        val mpConfig = managementPortal.combineWithEnv()
-        if (mpConfig != managementPortal) {
-            config = config.copy(managementPortal = mpConfig)
-        }
-        System.getenv("AUTH_KEYSTORE_PASSWORD")?.let {
-            config = config.copy(jwtKeystorePassword = it)
-        }
-        return config
-    }
+    fun combineWithEnv(): AuthConfig = this
+            .letEnv("AUTH_KEYSTORE_PASSWORD") { copy(jwtKeystorePassword = it) }
+            .run { managementPortal.combineWithEnv()
+                    .takeIf { it != managementPortal }
+                    ?.let { copy(managementPortal = it) }
+                    ?: this }
 }
 
 data class MPConfig(
@@ -62,14 +58,7 @@ data class MPConfig(
     @JsonIgnore
     val syncParticipantsInterval: Duration = Duration.ofMinutes(syncParticipantsIntervalMin)
 
-    fun combineWithEnv(): MPConfig {
-        var config = this
-        System.getenv("MANAGEMENT_PORTAL_CLIENT_ID")?.let {
-            config = config.copy(clientId = it)
-        }
-        System.getenv("MANAGEMENT_PORTAL_CLIENT_SECRET")?.let {
-            config = config.copy(clientSecret = it)
-        }
-        return config
-    }
+    fun combineWithEnv(): MPConfig = this
+            .letEnv("MANAGEMENT_PORTAL_CLIENT_ID") { copy(clientId = it) }
+            .letEnv("MANAGEMENT_PORTAL_CLIENT_SECRET") { copy(clientSecret = it) }
 }
