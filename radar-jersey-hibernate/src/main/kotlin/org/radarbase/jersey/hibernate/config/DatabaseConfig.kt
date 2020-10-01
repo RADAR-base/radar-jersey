@@ -12,7 +12,23 @@ data class DatabaseConfig(
         val properties: Map<String, String> = emptyMap(),
         val liquibase: LiquibaseConfig = LiquibaseConfig(),
         val healthCheckValiditySeconds: Long = 60
-)
+) {
+    fun combineWithEnv(): DatabaseConfig {
+        var config = this
+
+        System.getenv("DATABASE_URL")?.let {
+            config = config.copy(url = it)
+        }
+        System.getenv("DATABASE_USER")?.let {
+            config = config.copy(user = it)
+        }
+        System.getenv("DATABASE_PASSWORD")?.let {
+            config = config.copy(password = it)
+        }
+
+        return config
+    }
+}
 
 data class LiquibaseConfig(
         val enable: Boolean = true,

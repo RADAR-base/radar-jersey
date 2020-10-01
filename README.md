@@ -90,6 +90,9 @@ The following variables will be fetched from environment variables if set:\
 `MANAGEMENT_PORTAL_CLIENT_ID` sets `AuthConfig.managementPortal.clientId`\
 `MANAGEMENT_PORTAL_CLIENT_SECRET` sets `AuthConfig.managementPortal.clientSecret`\
 `AUTH_KEYSTORE_PASSWORD` sets `AuthConfig.jwtKeystorePassword` 
+`DATABASE_URL` sets `DatabaseConfig.url`
+`DATABASE_USER` sets `DatabaseConfig.user`
+`DATABASE_PASSWORD` sets `DatabaseConfig.password`
 
 This factory can then be specified in your main method, by adding it to your `MyConfigClass` definition:
 ```kotlin
