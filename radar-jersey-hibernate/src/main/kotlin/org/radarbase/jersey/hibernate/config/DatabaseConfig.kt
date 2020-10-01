@@ -1,6 +1,6 @@
 package org.radarbase.jersey.hibernate.config
 
-import org.radarbase.jersey.config.letEnv
+import org.radarbase.jersey.config.ConfigLoader.copyEnv
 
 
 data class DatabaseConfig(
@@ -16,9 +16,9 @@ data class DatabaseConfig(
         val healthCheckValiditySeconds: Long = 60
 ) {
     fun combineWithEnv(): DatabaseConfig = this
-            .letEnv("DATABASE_URL") { copy(url = it) }
-            .letEnv("DATABASE_USER") { copy(user = it) }
-            .letEnv("DATABASE_PASSWORD") { copy(password = it) }
+            .copyEnv("DATABASE_URL") { copy(url = it) }
+            .copyEnv("DATABASE_USER") { copy(user = it) }
+            .copyEnv("DATABASE_PASSWORD") { copy(password = it) }
 }
 
 data class LiquibaseConfig(

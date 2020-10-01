@@ -114,11 +114,10 @@ object ConfigLoader {
         val httpException = HttpExceptionResourceEnhancer()
         val generalException = GeneralExceptionResourceEnhancer()
     }
-}
 
-
-inline fun <T> T.letEnv(key: String, copyProperty: T.(String) -> T): T {
-    return System.getenv(key)?.let {
-        copyProperty(it)
-    } ?: this
+    inline fun <T> T.copyEnv(key: String, doCopy: T.(String) -> T): T {
+        return System.getenv(key)?.let {
+            doCopy(it)
+        } ?: this
+    }
 }

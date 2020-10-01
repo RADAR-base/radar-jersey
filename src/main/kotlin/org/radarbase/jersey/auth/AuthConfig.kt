@@ -10,7 +10,7 @@
 package org.radarbase.jersey.auth
 
 import com.fasterxml.jackson.annotation.JsonIgnore
-import org.radarbase.jersey.config.letEnv
+import org.radarbase.jersey.config.ConfigLoader.copyEnv
 import java.time.Duration
 
 data class AuthConfig(
@@ -32,7 +32,7 @@ data class AuthConfig(
         val jwtKeystorePassword: String? = null,
 ) {
     fun combineWithEnv(): AuthConfig = this
-            .letEnv("AUTH_KEYSTORE_PASSWORD") { copy(jwtKeystorePassword = it) }
+            .copyEnv("AUTH_KEYSTORE_PASSWORD") { copy(jwtKeystorePassword = it) }
             .copy(managementPortal = managementPortal.combineWithEnv())
 }
 
@@ -56,6 +56,6 @@ data class MPConfig(
     val syncParticipantsInterval: Duration = Duration.ofMinutes(syncParticipantsIntervalMin)
 
     fun combineWithEnv(): MPConfig = this
-            .letEnv("MANAGEMENT_PORTAL_CLIENT_ID") { copy(clientId = it) }
-            .letEnv("MANAGEMENT_PORTAL_CLIENT_SECRET") { copy(clientSecret = it) }
+            .copyEnv("MANAGEMENT_PORTAL_CLIENT_ID") { copy(clientId = it) }
+            .copyEnv("MANAGEMENT_PORTAL_CLIENT_SECRET") { copy(clientSecret = it) }
 }
