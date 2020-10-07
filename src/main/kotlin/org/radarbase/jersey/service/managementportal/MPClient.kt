@@ -2,8 +2,8 @@ package org.radarbase.jersey.service.managementportal
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.ObjectReader
 import okhttp3.*
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import org.radarbase.jersey.auth.Auth
@@ -31,15 +31,16 @@ class MPClient(
             .addPathSegment("")
             .build()
 
-    private val projectListReader = objectMapper.readerFor(object : TypeReference<List<MPProject>>() {})
-    private val userListReader = objectMapper.readerFor(object : TypeReference<List<MPUser>>() {})
-    private val tokenReader = objectMapper.readerFor(RestOauth2AccessToken::class.java)
+    private val projectListReader: ObjectReader by lazy { objectMapper.readerForListOf(MPProject::class.java) }
+    private val userListReader: ObjectReader by lazy { objectMapper.readerForListOf(MPUser::class.java) }
+    private val clientListReader: ObjectReader by lazy { objectMapper.readerForListOf(MPOAuthClient::class.java) }
+    private val tokenReader: ObjectReader by lazy { objectMapper.readerFor(RestOauth2AccessToken::class.java) }
 
     @Volatile
     private var token: RestOauth2AccessToken? = null
 
     private val validToken: RestOauth2AccessToken?
-        get() = token?.takeIf { it.isValid() }
+    get() = token?.takeIf { it.isValid() }
 
     private fun ensureToken(): String = (validToken
             ?: requestToken().also { token = it })
@@ -84,6 +85,16 @@ class MPClient(
 
         return httpClient.requestJson<List<MPUser>>(request, userListReader)
                 .map { it.copy(projectId = projectId) }
+    }
+
+    @Suppress("unused")
+    fun readClients(): List<MPOAuthClient> {
+        val request = Request.Builder().apply {
+            url(baseUrl.resolve("api/oauth-clients")!!)
+            header("Authorization", "Bearer ${ensureToken()}")
+        }.build()
+
+        return httpClient.requestJson(request, clientListReader)
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
