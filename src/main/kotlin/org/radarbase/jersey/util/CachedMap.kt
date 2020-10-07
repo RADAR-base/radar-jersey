@@ -28,9 +28,9 @@ class CachedMap<K,V>(
         /** How to update the cache. */
         supplier: () -> Map<K,V>
 ): CachedValue<Map<K, V>>(refreshDuration, retryDuration, supplier, ::emptyMap) {
-    /** Whether the cache contains [value]. If it does not contain the value and [retryDuration]
+    /** Whether the cache contains [key]. If it does not contain the value and [retryDuration]
      * has passed since the last try, it will update the cache and try once more. */
-    operator fun contains(key: K): Boolean = state.query { key in it }
+    operator fun contains(key: K): Boolean = state.test { key in it }
 
     /**
      * Find a pair matching [predicate].

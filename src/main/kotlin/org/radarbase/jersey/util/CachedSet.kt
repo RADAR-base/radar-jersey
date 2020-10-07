@@ -30,7 +30,7 @@ class CachedSet<T>(
 ): CachedValue<Set<T>>(refreshDuration, retryDuration, supplier, ::emptySet) {
     /** Whether the cache contains [value]. If it does not contain the value and [retryDuration]
      * has passed since the last try, it will update the cache and try once more. */
-    operator fun contains(value: T): Boolean = state.query { value in it }
+    operator fun contains(value: T): Boolean = state.test { value in it }
 
     /**
      * Find a value matching [predicate].

@@ -86,12 +86,14 @@ open class CachedValue<T: Any>(
             } else cache
         }
 
-        inline fun <S> query(method: (T) -> S): S {
-            return if (mustRefresh) {
-                method(tryRefresh() ?: cache)
-            } else {
-                method(cache)
+        inline fun test(predicate: (T) -> Boolean): Boolean = when {
+            mustRefresh -> predicate(tryRefresh() ?: cache)
+            predicate(cache) -> true
+            mayRetry -> {
+                val refreshed = tryRefresh()
+                refreshed != null && predicate(refreshed)
             }
+            else -> false
         }
     }
 }
