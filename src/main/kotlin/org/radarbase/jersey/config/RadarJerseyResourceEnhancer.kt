@@ -34,26 +34,35 @@ import javax.ws.rs.ext.ContextResolver
 class RadarJerseyResourceEnhancer(
         private val config: AuthConfig
 ): JerseyResourceEnhancer {
+    var mapper: ObjectMapper = ObjectMapper()
+            .setSerializationInclusion(JsonInclude.Include.NON_NULL)
+            .registerModule(JavaTimeModule())
+            .registerModule(KotlinModule())
+            .configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false)
+            .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+
+    var client: OkHttpClient = OkHttpClient().newBuilder()
+            .connectTimeout(10, TimeUnit.SECONDS)
+            .writeTimeout(10, TimeUnit.SECONDS)
+            .readTimeout(30, TimeUnit.SECONDS)
+            .build()
+
     override val classes = arrayOf(
             AuthenticationFilter::class.java,
             AuthorizationFeature::class.java)
 
     override fun ResourceConfig.enhance() {
-        register(ContextResolver { OBJECT_MAPPER })
+        register(ContextResolver { mapper })
     }
 
     override fun AbstractBinder.enhance() {
         bind(config.withEnv())
                 .to(AuthConfig::class.java)
 
-        bind(OkHttpClient().newBuilder()
-                .connectTimeout(10, TimeUnit.SECONDS)
-                .writeTimeout(10, TimeUnit.SECONDS)
-                .readTimeout(30, TimeUnit.SECONDS)
-                .build())
+        bind(client)
                 .to(OkHttpClient::class.java)
 
-        bind(OBJECT_MAPPER)
+        bind(mapper)
                 .to(ObjectMapper::class.java)
 
         // Bind factories.
@@ -62,14 +71,5 @@ class RadarJerseyResourceEnhancer(
                 .proxyForSameScope(true)
                 .to(Auth::class.java)
                 .`in`(RequestScoped::class.java)
-    }
-
-    companion object {
-        private val OBJECT_MAPPER: ObjectMapper = ObjectMapper()
-                .setSerializationInclusion(JsonInclude.Include.NON_NULL)
-                .registerModule(JavaTimeModule())
-                .registerModule(KotlinModule())
-                .configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false)
-                .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
     }
 }
