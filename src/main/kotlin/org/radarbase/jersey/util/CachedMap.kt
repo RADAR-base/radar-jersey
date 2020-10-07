@@ -20,31 +20,56 @@ import java.time.Duration
 import java.time.Instant
 
 /** Set of data that is cached for a duration of time. */
-class CachedSet<T>(
+class CachedMap<K,V>(
         /** Duration after which the cache is considered stale and should be refreshed. */
         refreshDuration: Duration,
         /** Duration after which the cache may be refreshed if the cache does not fulfill a certain
          * requirement. This should be shorter than [refreshDuration] to have effect. */
         retryDuration: Duration,
         /** How to update the cache. */
-        supplier: () -> Set<T>
-): CachedObject<Set<T>>(refreshDuration, retryDuration, supplier, ::emptySet) {
+        supplier: () -> Map<K,V>
+): CachedObject<Map<K, V>>(refreshDuration, retryDuration, supplier, ::emptyMap) {
     /** Whether the cache contains [value]. If it does not contain the value and [retryDuration]
      * has passed since the last try, it will update the cache and try once more. */
-    operator fun contains(value: T): Boolean = state.query { value in it }
+    operator fun contains(key: K): Boolean = state.query { key in it }
 
     /**
-     * Find a value matching [predicate].
+     * Find a pair matching [predicate].
      * If it does not contain the value and [retryDuration]
      * has passed since the last try, it will update the cache and try once more.
      * @return value if found and null otherwise
      */
-    fun find(predicate: (T) -> Boolean): T? = state.query({ it.find(predicate) }, { it != null })
+    fun find(predicate: (K, V) -> Boolean): Pair<K, V>? = state.query({
+        it.filter { e -> predicate(e.key, e.value) }
+                .toList()
+                .firstOrNull()
+    }, { it != null })
+
+    /**
+     * Find a pair matching [predicate].
+     * If it does not contain the value and [retryDuration]
+     * has passed since the last try, it will update the cache and try once more.
+     * @return value if found and null otherwise
+     */
+    fun findValue(predicate: (V) -> Boolean): V? = state.query({
+        it.filterValues(predicate)
+                .toList()
+                .firstOrNull()
+                ?.second
+    }, { it != null })
 
     /**
      * Get the value.
      * If the cache is empty and [retryDuration]
      * has passed since the last try, it will update the cache and try once more.
      */
-    fun get(): Set<T> = state.get { it.isNotEmpty() }
+    fun get(): Map<K, V> = state.get { it.isNotEmpty() }
+
+    /**
+     * Get the value.
+     * If the cache is empty and [retryDuration]
+     * has passed since the last try, it will update the cache and try once more.
+     */
+    operator fun get(key: K): V? = state.query({ it[key] }, { it != null })
 }
+

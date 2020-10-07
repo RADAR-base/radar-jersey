@@ -17,82 +17,21 @@
 package org.radarbase.jersey.util
 
 import java.time.Duration
-import java.time.Instant
-import java.util.concurrent.locks.Lock
-import java.util.concurrent.locks.ReentrantReadWriteLock
 
 /** Set of data that is cached for a duration of time. */
-class CachedValue<T>(
+class CachedValue<T: Any>(
         /** Duration after which the cache is considered stale and should be refreshed. */
-        private val refreshDuration: Duration,
+        refreshDuration: Duration,
         /** Duration after which the cache may be refreshed if the cache does not fulfill a certain
          * requirement. This should be shorter than [refreshDuration] to have effect. */
-        private val retryDuration: Duration,
+        retryDuration: Duration,
         /** How to update the cache. */
-        private val supplier: () -> T
-) {
-    private val refreshLock = ReentrantReadWriteLock()
-    private val readLock = refreshLock.readLock()
-    private val writeLock = refreshLock.writeLock()
-
-    var cache: T = supplier()
-        private set
-
-    private var nextRefresh: Instant
-    private var nextRetry: Instant
-
-    private val state: State
-        get() = readLock.locked {
-            val now = Instant.now()
-            return State(cache,
-                    now.isAfter(nextRefresh),
-                    now.isAfter(nextRetry))
-        }
-
-    init {
-        val now = Instant.now()
-        nextRefresh = now.plus(refreshDuration)
-        nextRetry = now.plus(retryDuration)
-    }
-
+        supplier: () -> T
+): CachedObject<T>(refreshDuration, retryDuration, supplier) {
     /**
      * Get the value.
      * If the cache is empty and [retryDuration]
      * has passed since the last try, it will update the cache and try once more.
      */
-    fun get(validityPredicate: (T) -> Boolean = { true }): T = state.query(validityPredicate)
-
-    private inner class State(val cache: T, val mustRefresh: Boolean, val mayRetry: Boolean) {
-        fun query(valueIsValid: (T) -> Boolean): T {
-            return if (shouldRefresh(valueIsValid)
-                    && writeLock.tryLock()) {
-                try {
-                    supplier()
-                            .also {
-                                this@CachedValue.cache = it
-                                val now = Instant.now()
-                                nextRefresh = now.plus(refreshDuration)
-                                nextRetry = now.plus(retryDuration)
-                            }
-                } finally {
-                    writeLock.unlock()
-                }
-            } else {
-                cache
-            }
-        }
-
-        private inline fun shouldRefresh(valueIsValid: (T) -> Boolean): Boolean = mustRefresh || (!valueIsValid(cache) && mayRetry)
-    }
-
-    companion object {
-        inline fun <T> Lock.locked(method: () -> T): T {
-            lock()
-            return try {
-                method()
-            } finally {
-                unlock()
-            }
-        }
-    }
+    fun get(validityPredicate: (T) -> Boolean = { true }): T = state.get(validityPredicate)
 }
