@@ -40,7 +40,7 @@ class MPClient(
     private var token: RestOauth2AccessToken? = null
 
     private val validToken: RestOauth2AccessToken?
-    get() = token?.takeIf { it.isValid() }
+        get() = token?.takeIf { it.isValid() }
 
     private fun ensureToken(): String = (validToken
             ?: requestToken().also { token = it })
