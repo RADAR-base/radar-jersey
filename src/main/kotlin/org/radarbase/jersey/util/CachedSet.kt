@@ -45,5 +45,5 @@ class CachedSet<T>(
      * If the cache is empty and [retryDuration]
      * has passed since the last try, it will update the cache and try once more.
      */
-    fun get(): Set<T> = get { it.isNotEmpty() }
+    override fun get(): Set<T> = get { it.isNotEmpty() }
 }

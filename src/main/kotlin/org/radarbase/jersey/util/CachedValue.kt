@@ -14,7 +14,6 @@ open class CachedValue<T: Any>(
         private val supplier: () -> T,
         initialValue: (() -> T)? = null,
 ) {
-
     private val refreshLock = ReentrantReadWriteLock()
     private val readLock = refreshLock.readLock()
     private val writeLock = refreshLock.writeLock()
@@ -50,10 +49,12 @@ open class CachedValue<T: Any>(
     fun refresh(): T = supplier()
             .also { cache = it }
 
+    open fun get(): T = state.get { true }
+
     /**
      * Get the value.
      * If the cache is empty and [retryDuration]
      * has passed since the last try, it will update the cache and try once more.
      */
-    fun get(validityPredicate: (T) -> Boolean = { true }): T = state.get(validityPredicate)
+    fun get(validityPredicate: (T) -> Boolean): T = state.get(validityPredicate)
 }
