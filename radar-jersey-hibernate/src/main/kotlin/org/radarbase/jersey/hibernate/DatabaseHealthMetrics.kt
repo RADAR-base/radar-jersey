@@ -1,13 +1,10 @@
 package org.radarbase.jersey.hibernate
 
-import liquibase.database.DatabaseFactory
-import liquibase.database.jvm.JdbcConnection
 import org.radarbase.jersey.hibernate.RadarEntityManagerFactory.Companion.connection
 import org.radarbase.jersey.hibernate.config.DatabaseConfig
 import org.radarbase.jersey.service.HealthService
 import org.radarbase.jersey.service.HealthService.Metric
 import org.radarbase.jersey.util.CachedValue
-import org.slf4j.LoggerFactory
 import java.time.Duration
 import javax.inject.Provider
 import javax.persistence.EntityManager
@@ -19,9 +16,8 @@ class DatabaseHealthMetrics(
 ): Metric(name = "db") {
     private val cachedStatus = CachedValue(
             Duration.ofSeconds(dbConfig.healthCheckValiditySeconds),
-            Duration.ofSeconds(dbConfig.healthCheckValiditySeconds)) {
-        testConnection()
-    }
+            Duration.ofSeconds(dbConfig.healthCheckValiditySeconds),
+            ::testConnection)
 
     override val status: HealthService.Status
         get() = cachedStatus.get { it == HealthService.Status.UP }
@@ -34,9 +30,5 @@ class DatabaseHealthMetrics(
         HealthService.Status.UP
     } catch (ex: Throwable) {
         HealthService.Status.DOWN
-    }
-
-    companion object {
-        private val logger = LoggerFactory.getLogger(DatabaseHealthMetrics::class.java)
     }
 }

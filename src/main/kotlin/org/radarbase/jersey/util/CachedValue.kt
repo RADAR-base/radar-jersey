@@ -29,14 +29,12 @@ open class CachedValue<T: Any>(
     private var nextRefresh: Instant
     private var nextRetry: Instant
 
-    protected val state: CacheState<T>
+    protected val state: CacheState
         get() = readLock.locked {
             val now = Instant.now()
             return CacheState(cache,
                     now.isAfter(nextRefresh),
-                    now.isAfter(nextRetry),
-                    writeLock,
-                    ::refresh)
+                    now.isAfter(nextRetry))
         }
 
     init {
@@ -46,8 +44,14 @@ open class CachedValue<T: Any>(
     }
 
     /** Force refresh of the cache. Use automatic refresh instead, if possible. */
-    fun refresh(): T = supplier()
-            .also { cache = it }
+    fun refresh(): T = writeLock.locked {
+        supplier().also { cache = it }
+    }
+
+    /** Force refresh of the cache if it is not locked for writing. Use automatic refresh instead, if possible. */
+    fun tryRefresh(): T? = writeLock.tryLocked {
+        supplier().also { cache = it }
+    }
 
     open fun get(): T = state.get { true }
 
@@ -57,4 +61,37 @@ open class CachedValue<T: Any>(
      * has passed since the last try, it will update the cache and try once more.
      */
     fun get(validityPredicate: (T) -> Boolean): T = state.get(validityPredicate)
+
+    inner class CacheState(
+            val cache: T,
+            val mustRefresh: Boolean,
+            val mayRetry: Boolean
+    ) {
+        inline fun <S> query(method: (T) -> S, valueIsValid: (S) -> Boolean): S {
+            return if (mustRefresh) {
+                method(tryRefresh() ?: cache)
+            } else {
+                val result = method(cache)
+                if (!valueIsValid(result) && mayRetry) {
+                    tryRefresh()
+                            ?.let { method(it) }
+                            ?: result
+                } else result
+            }
+        }
+
+        inline fun get(valueIsValid: (T) -> Boolean): T {
+            return if (mustRefresh || (!valueIsValid(cache) && mayRetry)) {
+                tryRefresh() ?: cache
+            } else cache
+        }
+
+        inline fun <S> query(method: (T) -> S): S {
+            return if (mustRefresh) {
+                method(tryRefresh() ?: cache)
+            } else {
+                method(cache)
+            }
+        }
+    }
 }
