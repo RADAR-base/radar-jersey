@@ -1,33 +1,55 @@
-/*
- *  Copyright 2020 The Hyve
- *
- *  Licensed under the Apache License, Version 2.0 (the "License");
- *  you may not use this file except in compliance with the License.
- *  You may obtain a copy of the License at
- *
- *    http://www.apache.org/licenses/LICENSE-2.0
- *
- *  Unless required by applicable law or agreed to in writing, software
- *  distributed under the License is distributed on an "AS IS" BASIS,
- *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *  See the License for the specific language governing permissions and
- *  limitations under the License.
- */
-
 package org.radarbase.jersey.util
 
 import java.time.Duration
+import java.time.Instant
+import java.util.concurrent.locks.ReentrantReadWriteLock
 
-/** Set of data that is cached for a duration of time. */
-class CachedValue<T: Any>(
+open class CachedValue<T: Any>(
         /** Duration after which the cache is considered stale and should be refreshed. */
-        refreshDuration: Duration,
+        private val refreshDuration: Duration,
         /** Duration after which the cache may be refreshed if the cache does not fulfill a certain
          * requirement. This should be shorter than [refreshDuration] to have effect. */
-        retryDuration: Duration,
+        private val retryDuration: Duration,
         /** How to update the cache. */
-        supplier: () -> T
-): CachedObject<T>(refreshDuration, retryDuration, supplier) {
+        private val supplier: () -> T,
+        initialValue: (() -> T)? = null,
+) {
+
+    private val refreshLock = ReentrantReadWriteLock()
+    private val readLock = refreshLock.readLock()
+    private val writeLock = refreshLock.writeLock()
+
+    var cache: T = initialValue?.invoke() ?: supplier()
+        private set(value) {
+            val now = Instant.now()
+            field = value
+            nextRefresh = now.plus(refreshDuration)
+            nextRetry = now.plus(retryDuration)
+        }
+
+    private var nextRefresh: Instant
+    private var nextRetry: Instant
+
+    protected val state: CacheState<T>
+        get() = readLock.locked {
+            val now = Instant.now()
+            return CacheState(cache,
+                    now.isAfter(nextRefresh),
+                    now.isAfter(nextRetry),
+                    writeLock,
+                    ::refresh)
+        }
+
+    init {
+        val now = Instant.now()
+        nextRefresh = now.plus(refreshDuration)
+        nextRetry = now.plus(retryDuration)
+    }
+
+    /** Force refresh of the cache. Use automatic refresh instead, if possible. */
+    fun refresh(): T = supplier()
+            .also { cache = it }
+
     /**
      * Get the value.
      * If the cache is empty and [retryDuration]

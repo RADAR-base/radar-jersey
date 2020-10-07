@@ -17,7 +17,6 @@
 package org.radarbase.jersey.util
 
 import java.time.Duration
-import java.time.Instant
 
 /** Set of data that is cached for a duration of time. */
 class CachedMap<K,V>(
@@ -28,7 +27,7 @@ class CachedMap<K,V>(
         retryDuration: Duration,
         /** How to update the cache. */
         supplier: () -> Map<K,V>
-): CachedObject<Map<K, V>>(refreshDuration, retryDuration, supplier, ::emptyMap) {
+): CachedValue<Map<K, V>>(refreshDuration, retryDuration, supplier, ::emptyMap) {
     /** Whether the cache contains [value]. If it does not contain the value and [retryDuration]
      * has passed since the last try, it will update the cache and try once more. */
     operator fun contains(key: K): Boolean = state.query { key in it }
@@ -63,7 +62,7 @@ class CachedMap<K,V>(
      * If the cache is empty and [retryDuration]
      * has passed since the last try, it will update the cache and try once more.
      */
-    fun get(): Map<K, V> = state.get { it.isNotEmpty() }
+    fun get(): Map<K, V> = get { it.isNotEmpty() }
 
     /**
      * Get the value.

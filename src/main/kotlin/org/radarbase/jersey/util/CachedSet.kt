@@ -17,7 +17,6 @@
 package org.radarbase.jersey.util
 
 import java.time.Duration
-import java.time.Instant
 
 /** Set of data that is cached for a duration of time. */
 class CachedSet<T>(
@@ -28,7 +27,7 @@ class CachedSet<T>(
         retryDuration: Duration,
         /** How to update the cache. */
         supplier: () -> Set<T>
-): CachedObject<Set<T>>(refreshDuration, retryDuration, supplier, ::emptySet) {
+): CachedValue<Set<T>>(refreshDuration, retryDuration, supplier, ::emptySet) {
     /** Whether the cache contains [value]. If it does not contain the value and [retryDuration]
      * has passed since the last try, it will update the cache and try once more. */
     operator fun contains(value: T): Boolean = state.query { value in it }
@@ -46,5 +45,5 @@ class CachedSet<T>(
      * If the cache is empty and [retryDuration]
      * has passed since the last try, it will update the cache and try once more.
      */
-    fun get(): Set<T> = state.get { it.isNotEmpty() }
+    fun get(): Set<T> = get { it.isNotEmpty() }
 }
