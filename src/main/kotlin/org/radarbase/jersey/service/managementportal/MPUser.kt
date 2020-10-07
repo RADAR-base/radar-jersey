@@ -13,4 +13,5 @@ data class MPUser(
         /** User status in the project. */
         val status: String = "DEACTIVATED",
         /** Additional attributes of the user. */
-        val attributes: Map<String, String> = emptyMap())
+        val attributes: Map<String, String> = emptyMap(),
+)

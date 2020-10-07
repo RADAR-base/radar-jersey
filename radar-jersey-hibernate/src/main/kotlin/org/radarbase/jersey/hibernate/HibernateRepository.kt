@@ -8,27 +8,34 @@ import javax.persistence.EntityManager
 import javax.persistence.EntityTransaction
 
 open class HibernateRepository(
-        @Suppress("MemberVisibilityCanBePrivate")
-        protected val entityManager: Provider<EntityManager>
+        private val entityManagerProvider: Provider<EntityManager>
 ) {
+    @Suppress("MemberVisibilityCanBePrivate")
+    protected val entityManager: EntityManager
+        get() = entityManagerProvider.get()
+
+    @Suppress("unused")
+    fun <T> transact(transactionOperation: EntityManager.() -> T) = entityManager.transact(transactionOperation)
+    @Suppress("unused")
+    fun <T> createTransaction(transactionOperation: EntityManager.(CloseableTransaction) -> T) = entityManager.createTransaction(transactionOperation)
+
     /**
      * Run a transaction and commit it. If an exception occurs, the transaction is rolled back.
      */
-    open fun <T> transact(transactionOperation: EntityManager.() -> T) = createTransaction {
+    open fun <T> EntityManager.transact(transactionOperation: EntityManager.() -> T) = createTransaction {
         it.use { transactionOperation() }
     }
 
     /**
      * Start a transaction without committing it. If an exception occurs, the transaction is rolled back.
      */
-    open fun <T> createTransaction(transactionOperation: EntityManager.(CloseableTransaction) -> T): T {
-        val entityManager = entityManager.get()
-        val currentTransaction = entityManager.transaction
+    open fun <T> EntityManager.createTransaction(transactionOperation: EntityManager.(CloseableTransaction) -> T): T {
+        val currentTransaction = transaction
                 ?: throw HttpInternalServerException("transaction_not_found", "Cannot find a transaction from EntityManager")
 
         currentTransaction.begin()
         try {
-            return entityManager.transactionOperation(object : CloseableTransaction {
+            return transactionOperation(object : CloseableTransaction {
                 override val transaction: EntityTransaction = currentTransaction
 
                 override fun close() {

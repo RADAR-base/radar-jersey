@@ -15,4 +15,5 @@ data class MPProject(
         /** Project description. */
         val description: String? = null,
         /** Any other attributes. */
-        val attributes: Map<String, String> = emptyMap())
+        val attributes: Map<String, String> = emptyMap(),
+)
