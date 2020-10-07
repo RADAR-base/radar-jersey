@@ -25,8 +25,11 @@ class MPClient(
             ?: throw IllegalArgumentException("Cannot configure managementportal client without client ID")
     private val clientSecret: String = config.managementPortal.clientSecret
             ?: throw IllegalArgumentException("Cannot configure managementportal client without client secret")
-    private val baseUrl: HttpUrl = config.managementPortal.url?.toHttpUrlOrNull()
-            ?: throw MalformedURLException("Cannot parse base URL ${config.managementPortal.url} as an URL")
+    private val baseUrl: HttpUrl = (config.managementPortal.url?.toHttpUrlOrNull()
+            ?: throw MalformedURLException("Cannot parse base URL ${config.managementPortal.url} as an URL"))
+            .newBuilder()
+            .addPathSegment("")
+            .build()
 
     private val projectListReader = objectMapper.readerFor(object : TypeReference<List<MPProject>>() {})
     private val userListReader = objectMapper.readerFor(object : TypeReference<List<MPUser>>() {})
