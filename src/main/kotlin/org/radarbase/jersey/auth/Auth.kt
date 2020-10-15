@@ -100,33 +100,34 @@ interface Auth {
         }
 
          logger.info(StringBuilder(140).apply {
-            (location ?: findCallerMethod())?.let {
-                append(it)
-                append(" - ")
-            }
-            if (token.isClientCredentials) {
-                append("Client '")
-                append(clientId)
-            } else {
-                append("User '")
-                append(this@Auth.userId)
-            }
-            append("' - ")
+             (location ?: findCallerMethod())?.let {
+                 append(it)
+                 append(" - ")
+             }
+             if (token.isClientCredentials) {
+                 append(clientId)
+             } else {
+                 append('@')
+                 append(this@Auth.userId)
+             }
 
-            val entity = ArrayList<String>(3).apply {
-                projectId?.let { add("project=$it") }
-                userId?.let { add("subject=$it") }
-                sourceId?.let { add("source=$it") }
+             append(" - ")
 
-            }
-            if (entity.isNotEmpty()) {
-                entity.joinTo(this, separator = ", ")
-                append(" - ")
-            }
+             append(if (isAuthorized) "GRANTED " else "DENIED ")
+             append(permission.scopeName())
 
-            append(if (isAuthorized) "GRANTED " else "DENIED ")
-            append(permission.scopeName())
-        }.toString())
+             val entity = ArrayList<String>(3).apply {
+                 projectId?.let { add("project=$it") }
+                 userId?.let { add("subject=$it") }
+                 sourceId?.let { add("source=$it") }
+
+             }
+             if (entity.isNotEmpty()) {
+                 append(" {")
+                 entity.joinTo(this, separator = ", ")
+                 append('}')
+             }
+         }.toString())
     }
 
     companion object {

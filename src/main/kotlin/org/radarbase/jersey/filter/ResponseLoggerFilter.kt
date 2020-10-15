@@ -28,12 +28,12 @@ class ResponseLoggerFilter : ContainerResponseFilter {
         }
 
         if (requestContext.mediaType == null) {
-            logger.info("{}   - {} {} -- <{}> ",
+            logger.info("[{}] {} {} -- <{}> ",
                     responseContext.status,
                     requestContext.method, requestContext.uriInfo.path,
                     responseContext.mediaType)
         } else {
-            logger.info("{}   - {} {} <{}: {}> -- <{}> ",
+            logger.info("[{}] {} {} <{}: {}> -- <{}> ",
                     responseContext.status,
                     requestContext.method, requestContext.uriInfo.path, requestContext.mediaType, requestContext.length,
                     responseContext.mediaType)

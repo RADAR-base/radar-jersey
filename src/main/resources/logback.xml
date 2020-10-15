@@ -10,7 +10,7 @@
     <appender name="WEB" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
             <pattern>
-                [%d] %msg%n
+                [%d] HTTP  - %msg%n
             </pattern>
         </encoder>
     </appender>

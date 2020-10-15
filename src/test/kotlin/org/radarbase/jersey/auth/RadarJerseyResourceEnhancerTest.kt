@@ -88,6 +88,17 @@ internal class RadarJerseyResourceEnhancerTest {
         }
     }
 
+    @Test
+    fun testUnauthenticatedGetNoAcceptHeader() {
+        client.newCall(Request.Builder()
+                .url("http://localhost:9091/user")
+                .header("Accept", "*/*")
+                .build()).execute().use { response ->
+            assertThat(response.isSuccessful, `is`(false))
+            assertThat(response.code, `is`(401))
+            assertThat(response.body?.string(), equalTo("{\"error\":\"token_missing\",\"error_description\":\"No bearer token is provided in the request.\"}"))
+        }
+    }
 
     @Test
     fun testBadAuthenticationGet() {
@@ -144,6 +155,24 @@ internal class RadarJerseyResourceEnhancerTest {
 
         assertThat(body, containsString("<h1>Bad request (status code 404)</h1>"))
     }
+
+
+    @Test
+    fun testNonExistingGetBrowser() {
+        val response = client.newCall(Request.Builder()
+                .url("http://localhost:9091/projects/c/users/b")
+                .bearerHeader(oauthHelper)
+                .header("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8")
+                .build()).execute()
+
+        assertThat(response.isSuccessful, `is`(false))
+        assertThat(response.code, `is`(404))
+
+        val body = response.body?.string()
+
+        assertThat(body, containsString("<h1>Bad request (status code 404)</h1>"))
+    }
+
 
     companion object {
         lateinit var oauthHelper: OAuthHelper
