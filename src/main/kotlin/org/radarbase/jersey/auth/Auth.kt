@@ -115,18 +115,13 @@ interface Auth {
 
              append(if (isAuthorized) "GRANTED " else "DENIED ")
              append(permission.scopeName())
+             append(' ')
 
-             val entity = ArrayList<String>(3).apply {
-                 projectId?.let { add("project=$it") }
-                 userId?.let { add("subject=$it") }
-                 sourceId?.let { add("source=$it") }
-
-             }
-             if (entity.isNotEmpty()) {
-                 append(" {")
-                 entity.joinTo(this, separator = ", ")
-                 append('}')
-             }
+             ArrayList<String>(3).apply {
+                 projectId?.let { add("project: $it") }
+                 userId?.let { add("subject: $it") }
+                 sourceId?.let { add("source: $it") }
+             }.joinTo(this, separator = ", ", prefix = "{", postfix = "}")
          }.toString())
     }
 
