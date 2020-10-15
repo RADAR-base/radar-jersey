@@ -81,8 +81,13 @@ open class CachedValue<T: Any>(
     } catch (ex: Exception) {
         if (cacheConfig.cacheExceptions) {
             writeLock.locked {
-                _exception = ex
-                lastUpdateNanos = System.nanoTime()
+                val now = System.nanoTime()
+                // don't write exception if very recently the cache was
+                // updated by another thread
+                if (now <= lastUpdateNanos + cacheConfig.retryNanos) {
+                    _exception = ex
+                    lastUpdateNanos = now
+                }
             }
         }
         throw ex
