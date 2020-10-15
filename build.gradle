@@ -5,7 +5,7 @@ plugins {
 
 allprojects {
     group = 'org.radarbase'
-    version = '0.3.3-SNAPSHOT'
+    version = '0.3.3'
 
     ext {
         jerseyVersion = "2.32"
@@ -27,8 +27,8 @@ ext {
     managementPortalVersion = "0.6.0"
     jakartaWsRsVersion = "2.1.6"
     jakartaAnnotationVersion = "1.3.5"
-    jacksonVersion = "2.11.2"
-    jacksonModuleVersion = "2.11.2"
+    jacksonVersion = "2.11.3"
+    jacksonModuleVersion = "2.11.3"
     slf4jVersion = "1.7.30"
     javaxXmlBindVersion = "2.3.1"
     javaxJaxbCoreVersion = "2.3.0.1"
