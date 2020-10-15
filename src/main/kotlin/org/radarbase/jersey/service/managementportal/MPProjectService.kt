@@ -19,6 +19,7 @@ package org.radarbase.jersey.service.managementportal
 import org.radarbase.jersey.auth.Auth
 import org.radarbase.jersey.auth.AuthConfig
 import org.radarbase.jersey.exception.HttpNotFoundException
+import org.radarbase.jersey.util.CacheConfig
 import org.radarbase.jersey.util.CachedMap
 import org.radarcns.auth.authorization.Permission
 import java.time.Duration
@@ -30,7 +31,9 @@ class MPProjectService(
         @Context private val config: AuthConfig,
         @Context private val mpClient: MPClient,
 ) : RadarProjectService {
-    private val projects = CachedMap(config.managementPortal.syncProjectsInterval, RETRY_INTERVAL) {
+    private val projects = CachedMap(CacheConfig(
+            refreshDuration = config.managementPortal.syncProjectsInterval,
+            retryDuration = RETRY_INTERVAL)) {
         mpClient.readProjects()
                 .map { it.id to it }
                 .toMap()
@@ -71,7 +74,9 @@ class MPProjectService(
     }
 
     private fun projectUserCache(projectId: String) = participants.computeIfAbsent(projectId) {
-        CachedMap(config.managementPortal.syncParticipantsInterval, RETRY_INTERVAL) {
+        CachedMap(CacheConfig(
+                refreshDuration = config.managementPortal.syncParticipantsInterval,
+                retryDuration = RETRY_INTERVAL)) {
             mpClient.readParticipants(projectId)
                     .map { it.id to it }
                     .toMap()

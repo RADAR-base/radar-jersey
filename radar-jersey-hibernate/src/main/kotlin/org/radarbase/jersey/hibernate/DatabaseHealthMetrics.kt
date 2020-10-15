@@ -4,9 +4,11 @@ import org.radarbase.jersey.hibernate.RadarEntityManagerFactory.Companion.connec
 import org.radarbase.jersey.hibernate.config.DatabaseConfig
 import org.radarbase.jersey.service.HealthService
 import org.radarbase.jersey.service.HealthService.Metric
+import org.radarbase.jersey.util.CacheConfig
 import org.radarbase.jersey.util.CachedValue
 import java.time.Duration
 import javax.inject.Provider
+import javax.persistence.Cache
 import javax.persistence.EntityManager
 import javax.ws.rs.core.Context
 
@@ -15,8 +17,10 @@ class DatabaseHealthMetrics(
         @Context dbConfig: DatabaseConfig
 ): Metric(name = "db") {
     private val cachedStatus = CachedValue(
-            Duration.ofSeconds(dbConfig.healthCheckValiditySeconds),
-            Duration.ofSeconds(dbConfig.healthCheckValiditySeconds),
+            CacheConfig(
+                    refreshDuration = Duration.ofSeconds(dbConfig.healthCheckValiditySeconds),
+                    retryDuration = Duration.ofSeconds(dbConfig.healthCheckValiditySeconds),
+            ),
             ::testConnection)
 
     override val status: HealthService.Status

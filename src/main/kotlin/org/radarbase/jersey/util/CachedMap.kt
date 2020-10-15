@@ -20,21 +20,26 @@ import java.time.Duration
 
 /** Set of data that is cached for a duration of time. */
 class CachedMap<K,V>(
-        /** Duration after which the cache is considered stale and should be refreshed. */
-        refreshDuration: Duration,
-        /** Duration after which the cache may be refreshed if the cache does not fulfill a certain
-         * requirement. This should be shorter than [refreshDuration] to have effect. */
-        retryDuration: Duration,
-        /** How to update the cache. */
+        cacheConfig: CacheConfig = CacheConfig(),
         supplier: () -> Map<K,V>
-): CachedValue<Map<K, V>>(refreshDuration, retryDuration, supplier, ::emptyMap) {
-    /** Whether the cache contains [key]. If it does not contain the value and [retryDuration]
+): CachedValue<Map<K, V>>(cacheConfig, supplier, ::emptyMap) {
+
+    constructor(
+            refreshDuration: Duration,
+            retryDuration: Duration,
+            supplier: () -> Map<K, V>) : this(
+            CacheConfig(
+                    refreshDuration = refreshDuration,
+                    retryDuration = retryDuration,
+            ), supplier)
+
+    /** Whether the cache contains [key]. If it does not contain the value and [CacheConfig.retryDuration]
      * has passed since the last try, it will update the cache and try once more. */
     operator fun contains(key: K): Boolean = state.test { key in it }
 
     /**
      * Find a pair matching [predicate].
-     * If it does not contain the value and [retryDuration]
+     * If it does not contain the value and [CacheConfig.retryDuration]
      * has passed since the last try, it will update the cache and try once more.
      * @return value if found and null otherwise
      */
@@ -46,7 +51,7 @@ class CachedMap<K,V>(
 
     /**
      * Find a pair matching [predicate].
-     * If it does not contain the value and [retryDuration]
+     * If it does not contain the value and [CacheConfig.retryDuration]
      * has passed since the last try, it will update the cache and try once more.
      * @return value if found and null otherwise
      */
@@ -59,14 +64,14 @@ class CachedMap<K,V>(
 
     /**
      * Get the value.
-     * If the cache is empty and [retryDuration]
+     * If the cache is empty and [CacheConfig.retryDuration]
      * has passed since the last try, it will update the cache and try once more.
      */
     override fun get(): Map<K, V> = get { it.isNotEmpty() }
 
     /**
      * Get the value.
-     * If the cache is empty and [retryDuration]
+     * If the cache is empty and [CacheConfig.retryDuration]
      * has passed since the last try, it will update the cache and try once more.
      */
     operator fun get(key: K): V? = state.query({ it[key] }, { it != null })
