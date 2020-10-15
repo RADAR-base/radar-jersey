@@ -84,7 +84,7 @@ open class CachedValue<T: Any>(
                 val now = System.nanoTime()
                 // don't write exception if very recently the cache was
                 // updated by another thread
-                if (now <= lastUpdateNanos + cacheConfig.retryNanos) {
+                if (_exception == null && now >= lastUpdateNanos + cacheConfig.retryNanos) {
                     _exception = ex
                     lastUpdateNanos = now
                 }
