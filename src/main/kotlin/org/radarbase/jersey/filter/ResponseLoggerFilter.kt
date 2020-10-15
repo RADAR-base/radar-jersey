@@ -10,9 +10,6 @@
 package org.radarbase.jersey.filter
 
 import org.slf4j.LoggerFactory
-import java.time.LocalDateTime
-import java.time.ZoneOffset
-import java.time.format.DateTimeFormatter
 import javax.inject.Singleton
 import javax.ws.rs.container.ContainerRequestContext
 import javax.ws.rs.container.ContainerResponseContext
@@ -23,17 +20,20 @@ import javax.ws.rs.ext.Provider
 @Singleton
 class ResponseLoggerFilter : ContainerResponseFilter {
     override fun filter(requestContext: ContainerRequestContext?, responseContext: ContainerResponseContext?) {
-        if (requestContext == null || responseContext == null) {
-            return
-        }
-
-        if (requestContext.mediaType == null) {
-            logger.info("[{}] {} {} -- <{}> ",
+        when {
+            requestContext == null || responseContext == null -> return
+            requestContext.mediaType == null -> logger.info(
+                    "[{}] {} {} -- <{}> ",
                     responseContext.status,
                     requestContext.method, requestContext.uriInfo.path,
                     responseContext.mediaType)
-        } else {
-            logger.info("[{}] {} {} <{}: {}> -- <{}> ",
+            requestContext.length < 0 -> logger.info(
+                    "[{}] {} {} <{}> -- <{}> ",
+                    responseContext.status,
+                    requestContext.method, requestContext.uriInfo.path, requestContext.mediaType,
+                    responseContext.mediaType)
+            else -> logger.info(
+                    "[{}] {} {} <{}: {}> -- <{}> ",
                     responseContext.status,
                     requestContext.method, requestContext.uriInfo.path, requestContext.mediaType, requestContext.length,
                     responseContext.mediaType)
@@ -41,8 +41,6 @@ class ResponseLoggerFilter : ContainerResponseFilter {
     }
 
     companion object {
-        val dateTimeFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
-
         private val logger = LoggerFactory.getLogger(ResponseLoggerFilter::class.java)
     }
 }
