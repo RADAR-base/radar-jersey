@@ -27,17 +27,13 @@ class ResponseLoggerFilter : ContainerResponseFilter {
             return
         }
 
-        val time = dateTimeFormatter.format(LocalDateTime.now(ZoneOffset.UTC))
-
         if (requestContext.mediaType == null) {
-            logger.info("[{}] {} - {} {} -- <{}> ",
-                    time,
+            logger.info("{}   - {} {} -- <{}> ",
                     responseContext.status,
                     requestContext.method, requestContext.uriInfo.path,
                     responseContext.mediaType)
         } else {
-            logger.info("[{}] {} - {} {} <{}: {}> -- <{}> ",
-                    time,
+            logger.info("{}   - {} {} <{}: {}> -- <{}> ",
                     responseContext.status,
                     requestContext.method, requestContext.uriInfo.path, requestContext.mediaType, requestContext.length,
                     responseContext.mediaType)

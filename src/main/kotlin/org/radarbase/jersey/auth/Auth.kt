@@ -99,8 +99,7 @@ interface Auth {
             return
         }
 
-         logger.info(StringBuilder(150).apply {
-            append("[authorization] ")
+         logger.info(StringBuilder(140).apply {
             (location ?: findCallerMethod())?.let {
                 append(it)
                 append(" - ")
