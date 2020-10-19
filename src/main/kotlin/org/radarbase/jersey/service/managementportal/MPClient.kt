@@ -64,7 +64,11 @@ class MPClient(
     fun readProjects(): List<MPProject> {
         logger.debug("Requesting for projects")
         val request = Request.Builder().apply {
-            url(baseUrl.resolve("api/projects")!!)
+            url(baseUrl.newBuilder()
+                    .addPathSegments("api/projects")
+                    .addQueryParameter("page", "0")
+                    .addQueryParameter("size", Int.MAX_VALUE.toString())
+                    .build())
             header("Authorization", "Bearer ${ensureToken()}")
         }.build()
 
