@@ -1,97 +1,181 @@
-/*
- *  Copyright 2020 The Hyve
- *
- *  Licensed under the Apache License, Version 2.0 (the "License");
- *  you may not use this file except in compliance with the License.
- *  You may obtain a copy of the License at
- *
- *    http://www.apache.org/licenses/LICENSE-2.0
- *
- *  Unless required by applicable law or agreed to in writing, software
- *  distributed under the License is distributed on an "AS IS" BASIS,
- *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *  See the License for the specific language governing permissions and
- *  limitations under the License.
- */
-
 package org.radarbase.jersey.util
 
 import java.time.Duration
-import java.time.Instant
+import java.util.concurrent.Semaphore
 import java.util.concurrent.locks.Lock
 import java.util.concurrent.locks.ReentrantReadWriteLock
 
-/** Set of data that is cached for a duration of time. */
-class CachedValue<T>(
-        /** Duration after which the cache is considered stale and should be refreshed. */
-        private val refreshDuration: Duration,
-        /** Duration after which the cache may be refreshed if the cache does not fulfill a certain
-         * requirement. This should be shorter than [refreshDuration] to have effect. */
-        private val retryDuration: Duration,
+open class CachedValue<T: Any>(
+        protected val cacheConfig: CacheConfig = CacheConfig(),
         /** How to update the cache. */
-        private val supplier: () -> T
+        private val supplier: () -> T,
+        initialValue: (() -> T)? = null,
 ) {
+    constructor(
+            refreshDuration: Duration,
+            retryDuration: Duration,
+            supplier: () -> T,
+            initialValue: (() -> T)? = null,
+    ) : this(
+            CacheConfig(
+                    refreshDuration = refreshDuration,
+                    retryDuration = retryDuration,
+            ),
+            supplier = supplier,
+            initialValue = initialValue)
+
     private val refreshLock = ReentrantReadWriteLock()
-    private val readLock = refreshLock.readLock()
+    private val readLock: Lock = refreshLock.readLock()
     private val writeLock = refreshLock.writeLock()
+    private val computeSemaphore = Semaphore(cacheConfig.maxSimultaneousCompute)
 
-    var cache: T = supplier()
-        private set
+    private var lastUpdateNanos: Long = Long.MIN_VALUE
+    private var _exception: Exception? = null
 
-    private var nextRefresh: Instant
-    private var nextRetry: Instant
+    val exception: Exception?
+        get() = readLock.locked { _exception }
 
-    private val state: State
+    val isStale: Boolean
         get() = readLock.locked {
-            val now = Instant.now()
-            return State(cache,
-                    now.isAfter(nextRefresh),
-                    now.isAfter(nextRetry))
+            System.nanoTime() >= lastUpdateNanos + cacheConfig.staleNanos
         }
 
-    init {
-        val now = Instant.now()
-        nextRefresh = now.plus(refreshDuration)
-        nextRetry = now.plus(retryDuration)
+    private var cache: T = initialValue?.invoke() ?: supplier()
+
+    val value: T
+        get() = readLock.locked { cache }
+
+    protected val state: CacheState
+        get() = readLock.locked {
+            return CacheState(cache, lastUpdateNanos, _exception)
+        }
+
+    /** Force refresh of the cache. Use automatic refresh instead, if possible. */
+    fun refresh(currentUpdateNanos: Long? = null): T = computeSemaphore.acquired {
+        doRefresh(currentUpdateNanos)
     }
+
+    /** Force refresh of the cache if it is not locked for writing. Use automatic refresh instead, if possible. */
+    fun tryRefresh(currentUpdateNanos: Long? = null, tryLockNanos: Long? = null): T? = computeSemaphore.tryAcquired(tryLockNanos) {
+        doRefresh(currentUpdateNanos)
+    }
+
+    private fun doRefresh(currentUpdateNanos: Long?): T = try {
+        // Do not actually refresh if there was already a previous update
+        if (currentUpdateNanos != null) {
+            readLock.locked {
+                if (lastUpdateNanos > currentUpdateNanos) {
+                    _exception?.let { throw it }
+                    return cache
+                }
+            }
+        }
+        supplier()
+                .also {
+                    writeLock.locked {
+                        cache = it
+                        lastUpdateNanos = System.nanoTime()
+                        _exception = null
+                    }
+                }
+    } catch (ex: Exception) {
+        if (cacheConfig.cacheExceptions) {
+            writeLock.locked {
+                val now = System.nanoTime()
+                // don't write exception if very recently the cache was
+                // updated by another thread
+                if (_exception == null && now >= lastUpdateNanos + cacheConfig.retryNanos) {
+                    _exception = ex
+                    lastUpdateNanos = now
+                }
+            }
+        }
+        throw ex
+    }
+
+    open fun get(): T = state.get { true }
 
     /**
      * Get the value.
-     * If the cache is empty and [retryDuration]
+     * If the cache is empty and [CacheConfig.retryDuration]
      * has passed since the last try, it will update the cache and try once more.
      */
-    fun get(validityPredicate: (T) -> Boolean = { true }): T = state.query(validityPredicate)
+    fun get(validityPredicate: (T) -> Boolean): T = state.get(validityPredicate)
 
-    private inner class State(val cache: T, val mustRefresh: Boolean, val mayRetry: Boolean) {
-        fun query(valueIsValid: (T) -> Boolean): T {
-            return if (shouldRefresh(valueIsValid)
-                    && writeLock.tryLock()) {
-                try {
-                    supplier()
-                            .also {
-                                this@CachedValue.cache = it
-                                val now = Instant.now()
-                                nextRefresh = now.plus(refreshDuration)
-                                nextRetry = now.plus(retryDuration)
-                            }
-                } finally {
-                    writeLock.unlock()
+    fun <S> query(method: (T) -> S, valueIsValid: (S) -> Boolean): S = state.query(method, valueIsValid)
+
+    /** Immutable state at a point in time. */
+    protected inner class CacheState(
+            /** Cached value. */
+            val cache: T,
+            /** Time that the cache was updated. */
+            val lastUpdateNanos: Long,
+            /** Cached exception. */
+            val exception: Exception?,
+    ) {
+        val mustRefresh: Boolean
+        val mayRetry: Boolean
+
+        init {
+            val now = System.nanoTime()
+            mustRefresh = now >= lastUpdateNanos + cacheConfig.refreshNanos
+            mayRetry = now >= lastUpdateNanos + cacheConfig.retryNanos
+        }
+
+        /**
+         * Checks for exceptions and throws if necessary. If no exceptions are found,
+         * proceeds to call [application].
+         */
+        inline fun <S> applyValidState(method: (T) -> S, application: () -> S): S {
+            return if (exception != null) {
+                if (mustRefresh || mayRetry) {
+                    method(tryRefresh(lastUpdateNanos, cacheConfig.exceptionLockNanos) ?: throw exception)
                 }
-            } else {
-                cache
+                else throw exception
+            } else application()
+        }
+
+        /**
+         * Query the current state, applying [method]. If [valueIsValid] does not give a valid
+         * result, that is, it is false, recompute the value if [mayRetry] is true. If exceptions
+         * are cached as per [CacheConfig.cacheExceptions], this may return an exception from a
+         * previous call.
+         */
+        inline fun <S> query(method: (T) -> S, valueIsValid: (S) -> Boolean): S = applyValidState(method) {
+            if (mustRefresh) method(tryRefresh(lastUpdateNanos) ?: cache)
+            else {
+                val result = method(cache)
+                val refreshed = if (!valueIsValid(result) && mayRetry) tryRefresh(lastUpdateNanos) else null
+                if (refreshed != null) method(refreshed) else result
             }
         }
 
-        private inline fun shouldRefresh(valueIsValid: (T) -> Boolean): Boolean = mustRefresh || (!valueIsValid(cache) && mayRetry)
-    }
+        /**
+         * Get the current state. If [valueIsValid] does not give a valid
+         * result, that is, it is false, recompute the value if [mayRetry] is true. If exceptions
+         * are cached as per [CacheConfig.cacheExceptions], this may return an exception from a
+         * previous call.
+         */
+        inline fun get(valueIsValid: (T) -> Boolean): T = applyValidState({ it }) {
+            if (mustRefresh || (!valueIsValid(cache) && mayRetry)) tryRefresh(lastUpdateNanos) ?: cache
+            else cache
+        }
 
-    companion object {
-        inline fun <T> Lock.locked(method: () -> T): T {
-            lock()
-            return try {
-                method()
-            } finally {
-                unlock()
+        /**
+         * Test a predicate on the current state. If the result is false, recompute the value if
+         * [mayRetry] is true and run the predicate on that. If exceptions
+         * are cached as per [CacheConfig.cacheExceptions], this may return an exception from a
+         * previous call.
+         */
+        inline fun test(predicate: (T) -> Boolean): Boolean = applyValidState(predicate) {
+            when {
+                mustRefresh -> predicate(tryRefresh(lastUpdateNanos) ?: cache)
+                predicate(cache) -> true
+                mayRetry -> {
+                    val refreshed = tryRefresh(lastUpdateNanos)
+                    refreshed != null && predicate(refreshed)
+                }
+                else -> false
             }
         }
     }

@@ -49,6 +49,8 @@ interface RadarProjectService : ProjectService {
      * Get subject with [externalUserId] from [projectId] in ManagementPortal.
      * @throws HttpNotFoundException if the project does not exist.
      */
-    fun userByExternalId(projectId: String, externalUserId: String): MPUser? =
-            projectUsers(projectId).find { it.externalId == externalUserId }
+    fun userByExternalId(projectId: String, externalUserId: String): MPUser?
+
+    fun getUser(projectId: String, userId: String): MPUser?
+    fun ensureUser(projectId: String, userId: String)
 }

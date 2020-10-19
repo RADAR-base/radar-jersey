@@ -19,37 +19,61 @@ package org.radarbase.jersey.util
 import java.time.Duration
 
 /** Set of data that is cached for a duration of time. */
-class CachedSet<T>(
+class CachedMap<K,V>(
         cacheConfig: CacheConfig = CacheConfig(),
-        /** How to update the cache. */
-        supplier: () -> Set<T>
-): CachedValue<Set<T>>(cacheConfig, supplier, ::emptySet) {
+        supplier: () -> Map<K,V>
+): CachedValue<Map<K, V>>(cacheConfig, supplier, ::emptyMap) {
 
     constructor(
             refreshDuration: Duration,
             retryDuration: Duration,
-            supplier: () -> Set<T>) : this(
+            supplier: () -> Map<K, V>) : this(
             CacheConfig(
                     refreshDuration = refreshDuration,
                     retryDuration = retryDuration,
             ), supplier)
 
-    /** Whether the cache contains [value]. If it does not contain the value and [CacheConfig.retryDuration]
+    /** Whether the cache contains [key]. If it does not contain the value and [CacheConfig.retryDuration]
      * has passed since the last try, it will update the cache and try once more. */
-    operator fun contains(value: T): Boolean = state.test { value in it }
+    operator fun contains(key: K): Boolean = state.test { key in it }
 
     /**
-     * Find a value matching [predicate].
+     * Find a pair matching [predicate].
      * If it does not contain the value and [CacheConfig.retryDuration]
      * has passed since the last try, it will update the cache and try once more.
      * @return value if found and null otherwise
      */
-    fun find(predicate: (T) -> Boolean): T? = state.query({ it.find(predicate) }, { it != null })
+    fun find(predicate: (K, V) -> Boolean): Pair<K, V>? = state.query({
+        it.filter { e -> predicate(e.key, e.value) }
+                .toList()
+                .firstOrNull()
+    }, { it != null })
+
+    /**
+     * Find a pair matching [predicate].
+     * If it does not contain the value and [CacheConfig.retryDuration]
+     * has passed since the last try, it will update the cache and try once more.
+     * @return value if found and null otherwise
+     */
+    fun findValue(predicate: (V) -> Boolean): V? = state.query({
+        it.filterValues(predicate)
+                .toList()
+                .firstOrNull()
+                ?.second
+    }, { it != null })
 
     /**
      * Get the value.
      * If the cache is empty and [CacheConfig.retryDuration]
      * has passed since the last try, it will update the cache and try once more.
      */
-    override fun get(): Set<T> = get { it.isNotEmpty() }
+    override fun get(): Map<K, V> = get { it.isNotEmpty() }
+
+    /**
+     * Get the value.
+     * If the cache is empty and [CacheConfig.retryDuration]
+     * has passed since the last try, it will update the cache and try once more.
+     */
+    operator fun get(key: K): V? = state.query({ it[key] }, { it != null })
 }
+

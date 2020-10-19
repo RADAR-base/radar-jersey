@@ -19,7 +19,8 @@ package org.radarbase.jersey.service.managementportal
 import org.radarbase.jersey.auth.Auth
 import org.radarbase.jersey.auth.AuthConfig
 import org.radarbase.jersey.exception.HttpNotFoundException
-import org.radarbase.jersey.util.CachedSet
+import org.radarbase.jersey.util.CacheConfig
+import org.radarbase.jersey.util.CachedMap
 import org.radarcns.auth.authorization.Permission
 import java.time.Duration
 import java.util.concurrent.ConcurrentHashMap
@@ -30,29 +31,56 @@ class MPProjectService(
         @Context private val config: AuthConfig,
         @Context private val mpClient: MPClient,
 ) : RadarProjectService {
-    private val projects = CachedSet(config.managementPortal.syncProjectsInterval, RETRY_INTERVAL) {
+    private val projects = CachedMap(CacheConfig(
+            refreshDuration = config.managementPortal.syncProjectsInterval,
+            retryDuration = RETRY_INTERVAL)) {
         mpClient.readProjects()
+                .map { it.id to it }
+                .toMap()
     }
 
-    private val participants: ConcurrentMap<String, CachedSet<MPUser>> = ConcurrentHashMap()
+    private val participants: ConcurrentMap<String, CachedMap<String, MPUser>> = ConcurrentHashMap()
 
     override fun userProjects(auth: Auth, permission: Permission): List<MPProject> {
         return projects.get()
-            .filter { auth.token.hasPermissionOnProject(permission, it.id) }
+                .values
+                .filter { auth.token.hasPermissionOnProject(permission, it.id) }
     }
 
-    override fun project(projectId: String): MPProject = projects.find { it.id == projectId }
+    override fun ensureProject(projectId: String) {
+        if (projectId !in projects) {
+            throw HttpNotFoundException("project_not_found", "Project $projectId not found in Management Portal.")
+        }
+    }
+
+    override fun project(projectId: String): MPProject = projects[projectId]
         ?: throw HttpNotFoundException("project_not_found", "Project $projectId not found in Management Portal.")
 
-    override fun projectUsers(projectId: String): List<MPUser> {
-        ensureProject(projectId)
-        val projectParticipants = participants.computeIfAbsent(projectId) {
-            CachedSet(config.managementPortal.syncParticipantsInterval, RETRY_INTERVAL) {
-                mpClient.readParticipants(projectId)
-            }
-        }
+    override fun projectUsers(projectId: String): List<MPUser> = projectUserCache(projectId).get().values.toList()
 
-        return projectParticipants.get().toList()
+    override fun userByExternalId(projectId: String, externalUserId: String): MPUser? = projectUserCache(projectId)
+            .findValue { it.externalId == externalUserId }
+
+    override fun ensureUser(projectId: String, userId: String) {
+        ensureProject(projectId)
+        if (!projectUserCache(projectId).contains(userId)) {
+            throw HttpNotFoundException("user_not_found", "User $userId not found in project $projectId of ManagementPortal.")
+        }
+    }
+
+    override fun getUser(projectId: String, userId: String): MPUser? {
+        ensureProject(projectId)
+        return projectUserCache(projectId)[userId]
+    }
+
+    private fun projectUserCache(projectId: String) = participants.computeIfAbsent(projectId) {
+        CachedMap(CacheConfig(
+                refreshDuration = config.managementPortal.syncParticipantsInterval,
+                retryDuration = RETRY_INTERVAL)) {
+            mpClient.readParticipants(projectId)
+                    .map { it.id to it }
+                    .toMap()
+        }
     }
 
     companion object {

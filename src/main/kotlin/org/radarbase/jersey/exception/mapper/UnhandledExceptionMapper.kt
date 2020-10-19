@@ -11,6 +11,7 @@ package org.radarbase.jersey.exception.mapper
 
 import org.slf4j.LoggerFactory
 import javax.inject.Singleton
+import javax.ws.rs.container.ContainerRequestContext
 import javax.ws.rs.core.Context
 import javax.ws.rs.core.Response
 import javax.ws.rs.core.UriInfo
@@ -21,15 +22,15 @@ import javax.ws.rs.ext.Provider
 @Provider
 @Singleton
 class UnhandledExceptionMapper(
-        @Context private val uriInfo: UriInfo
+        @Context private val uriInfo: UriInfo,
+        @Context private val requestContext: ContainerRequestContext,
 ) : ExceptionMapper<Throwable> {
 
     override fun toResponse(exception: Throwable): Response {
-        logger.error("[500] {}", uriInfo.absolutePath, exception)
+        logger.error("[500] {} {}", requestContext.method, uriInfo.path, exception)
         return Response.serverError()
                 .header("Content-Type", "application/json; charset=utf-8")
-                .entity("{\"error\":\"unknown\","
-                        + "\"error_description\":\"Unknown exception.\"}")
+                .entity("""{"error":"unknown","error_description":"Unknown exception."}""")
                 .build()
     }
 

@@ -32,9 +32,9 @@ class HttpApplicationExceptionMapper(
         val mediaType = requestContext.acceptableMediaTypes
                 .firstOrNull { type -> type in supportedTypes }
                 .takeIf { it != MediaType.WILDCARD_TYPE }
-                ?: MediaType.TEXT_PLAIN_TYPE
+                ?: MediaType.APPLICATION_JSON_TYPE
 
-        logger.error("[{}] {} - {}: {}", exception.status, uriInfo.absolutePath, exception.code, exception.detailedMessage)
+        logger.error("[{}] {} {} - {}: {}", exception.status, requestContext.method, uriInfo.path, exception.code, exception.detailedMessage)
 
         val renderer = renderers.named(mediaType.toString()).firstOrNull()
 

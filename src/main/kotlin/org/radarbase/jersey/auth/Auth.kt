@@ -99,47 +99,53 @@ interface Auth {
             return
         }
 
-        logger.info(StringBuilder(150).apply {
-            append("[AUTHORIZATION] ")
-            append(location ?: findCallerMethod())
-            if (token.isClientCredentials) {
-                append(" - Client '")
-                append(clientId)
-            } else {
-                append(" - User '")
-                append(this@Auth.userId)
-            }
-            append("' - ")
+         logger.info(StringBuilder(140).apply {
+             (location ?: findCallerMethod())?.let {
+                 append(it)
+                 append(" - ")
+             }
+             if (token.isClientCredentials) {
+                 append(clientId)
+             } else {
+                 append('@')
+                 append(this@Auth.userId)
+             }
 
-            sequenceOf(
-                    "project" to projectId,
-                    "subject" to userId,
-                    "source" to sourceId)
-                    .mapNotNull { (key, value) ->
-                        value?.let { "$key=$it" }
-                    }
-                    .joinTo(this, separator = ", ")
-            append(" - ")
-            append(if (isAuthorized) "GRANTED " else "DENIED ")
-            append(permission.scopeName())
-        }.toString())
+             append(" - ")
+
+             append(if (isAuthorized) "GRANTED " else "DENIED ")
+             append(permission.scopeName())
+             append(' ')
+
+             ArrayList<String>(3).apply {
+                 projectId?.let { add("project: $it") }
+                 userId?.let { add("subject: $it") }
+                 sourceId?.let { add("source: $it") }
+             }.joinTo(this, separator = ", ", prefix = "{", postfix = "}")
+         }.toString())
     }
 
     companion object {
         private val stackWalker = StackWalker
                 .getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE)
 
-        private fun findCallerMethod(): String = stackWalker.walk { stream -> stream
-                    .skip(2) // this method and logPermission
-                    .filter { stackElement ->
+        private val skipCallerMethodNames = arrayOf("logPermission", "findCallerMethod")
+
+        private fun findCallerMethod(): String? = stackWalker.walk { stream -> stream
+                .skip(2) // this method and logPermission
+                .filter { stackElement ->
+                    if (stackElement.methodName in skipCallerMethodNames) {
+                        false
+                    } else {
                         val declaringClass = stackElement.declaringClass
                         !declaringClass.isInstance(Auth::class.java)
                                 && !declaringClass.isAnonymousClass
                                 && !declaringClass.isLocalClass
                     }
-                    .findFirst()
-                    .map { "${it.declaringClass.simpleName}.${it.methodName}" }
-                    .orElse("unknown method")
+                }
+                .findFirst()
+                .map { "${it.declaringClass.simpleName}.${it.methodName}" }
+                .orElse(null)
         }
 
         private val logger = LoggerFactory.getLogger(Auth::class.java)
