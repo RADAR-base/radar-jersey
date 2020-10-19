@@ -230,12 +230,12 @@ internal class CachedValueTest {
 
         assertThat(cache.get(), `is`(1))
         assertThat(cache.get(), `is`(1))
-        Thread.sleep(20L)
+        Thread.sleep(21L)
         assertThrows<IllegalStateException> { cache.get() }
         assertThat(cache.exception, not(nullValue()))
         assertThat(cache.exception, instanceOf(IllegalStateException::class.java))
         assertThrows<Exception> { cache.get() }
-        Thread.sleep(10L)
+        Thread.sleep(11L)
         assertThat(cache.get(), `is`(3))
     }
 }
