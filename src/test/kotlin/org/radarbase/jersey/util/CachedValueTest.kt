@@ -23,13 +23,25 @@ internal class CachedValueTest {
                         refreshDuration = Duration.ofMillis(10),
                         staleThresholdDuration = Duration.ofMillis(10),
                 ), supplier = { listOf("something") })
-        assertThat("Initial value is stale", cache.isStale, `is`(true))
+        assertThat("Initial value from supplier is not stale", cache.isStale, `is`(false))
         cache.get()
         assertThat("After get, cache is not stale", cache.isStale, `is`(false))
         Thread.sleep(10)
         assertThat("After refresh duration, cache is not stale", cache.isStale, `is`(false))
         Thread.sleep(10)
         assertThat("After refresh + stale duration, cache is stale", cache.isStale, `is`(true))
+    }
+
+    @Test
+    fun isStaleInitial() {
+        val cache = CachedValue(
+                CacheConfig(
+                        refreshDuration = Duration.ofMillis(10),
+                        staleThresholdDuration = Duration.ofMillis(10),
+                ), supplier = { listOf("something") }, { emptyList() })
+        assertThat("Initial value from initialValue is stale", cache.isStale, `is`(true))
+        cache.get()
+        assertThat("After get, cache is not stale", cache.isStale, `is`(false))
     }
 
     @Test
@@ -218,12 +230,12 @@ internal class CachedValueTest {
 
         assertThat(cache.get(), `is`(1))
         assertThat(cache.get(), `is`(1))
-        Thread.sleep(20L)
+        Thread.sleep(21L)
         assertThrows<IllegalStateException> { cache.get() }
         assertThat(cache.exception, not(nullValue()))
         assertThat(cache.exception, instanceOf(IllegalStateException::class.java))
         assertThrows<Exception> { cache.get() }
-        Thread.sleep(10L)
+        Thread.sleep(11L)
         assertThat(cache.get(), `is`(3))
     }
 }

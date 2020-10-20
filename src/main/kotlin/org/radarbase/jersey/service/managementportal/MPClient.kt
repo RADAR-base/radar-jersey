@@ -47,54 +47,53 @@ class MPClient(
             .accessToken
 
     private fun requestToken(): RestOauth2AccessToken {
-        val request = Request.Builder().apply {
-            url(baseUrl.resolve("oauth/token")!!)
+        return request(tokenReader, { addPathSegments("api/projects") }) {
             post(FormBody.Builder().apply {
                 add("grant_type", "client_credentials")
                 add("client_id", clientId)
                 add("client_secret", clientSecret)
             }.build())
-            header("Authorization", Credentials.basic(clientId, clientSecret))
-        }.build()
-
-        return httpClient.requestJson(request, tokenReader)
+        }
     }
 
     /** Read list of projects from ManagementPortal. */
     fun readProjects(): List<MPProject> {
         logger.debug("Requesting for projects")
-        val request = Request.Builder().apply {
-            url(baseUrl.resolve("api/projects")!!)
-            header("Authorization", "Bearer ${ensureToken()}")
-        }.build()
-
-        return httpClient.requestJson(request, projectListReader)
+        return request(projectListReader,
+                {
+                    addPathSegments("api/projects")
+                    addQueryParameter("page", "0")
+                    addQueryParameter("size", Int.MAX_VALUE.toString())
+                })
     }
 
     /** Read list of participants from ManagementPortal project. The [projectId] is the name that
      * the project is identified by. */
     fun readParticipants(projectId: String): List<MPUser> {
-        val request = Request.Builder().apply {
-            url(baseUrl.newBuilder()
-                    .addPathSegments("api/projects/$projectId/subjects")
-                    .addQueryParameter("page", "0")
-                    .addQueryParameter("size", Int.MAX_VALUE.toString())
-                    .build())
-            header("Authorization", "Bearer ${ensureToken()}")
-        }.build()
-
-        return httpClient.requestJson<List<MPUser>>(request, userListReader)
+        return request<List<MPUser>>(userListReader,
+                {
+                    addPathSegments("api/projects/$projectId/subjects")
+                    addQueryParameter("page", "0")
+                    addQueryParameter("size", Int.MAX_VALUE.toString())
+                })
                 .map { it.copy(projectId = projectId) }
     }
 
     @Suppress("unused")
     fun readClients(): List<MPOAuthClient> {
+        return request(clientListReader, { addPathSegments("api/oauth-clients") })
+    }
+
+    fun <T> request(reader: ObjectReader, urlBuilder: HttpUrl.Builder.() -> Unit, requestBuilder: (Request.Builder.() -> Unit)? = null): T {
         val request = Request.Builder().apply {
-            url(baseUrl.resolve("api/oauth-clients")!!)
+            url(baseUrl.newBuilder().apply {
+                urlBuilder()
+            }.build())
             header("Authorization", "Bearer ${ensureToken()}")
+            if (requestBuilder != null) requestBuilder()
         }.build()
 
-        return httpClient.requestJson(request, clientListReader)
+        return httpClient.requestJson(request, reader)
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
