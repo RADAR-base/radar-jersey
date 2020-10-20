@@ -47,7 +47,7 @@ class MPClient(
             .accessToken
 
     private fun requestToken(): RestOauth2AccessToken {
-        return request(tokenReader, { addPathSegments("api/projects") }) {
+        return request(tokenReader, { addPathSegments("oauth/token") }) {
             post(FormBody.Builder().apply {
                 add("grant_type", "client_credentials")
                 add("client_id", clientId)
