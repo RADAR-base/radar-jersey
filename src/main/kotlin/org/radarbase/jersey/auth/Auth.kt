@@ -129,12 +129,10 @@ interface Auth {
         private val stackWalker = StackWalker
                 .getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE)
 
-        private val skipCallerMethodNames = arrayOf("logPermission", "findCallerMethod")
-
         private fun findCallerMethod(): String? = stackWalker.walk { stream -> stream
                 .skip(2) // this method and logPermission
                 .filter { stackElement ->
-                    if (stackElement.methodName in skipCallerMethodNames) {
+                    if (stackElement.methodName.startsWith("logPermission")) {
                         false
                     } else {
                         val declaringClass = stackElement.declaringClass
