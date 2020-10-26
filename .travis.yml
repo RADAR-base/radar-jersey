@@ -19,16 +19,16 @@ deploy:
     file_glob: true
     file:
       - "*/build/libs/*.jar"
-    cleanup: false
+    skip_cleanup: true
     on:
       tags: true
   - provider: script
     script: ./gradlew publish
-    cleanup: false
+    skip_cleanup: true
     on:
       branch: dev
   - provider: script
     script: ./gradlew bintrayUpload
-    cleanup: false 
+    skip_cleanup: true
     on:
       tags: true
