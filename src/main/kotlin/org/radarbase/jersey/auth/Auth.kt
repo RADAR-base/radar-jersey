@@ -132,7 +132,9 @@ interface Auth {
         private fun findCallerMethod(): String? = stackWalker.walk { stream -> stream
                 .skip(2) // this method and logPermission
                 .filter { stackElement ->
-                    if (stackElement.methodName.startsWith("logPermission")) {
+                    val method = stackElement.methodName
+                    if (method.startsWith("logPermission")
+                            || method.startsWith("checkPermission")) {
                         false
                     } else {
                         val declaringClass = stackElement.declaringClass
