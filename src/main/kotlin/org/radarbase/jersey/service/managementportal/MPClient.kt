@@ -42,18 +42,18 @@ class MPClient(
     private val validToken: RestOauth2AccessToken?
         get() = token?.takeIf { it.isValid() }
 
-    private fun ensureToken(): String = (validToken
-            ?: requestToken().also { token = it })
-            .accessToken
+    private fun ensureToken(): String = (
+            validToken ?: requestToken().also { token = it }
+            ).accessToken
 
     private fun requestToken(): RestOauth2AccessToken {
-        return request(tokenReader, { addPathSegments("oauth/token") }) {
+        return request(tokenReader, { addPathSegments("oauth/token") }, {
             post(FormBody.Builder().apply {
                 add("grant_type", "client_credentials")
                 add("client_id", clientId)
                 add("client_secret", clientSecret)
             }.build())
-        }
+        }, withToken = false)
     }
 
     /** Read list of projects from ManagementPortal. */
@@ -84,12 +84,19 @@ class MPClient(
         return request(clientListReader, { addPathSegments("api/oauth-clients") })
     }
 
-    fun <T> request(reader: ObjectReader, urlBuilder: HttpUrl.Builder.() -> Unit, requestBuilder: (Request.Builder.() -> Unit)? = null): T {
+    fun <T> request(
+            reader: ObjectReader,
+            urlBuilder: HttpUrl.Builder.() -> Unit,
+            requestBuilder: (Request.Builder.() -> Unit)? = null,
+            withToken: Boolean = true): T {
         val request = Request.Builder().apply {
             url(baseUrl.newBuilder().apply {
                 urlBuilder()
             }.build())
-            header("Authorization", "Bearer ${ensureToken()}")
+
+            if (withToken) {
+                header("Authorization", "Bearer ${ensureToken()}")
+            }
             if (requestBuilder != null) requestBuilder()
         }.build()
 
