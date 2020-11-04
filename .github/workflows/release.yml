@@ -47,7 +47,7 @@ jobs:
               run: ./gradlew bintrayUpload
             - name: Publish to nexus
               env:
-                NEXUS_USER: {{ secrets.NEXUS_USER }}
-                NEXUS_PASSWORD: {{ secrets.NEXUS_PASSWORD }}
+                NEXUS_USER: ${{ secrets.NEXUS_USER }}
+                NEXUS_PASSWORD: ${{ secrets.NEXUS_PASSWORD }}
               run: ./gradlew publish
 
