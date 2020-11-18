@@ -3,10 +3,13 @@ package org.radarbase.jersey.config
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory
 import com.fasterxml.jackson.module.kotlin.KotlinModule
+import io.swagger.v3.oas.models.OpenAPI
+import io.swagger.v3.oas.models.info.Info
 import org.glassfish.jersey.internal.inject.AbstractBinder
 import org.glassfish.jersey.server.ResourceConfig
 import org.radarbase.jersey.auth.AuthConfig
 import org.radarbase.jersey.cache.CacheControlFeature
+import org.radarbase.jersey.doc.swagger.SwaggerResourceEnhancer
 import org.radarbase.jersey.filter.CorsFilter
 import org.radarbase.jersey.filter.ResponseLoggerFilter
 import org.slf4j.Logger
@@ -115,6 +118,7 @@ object ConfigLoader {
         val health = HealthResourceEnhancer()
         val httpException = HttpExceptionResourceEnhancer()
         val generalException = GeneralExceptionResourceEnhancer()
+        fun swagger(openApi: OpenAPI, resourcePackages: Set<String>? = null) = SwaggerResourceEnhancer(openApi, resourcePackages)
     }
 
     inline fun <T> T.copyEnv(key: String, doCopy: T.(String?) -> T): T = copyOnChange<T, String?>(null, { System.getenv(key) }, doCopy)

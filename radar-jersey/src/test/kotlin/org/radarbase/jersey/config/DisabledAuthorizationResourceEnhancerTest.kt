@@ -11,8 +11,6 @@ import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.radarbase.jersey.auth.AuthConfig
-import org.radarbase.jersey.auth.OAuthHelper.Companion.bearerHeader
-import org.radarbase.jersey.auth.RadarJerseyResourceEnhancerTest
 import org.radarbase.jersey.mock.MockDisabledAuthResourceEnhancerFactory
 import java.net.URI
 

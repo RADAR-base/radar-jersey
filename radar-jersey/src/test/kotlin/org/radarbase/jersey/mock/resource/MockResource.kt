@@ -9,6 +9,10 @@
 
 package org.radarbase.jersey.mock.resource
 
+import io.swagger.v3.oas.annotations.OpenAPIDefinition
+import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.responses.ApiResponse
+import io.swagger.v3.oas.annotations.responses.ApiResponses
 import org.radarbase.jersey.auth.Auth
 import org.radarbase.jersey.auth.Authenticated
 import org.radarbase.jersey.auth.NeedsPermission
@@ -37,11 +41,24 @@ class MockResource {
 
     @Authenticated
     @GET
+    @Path("user/detailed")
+    fun someUserDetailed(@Context auth: Auth): DetailedUser {
+        return DetailedUser(auth.token.token, "name")
+    }
+
+    @Authenticated
+    @GET
     @Path("projects/{projectId}/users/{subjectId}")
     @NeedsPermission(Permission.Entity.SUBJECT, Permission.Operation.READ, "projectId", "subjectId")
+    @Operation(description = "Get user that is subject in given project")
+    @ApiResponses(value = [
+        ApiResponse(description = "User")
+    ])
     fun mySubject(
             @PathParam("projectId") projectId: String,
             @PathParam("subjectId") userId: String): Map<String, String> {
         return mapOf("projectId" to projectId, "userId" to userId)
     }
+
+    data class DetailedUser(val accessToken: String, val name: String)
 }
