@@ -14,7 +14,7 @@ plugins {
 
 subprojects {
     group = "org.radarbase"
-    version = "0.4.3-SNAPSHOT"
+    version = "0.4.3"
 
     val githubRepoName = "RADAR-base/radar-jersey"
     val githubUrl = "https://github.com/$githubRepoName.git"
