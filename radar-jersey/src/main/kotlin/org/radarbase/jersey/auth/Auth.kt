@@ -131,7 +131,7 @@ interface Auth {
 
         private fun findCallerMethod(): String? = stackWalker.walk { stream -> stream
                 .skip(2) // this method and logPermission
-                .filterNot { it.isAuthMethod }
+                .filter { !it.isAuthMethod }
                 .findFirst()
                 .map { "${it.declaringClass.simpleName}.${it.methodName}" }
                 .orElse(null)
