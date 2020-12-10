@@ -131,23 +131,21 @@ interface Auth {
 
         private fun findCallerMethod(): String? = stackWalker.walk { stream -> stream
                 .skip(2) // this method and logPermission
-                .filter { stackElement ->
-                    val method = stackElement.methodName
-                    if (method.startsWith("logPermission")
-                            || method.startsWith("checkPermission")) {
-                        false
-                    } else {
-                        val declaringClass = stackElement.declaringClass
-                        !declaringClass.isInstance(Auth::class.java)
-                                && !declaringClass.isAnonymousClass
-                                && !declaringClass.isLocalClass
-                    }
-                }
+                .filterNot { it.isAuthMethod }
                 .findFirst()
                 .map { "${it.declaringClass.simpleName}.${it.methodName}" }
                 .orElse(null)
         }
 
         private val logger = LoggerFactory.getLogger(Auth::class.java)
+
+        private val StackWalker.StackFrame.isAuthMethod: Boolean
+            get() = methodName.isAuthMethodName || declaringClass.isAuthClass
+
+        private val String.isAuthMethodName: Boolean
+            get() = startsWith("logPermission") || startsWith("checkPermission")
+
+        private val Class<*>.isAuthClass: Boolean
+            get() = isInstance(Auth::class.java) || isAnonymousClass || isLocalClass
     }
 }
