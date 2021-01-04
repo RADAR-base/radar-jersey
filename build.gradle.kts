@@ -3,22 +3,27 @@ import org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
 import org.gradle.kotlin.dsl.support.serviceOf
 import org.jetbrains.dokka.gradle.DokkaTask
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-import java.util.Date
 
 plugins {
     kotlin("jvm") apply false
-    id("com.jfrog.bintray")
     id("maven-publish")
     id("org.jetbrains.dokka") apply false
 }
 
 subprojects {
+    val myproject = this
     group = "org.radarbase"
     version = "0.4.3"
 
     val githubRepoName = "RADAR-base/radar-jersey"
     val githubUrl = "https://github.com/$githubRepoName.git"
     val githubIssueUrl = "https://github.com/$githubRepoName/issues"
+
+    extra.apply {
+        set("githubRepoName", githubRepoName)
+        set("githubUrl", githubUrl)
+        set("githubIssueUrl", githubIssueUrl)
+    }
 
     repositories {
         jcenter()
@@ -50,7 +55,7 @@ subprojects {
     }
 
     val sourcesJar by tasks.registering(Jar::class) {
-        from(project.the<SourceSetContainer>()["main"].allSource)
+        from(myproject.the<SourceSetContainer>()["main"].allSource)
         archiveClassifier.set("sources")
         val classes by tasks
         dependsOn(classes)
@@ -80,8 +85,8 @@ subprojects {
                 artifact(dokkaJar)
 
                 pom {
-                    name.set(project.name)
-                    description.set(project.description)
+                    name.set(myproject.name)
+                    description.set(myproject.description)
                     url.set(githubUrl)
                     licenses {
                         license {
@@ -121,38 +126,20 @@ subprojects {
         }
         repositories {
             val nexusRepoBase = "https://repo.thehyve.nl/content/repositories"
-            val url = if (project.version.toString().endsWith("SNAPSHOT")) "$nexusRepoBase/snapshots" else "$nexusRepoBase/releases"
+            val url = if (myproject.version.toString().endsWith("SNAPSHOT")) "$nexusRepoBase/snapshots" else "$nexusRepoBase/releases"
             maven(url = url) {
+                name = "thehyve"
                 credentials {
-                    username = if (project.hasProperty("nexusUser")) project.property("nexusUser").toString() else System.getenv("NEXUS_USER")
-                    password = if (project.hasProperty("nexusPassword")) project.property("nexusPassword").toString() else System.getenv("NEXUS_PASSWORD")
+                    username = if (myproject.hasProperty("nexusUser")) myproject.property("nexusUser").toString() else System.getenv("NEXUS_USER")
+                    password = if (myproject.hasProperty("nexusPassword")) myproject.property("nexusPassword").toString() else System.getenv("NEXUS_PASSWORD")
                 }
             }
-        }
-    }
-
-    apply(plugin = "com.jfrog.bintray")
-    bintray {
-        user = if (project.hasProperty("bintrayUser")) project.property("bintrayUser").toString() else System.getenv("BINTRAY_USER")
-        key = if (project.hasProperty("bintrayApiKey")) project.property("bintrayApiKey").toString() else System.getenv("BINTRAY_API_KEY")
-        override = false
-        setPublications("mavenJar")
-        pkg.apply {
-            repo = project.group.toString()
-            name = project.name
-            userOrg = "radar-base"
-            desc = project.description
-            setLicenses("Apache-2.0")
-            websiteUrl = "http://radar-base.org"
-            issueTrackerUrl = githubIssueUrl
-            vcsUrl = githubUrl
-            githubRepo = githubRepoName
-            githubReleaseNotesFile = "README.md"
-            version.apply {
-                name = project.version.toString()
-                desc = project.description
-                vcsTag = System.getenv("TRAVIS_TAG")
-                released = Date().toString()
+            maven(url = "https://api.bintray.com/maven/radar-base/org.radarbase/${myproject.name}/") {
+                name = "bintray"
+                credentials {
+                    username = if (project.hasProperty("bintrayUser")) project.property("bintrayUser").toString() else System.getenv("BINTRAY_USER")
+                    password = if (project.hasProperty("bintrayApiKey")) project.property("bintrayApiKey").toString() else System.getenv("BINTRAY_API_KEY")
+                }
             }
         }
     }
@@ -183,8 +170,8 @@ subprojects {
         tasks.withType<Jar> {
             manifest {
                 attributes(
-                        "Implementation-Title" to project.name,
-                        "Implementation-Version" to project.version
+                        "Implementation-Title" to myproject.name,
+                        "Implementation-Version" to myproject.version
                 )
             }
         }
@@ -194,9 +181,6 @@ subprojects {
         }
 
         val assemble by tasks
-        val bintrayUpload by tasks
-        bintrayUpload.dependsOn(assemble)
-
         assemble.dependsOn(sourcesJar)
         assemble.dependsOn(dokkaJar)
     }

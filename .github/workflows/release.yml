@@ -40,14 +40,10 @@ jobs:
               with:
                   files: 'build/libs/*;build/distributions/*'
                   repo-token: ${{ secrets.GITHUB_TOKEN }}
-            - name: Upload to Bintray
+            - name: Publish to Maven repositories
               env:
                 BINTRAY_USER: ${{ secrets.BINTRAY_USER }}
                 BINTRAY_API_KEY: ${{ secrets.BINTRAY_API_KEY }}
-              run: ./gradlew bintrayUpload
-            - name: Publish to nexus
-              env:
                 NEXUS_USER: ${{ secrets.NEXUS_USER }}
                 NEXUS_PASSWORD: ${{ secrets.NEXUS_PASSWORD }}
               run: ./gradlew publish
-
