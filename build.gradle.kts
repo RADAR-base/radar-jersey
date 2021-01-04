@@ -125,20 +125,37 @@ subprojects {
             }
         }
         repositories {
-            val nexusRepoBase = "https://repo.thehyve.nl/content/repositories"
-            val url = if (myproject.version.toString().endsWith("SNAPSHOT")) "$nexusRepoBase/snapshots" else "$nexusRepoBase/releases"
-            maven(url = url) {
-                name = "thehyve"
-                credentials {
-                    username = if (myproject.hasProperty("nexusUser")) myproject.property("nexusUser").toString() else System.getenv("NEXUS_USER")
-                    password = if (myproject.hasProperty("nexusPassword")) myproject.property("nexusPassword").toString() else System.getenv("NEXUS_PASSWORD")
+            fun Project.propertyOrEnv(propertyName: String, envName: String): String? {
+                return if (hasProperty(propertyName)) {
+                    property(propertyName)?.toString()
+                } else {
+                    System.getenv(envName)
                 }
             }
-            maven(url = "https://api.bintray.com/maven/radar-base/org.radarbase/${myproject.name}/") {
-                name = "bintray"
-                credentials {
-                    username = if (project.hasProperty("bintrayUser")) project.property("bintrayUser").toString() else System.getenv("BINTRAY_USER")
-                    password = if (project.hasProperty("bintrayApiKey")) project.property("bintrayApiKey").toString() else System.getenv("BINTRAY_API_KEY")
+
+            val nexusRepoBase = "https://repo.thehyve.nl/content/repositories"
+            if (version.toString().endsWith("SNAPSHOT")) {
+                maven(url = "$nexusRepoBase/snapshots") {
+                    name = "thehyveSnapshots"
+                    credentials {
+                        username = propertyOrEnv("nexusUser", "NEXUS_USER")
+                        password = propertyOrEnv("nexusPassword", "NEXUS_PASSWORD")
+                    }
+                }
+            } else {
+                maven(url = "$nexusRepoBase/releases") {
+                    name = "thehyve"
+                    credentials {
+                        username = propertyOrEnv("nexusUser", "NEXUS_USER")
+                        password = propertyOrEnv("nexusPassword", "NEXUS_PASSWORD")
+                    }
+                }
+                maven(url = "https://api.bintray.com/maven/radar-base/org.radarbase/${myproject.name}/") {
+                    name = "bintray"
+                    credentials {
+                        username = propertyOrEnv("bintrayUser", "BINTRAY_USER")
+                        password = propertyOrEnv("bintrayApiKey", "BINTRAY_API_KEY")
+                    }
                 }
             }
         }
