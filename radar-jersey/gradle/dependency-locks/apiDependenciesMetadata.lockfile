@@ -19,9 +19,9 @@ org.glassfish.jersey.core:jersey-common:2.33
 org.glassfish.jersey.core:jersey-server:2.33
 org.glassfish.jersey.inject:jersey-hk2:2.33
 org.javassist:javassist:3.25.0-GA
-org.jetbrains.kotlin:kotlin-stdlib-common:1.4.10
-org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.4.10
-org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.4.10
-org.jetbrains.kotlin:kotlin-stdlib:1.4.10
+org.jetbrains.kotlin:kotlin-stdlib-common:1.4.21
+org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.4.21
+org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.4.21
+org.jetbrains.kotlin:kotlin-stdlib:1.4.21
 org.jetbrains:annotations:13.0
 org.radarcns:radar-auth:0.6.1

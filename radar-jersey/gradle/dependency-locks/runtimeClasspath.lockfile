@@ -53,11 +53,11 @@ org.glassfish.jersey.ext:jersey-entity-filtering:2.33
 org.glassfish.jersey.inject:jersey-hk2:2.33
 org.glassfish.jersey.media:jersey-media-json-jackson:2.33
 org.javassist:javassist:3.25.0-GA
-org.jetbrains.kotlin:kotlin-reflect:1.4.10
-org.jetbrains.kotlin:kotlin-stdlib-common:1.4.10
-org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.4.10
-org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.4.10
-org.jetbrains.kotlin:kotlin-stdlib:1.4.10
+org.jetbrains.kotlin:kotlin-reflect:1.4.21
+org.jetbrains.kotlin:kotlin-stdlib-common:1.4.21
+org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.4.21
+org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.4.21
+org.jetbrains.kotlin:kotlin-stdlib:1.4.21
 org.jetbrains:annotations:13.0
 org.radarcns:radar-auth:0.6.1
 org.slf4j:slf4j-api:1.7.30
