@@ -28,6 +28,7 @@ subprojects {
     repositories {
         jcenter()
         maven(url = "https://dl.bintray.com/radar-cns/org.radarcns")
+        maven(url = "https://dl.bintray.com/radar-base/org.radarbase")
         maven(url = "https://repo.thehyve.nl/content/repositories/snapshots")
     }
 
@@ -204,5 +205,5 @@ subprojects {
 }
 
 tasks.wrapper {
-    gradleVersion = "6.7"
+    gradleVersion = "6.7.1"
 }

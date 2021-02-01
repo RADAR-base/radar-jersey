@@ -3,7 +3,7 @@
 # This file is expected to be part of source control.
 ch.qos.logback:logback-classic:1.2.3
 ch.qos.logback:logback-core:1.2.3
-com.auth0:java-jwt:3.11.0
+com.auth0:java-jwt:3.12.0
 com.fasterxml.jackson.core:jackson-annotations:2.11.4
 com.fasterxml.jackson.core:jackson-core:2.11.4
 com.fasterxml.jackson.core:jackson-databind:2.11.4
@@ -15,7 +15,7 @@ com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:2.11.1
 com.fasterxml.jackson.module:jackson-module-jaxb-annotations:2.11.3
 com.fasterxml.jackson.module:jackson-module-kotlin:2.11.4
 com.github.spullara.mustache.java:compiler:0.9.6
-com.squareup.okhttp3:okhttp:4.9.0
+com.squareup.okhttp3:okhttp:4.9.1
 com.squareup.okio:okio:2.8.0
 com.sun.activation:jakarta.activation:1.2.2
 com.sun.istack:istack-commons-runtime:3.0.11
@@ -76,6 +76,8 @@ org.junit.platform:junit-platform-commons:1.7.0
 org.junit.platform:junit-platform-engine:1.7.0
 org.junit:junit-bom:5.7.0
 org.opentest4j:opentest4j:1.2.0
-org.radarcns:radar-auth:0.6.1
+org.radarbase:managementportal-client:0.6.3
+org.radarcns:oauth-client-util:0.6.3
+org.radarcns:radar-auth:0.6.3
 org.slf4j:slf4j-api:1.7.30
 org.yaml:snakeyaml:1.26

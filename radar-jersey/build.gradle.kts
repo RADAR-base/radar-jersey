@@ -11,6 +11,7 @@ dependencies {
 
     val managementPortalVersion: String by project
     api("org.radarcns:radar-auth:$managementPortalVersion")
+    api("org.radarbase:managementportal-client:$managementPortalVersion")
 
     val jakartaWsRsVersion: String by project
     api("jakarta.ws.rs:jakarta.ws.rs-api:$jakartaWsRsVersion")
