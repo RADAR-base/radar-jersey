@@ -14,11 +14,11 @@ import org.radarbase.jersey.auth.NeedsPermission
 import org.radarbase.jersey.exception.HttpForbiddenException
 import org.radarbase.jersey.service.ProjectService
 import org.radarcns.auth.authorization.Permission
-import javax.ws.rs.container.ContainerRequestContext
-import javax.ws.rs.container.ContainerRequestFilter
-import javax.ws.rs.container.ResourceInfo
-import javax.ws.rs.core.Context
-import javax.ws.rs.core.UriInfo
+import jakarta.ws.rs.container.ContainerRequestContext
+import jakarta.ws.rs.container.ContainerRequestFilter
+import jakarta.ws.rs.container.ResourceInfo
+import jakarta.ws.rs.core.Context
+import jakarta.ws.rs.core.UriInfo
 
 /**
  * Check that the token has given permissions.

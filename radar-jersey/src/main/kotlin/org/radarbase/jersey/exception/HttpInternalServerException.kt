@@ -9,7 +9,7 @@
 
 package org.radarbase.jersey.exception
 
-import javax.ws.rs.core.Response
+import jakarta.ws.rs.core.Response
 
 class HttpInternalServerException(code: String, message: String) :
         HttpApplicationException(Response.Status.INTERNAL_SERVER_ERROR, code, message)

@@ -18,8 +18,8 @@ package org.radarbase.jersey.service.managementportal
 
 import org.radarbase.jersey.exception.HttpNotFoundException
 import org.radarbase.jersey.service.ProjectService
-import javax.inject.Provider
-import javax.ws.rs.core.Context
+import jakarta.inject.Provider
+import jakarta.ws.rs.core.Context
 
 class ProjectServiceWrapper(
     @Context private val radarProjectService: Provider<RadarProjectService>

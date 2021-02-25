@@ -9,7 +9,7 @@
 
 package org.radarbase.jersey.exception
 
-import javax.ws.rs.core.Response
+import jakarta.ws.rs.core.Response
 
 class HttpConflictException(code: String, messageText: String) :
         HttpApplicationException(Response.Status.CONFLICT, code, messageText)

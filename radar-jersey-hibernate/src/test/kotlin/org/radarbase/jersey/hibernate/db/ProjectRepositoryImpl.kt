@@ -1,9 +1,9 @@
 package org.radarbase.jersey.hibernate.db
 
 import org.radarbase.jersey.hibernate.HibernateRepository
-import javax.inject.Provider
+import jakarta.inject.Provider
 import javax.persistence.EntityManager
-import javax.ws.rs.core.Context
+import jakarta.ws.rs.core.Context
 
 class ProjectRepositoryImpl(
         @Context em: Provider<EntityManager>

@@ -3,7 +3,7 @@ package org.radarbase.jersey.config
 import org.glassfish.jersey.internal.inject.AbstractBinder
 import org.glassfish.jersey.internal.inject.PerThread
 import org.radarbase.jersey.exception.mapper.*
-import javax.inject.Singleton
+import jakarta.inject.Singleton
 
 /** Add HttpApplicationException handling. This includes a HTML templating solution. */
 class HttpExceptionResourceEnhancer: JerseyResourceEnhancer {

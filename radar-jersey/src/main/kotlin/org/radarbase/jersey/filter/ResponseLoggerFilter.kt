@@ -10,11 +10,11 @@
 package org.radarbase.jersey.filter
 
 import org.slf4j.LoggerFactory
-import javax.inject.Singleton
-import javax.ws.rs.container.ContainerRequestContext
-import javax.ws.rs.container.ContainerResponseContext
-import javax.ws.rs.container.ContainerResponseFilter
-import javax.ws.rs.ext.Provider
+import jakarta.inject.Singleton
+import jakarta.ws.rs.container.ContainerRequestContext
+import jakarta.ws.rs.container.ContainerResponseContext
+import jakarta.ws.rs.container.ContainerResponseFilter
+import jakarta.ws.rs.ext.Provider
 
 @Provider
 @Singleton

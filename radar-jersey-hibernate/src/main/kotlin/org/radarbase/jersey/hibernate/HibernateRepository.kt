@@ -3,7 +3,7 @@ package org.radarbase.jersey.hibernate
 import org.radarbase.jersey.exception.HttpInternalServerException
 import org.radarbase.jersey.hibernate.config.CloseableTransaction
 import org.slf4j.LoggerFactory
-import javax.inject.Provider
+import jakarta.inject.Provider
 import javax.persistence.EntityManager
 import javax.persistence.EntityTransaction
 

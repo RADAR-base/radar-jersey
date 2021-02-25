@@ -15,12 +15,12 @@ import org.radarbase.jersey.hibernate.config.DatabaseConfig
 import org.slf4j.LoggerFactory
 import java.sql.Connection
 import javax.persistence.EntityManagerFactory
-import javax.ws.rs.core.Context
-import javax.ws.rs.ext.Provider
+import jakarta.ws.rs.core.Context
+import jakarta.ws.rs.ext.Provider
 
 @Provider
 class DatabaseInitialization(
-        @Context private val entityManagerFactory: javax.inject.Provider<EntityManagerFactory>,
+        @Context private val entityManagerFactory: jakarta.inject.Provider<EntityManagerFactory>,
         @Context private val dbConfig: DatabaseConfig,
 ) : ApplicationEventListener {
     override fun onEvent(event: ApplicationEvent) {

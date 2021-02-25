@@ -8,7 +8,7 @@ import org.radarbase.jersey.hibernate.DatabaseInitialization
 import org.radarbase.jersey.hibernate.RadarEntityManagerFactory
 import org.radarbase.jersey.hibernate.RadarEntityManagerFactoryFactory
 import org.radarbase.jersey.service.HealthService
-import javax.inject.Singleton
+import jakarta.inject.Singleton
 import javax.persistence.EntityManager
 import javax.persistence.EntityManagerFactory
 

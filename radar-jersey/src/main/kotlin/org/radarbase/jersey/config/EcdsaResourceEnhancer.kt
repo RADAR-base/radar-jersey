@@ -12,7 +12,7 @@ package org.radarbase.jersey.config
 import org.glassfish.jersey.internal.inject.AbstractBinder
 import org.radarbase.jersey.auth.AuthValidator
 import org.radarbase.jersey.auth.jwt.EcdsaJwtTokenValidator
-import javax.inject.Singleton
+import jakarta.inject.Singleton
 
 /**
  * Registration for authorization against a generic OAuth 2.0 provider.

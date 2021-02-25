@@ -1,56 +1,56 @@
-import org.gradle.api.internal.artifacts.ivyservice.ivyresolve.strategy.VersionSelectorScheme
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
-import org.gradle.kotlin.dsl.support.serviceOf
 import org.jetbrains.dokka.gradle.DokkaTask
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-import java.util.Date
+import com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask
 
 plugins {
     kotlin("jvm") apply false
-    id("com.jfrog.bintray")
-    id("maven-publish")
+    `maven-publish`
+    signing
     id("org.jetbrains.dokka") apply false
+    id("com.github.ben-manes.versions") version "0.36.0" apply false
 }
 
 subprojects {
+    val myproject = this
     group = "org.radarbase"
-    version = "0.4.3"
+    version = "0.5.0"
 
     val githubRepoName = "RADAR-base/radar-jersey"
     val githubUrl = "https://github.com/$githubRepoName.git"
     val githubIssueUrl = "https://github.com/$githubRepoName/issues"
 
-    repositories {
-        jcenter()
-        maven(url = "https://dl.bintray.com/radar-cns/org.radarcns")
-        maven(url = "https://repo.thehyve.nl/content/repositories/snapshots")
+    extra.apply {
+        set("githubRepoName", githubRepoName)
+        set("githubUrl", githubUrl)
+        set("githubIssueUrl", githubIssueUrl)
     }
 
-    dependencyLocking {
-        lockAllConfigurations()
+    apply(plugin = "com.github.ben-manes.versions")
+
+    fun isNonStable(version: String): Boolean {
+        val stableKeyword = listOf("RELEASE", "FINAL", "GA").any { version.toUpperCase().contains(it) }
+        val regex = "^[0-9,.v-]+(-r)?$".toRegex()
+        val isStable = stableKeyword || regex.matches(version)
+        return isStable.not()
     }
 
-    configurations {
-        // Avoid non-release versions from wildcards
-        all {
-            val versionSelectorScheme = serviceOf<VersionSelectorScheme>()
-            resolutionStrategy.componentSelection.all {
-                if (candidate.version.contains("-SNAPSHOT")
-                        || candidate.version.contains("-rc", ignoreCase = true)
-                        || candidate.version.contains(".Draft", ignoreCase = true)
-                        || candidate.version.contains("-alpha", ignoreCase = true)
-                        || candidate.version.contains("-beta", ignoreCase = true)) {
-                    val dependency = allDependencies.find { it.group == candidate.group && it.name == candidate.module }
-                    if (dependency != null && !versionSelectorScheme.parseSelector(dependency.version).matchesUniqueVersion()) {
-                        reject("only releases are allowed for $dependency")
-                    }
-                }
-            }
+    tasks.named<DependencyUpdatesTask>("dependencyUpdates").configure {
+        rejectVersionIf {
+            isNonStable(candidate.version)
         }
     }
 
+    repositories {
+        mavenCentral()
+        jcenter()
+        maven(url = "https://dl.bintray.com/radar-cns/org.radarcns")
+        maven(url = "https://dl.bintray.com/radar-base/org.radarbase")
+        maven(url = "https://repo.thehyve.nl/content/repositories/snapshots")
+    }
+
     val sourcesJar by tasks.registering(Jar::class) {
-        from(project.the<SourceSetContainer>()["main"].allSource)
+        from(myproject.the<SourceSetContainer>()["main"].allSource)
         archiveClassifier.set("sources")
         val classes by tasks
         dependsOn(classes)
@@ -80,8 +80,8 @@ subprojects {
                 artifact(dokkaJar)
 
                 pom {
-                    name.set(project.name)
-                    description.set(project.description)
+                    name.set(myproject.name)
+                    description.set(myproject.description)
                     url.set(githubUrl)
                     licenses {
                         license {
@@ -120,42 +120,28 @@ subprojects {
             }
         }
         repositories {
-            val nexusRepoBase = "https://repo.thehyve.nl/content/repositories"
-            val url = if (project.version.toString().endsWith("SNAPSHOT")) "$nexusRepoBase/snapshots" else "$nexusRepoBase/releases"
-            maven(url = url) {
-                credentials {
-                    username = if (project.hasProperty("nexusUser")) project.property("nexusUser").toString() else System.getenv("NEXUS_USER")
-                    password = if (project.hasProperty("nexusPassword")) project.property("nexusPassword").toString() else System.getenv("NEXUS_PASSWORD")
+            fun Project.propertyOrEnv(propertyName: String, envName: String): String? {
+                return if (hasProperty(propertyName)) {
+                    property(propertyName)?.toString()
+                } else {
+                    System.getenv(envName)
                 }
+            }
+
+            maven {
+                name = "OSSRH"
+                credentials {
+                    username = propertyOrEnv("ossrh.user", "OSSRH_USER")
+                    password = propertyOrEnv("ossrh.password", "OSSRH_PASSWORD")
+                }
+
+                val releasesRepoUrl = uri("https://oss.sonatype.org/service/local/staging/deploy/maven2/")
+                val snapshotsRepoUrl = uri("https://oss.sonatype.org/content/repositories/snapshots/")
+                url = if (version.toString().endsWith("SNAPSHOT")) snapshotsRepoUrl else releasesRepoUrl
             }
         }
     }
 
-    apply(plugin = "com.jfrog.bintray")
-    bintray {
-        user = if (project.hasProperty("bintrayUser")) project.property("bintrayUser").toString() else System.getenv("BINTRAY_USER")
-        key = if (project.hasProperty("bintrayApiKey")) project.property("bintrayApiKey").toString() else System.getenv("BINTRAY_API_KEY")
-        override = false
-        setPublications("mavenJar")
-        pkg.apply {
-            repo = project.group.toString()
-            name = project.name
-            userOrg = "radar-base"
-            desc = project.description
-            setLicenses("Apache-2.0")
-            websiteUrl = "http://radar-base.org"
-            issueTrackerUrl = githubIssueUrl
-            vcsUrl = githubUrl
-            githubRepo = githubRepoName
-            githubReleaseNotesFile = "README.md"
-            version.apply {
-                name = project.version.toString()
-                desc = project.description
-                vcsTag = System.getenv("TRAVIS_TAG")
-                released = Date().toString()
-            }
-        }
-    }
 
     afterEvaluate {
         tasks.withType<KotlinCompile> {
@@ -183,8 +169,8 @@ subprojects {
         tasks.withType<Jar> {
             manifest {
                 attributes(
-                        "Implementation-Title" to project.name,
-                        "Implementation-Version" to project.version
+                    "Implementation-Title" to myproject.name,
+                    "Implementation-Version" to myproject.version
                 )
             }
         }
@@ -194,14 +180,24 @@ subprojects {
         }
 
         val assemble by tasks
-        val bintrayUpload by tasks
-        bintrayUpload.dependsOn(assemble)
-
         assemble.dependsOn(sourcesJar)
         assemble.dependsOn(dokkaJar)
+
+        apply(plugin = "signing")
+
+        signing {
+            useGpgCmd()
+            isRequired = true
+            sign(tasks["sourcesJar"], tasks["dokkaJar"])
+            sign(publishing.publications["mavenJar"])
+        }
+
+        tasks.withType<Sign>().configureEach {
+            onlyIf { gradle.taskGraph.hasTask("${project.path}:publish") }
+        }
     }
 }
 
 tasks.wrapper {
-    gradleVersion = "6.7"
+    gradleVersion = "6.8.3"
 }

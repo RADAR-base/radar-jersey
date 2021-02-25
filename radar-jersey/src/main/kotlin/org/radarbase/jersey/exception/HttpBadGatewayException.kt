@@ -9,7 +9,7 @@
 
 package org.radarbase.jersey.exception
 
-import javax.ws.rs.core.Response.Status
+import jakarta.ws.rs.core.Response.Status
 
 class HttpBadGatewayException(message: String)
     : HttpApplicationException(Status.BAD_GATEWAY, "bad_gateway", message)

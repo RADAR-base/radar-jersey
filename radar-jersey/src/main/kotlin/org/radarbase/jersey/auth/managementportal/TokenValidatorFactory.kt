@@ -14,7 +14,7 @@ import org.radarcns.auth.authentication.TokenValidator
 import org.radarcns.auth.config.TokenVerifierPublicKeyConfig
 import java.net.URI
 import java.util.function.Supplier
-import javax.ws.rs.core.Context
+import jakarta.ws.rs.core.Context
 
 class TokenValidatorFactory(
         @Context private val config: AuthConfig

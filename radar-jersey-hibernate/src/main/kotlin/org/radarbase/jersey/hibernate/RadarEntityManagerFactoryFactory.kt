@@ -8,7 +8,7 @@ import org.slf4j.LoggerFactory
 import java.util.*
 import javax.persistence.EntityManager
 import javax.persistence.EntityManagerFactory
-import javax.ws.rs.core.Context
+import jakarta.ws.rs.core.Context
 
 /**
  * Creates EntityManagerFactory using Hibernate. When an [EntityManagerFactory] is created,

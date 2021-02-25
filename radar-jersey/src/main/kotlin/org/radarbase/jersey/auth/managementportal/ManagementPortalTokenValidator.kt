@@ -15,8 +15,8 @@ import org.radarbase.jersey.auth.AuthValidator
 import org.radarcns.auth.authentication.TokenValidator
 import org.radarcns.auth.exception.TokenValidationException
 import org.slf4j.LoggerFactory
-import javax.ws.rs.container.ContainerRequestContext
-import javax.ws.rs.core.Context
+import jakarta.ws.rs.container.ContainerRequestContext
+import jakarta.ws.rs.core.Context
 
 /** Creates a TokenValidator based on the current management portal configuration. */
 class ManagementPortalTokenValidator(

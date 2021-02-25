@@ -15,12 +15,13 @@ import org.radarbase.jersey.auth.AuthValidator
 import org.radarbase.jersey.auth.managementportal.ManagementPortalTokenValidator
 import org.radarbase.jersey.auth.managementportal.TokenValidatorFactory
 import org.radarbase.jersey.service.ProjectService
-import org.radarbase.jersey.service.managementportal.MPClient
+import org.radarbase.jersey.service.managementportal.MPClientFactory
 import org.radarbase.jersey.service.managementportal.MPProjectService
 import org.radarbase.jersey.service.managementportal.ProjectServiceWrapper
 import org.radarbase.jersey.service.managementportal.RadarProjectService
+import org.radarbase.management.client.MPClient
 import org.radarcns.auth.authentication.TokenValidator
-import javax.inject.Singleton
+import jakarta.inject.Singleton
 
 /**
  * Registration for authorization against a ManagementPortal. It requires managementPortalUrl and
@@ -30,25 +31,25 @@ class ManagementPortalResourceEnhancer(private val config: AuthConfig) : JerseyR
     override fun AbstractBinder.enhance() {
         val config = config.withEnv()
         bindFactory(TokenValidatorFactory::class.java)
-                .to(TokenValidator::class.java)
-                .`in`(Singleton::class.java)
+            .to(TokenValidator::class.java)
+            .`in`(Singleton::class.java)
 
         bind(ManagementPortalTokenValidator::class.java)
-                .to(AuthValidator::class.java)
-                .`in`(Singleton::class.java)
+            .to(AuthValidator::class.java)
+            .`in`(Singleton::class.java)
 
         if (config.managementPortal.clientId != null) {
-            bind(MPClient::class.java)
-                    .to(MPClient::class.java)
-                    .`in`(Singleton::class.java)
+            bind(MPClientFactory::class.java)
+                .to(MPClient::class.java)
+                .`in`(Singleton::class.java)
 
             bind(ProjectServiceWrapper::class.java)
-                    .to(ProjectService::class.java)
-                    .`in`(Singleton::class.java)
+                .to(ProjectService::class.java)
+                .`in`(Singleton::class.java)
 
             bind(MPProjectService::class.java)
-                    .to(RadarProjectService::class.java)
-                    .`in`(Singleton::class.java)
+                .to(RadarProjectService::class.java)
+                .`in`(Singleton::class.java)
         }
     }
 }

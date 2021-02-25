@@ -13,13 +13,13 @@ import org.radarbase.jersey.auth.AuthValidator
 import org.radarbase.jersey.auth.Authenticated
 import org.radarbase.jersey.exception.HttpUnauthorizedException
 import org.radarcns.auth.exception.TokenValidationException
-import javax.annotation.Priority
-import javax.inject.Singleton
-import javax.ws.rs.Priorities
-import javax.ws.rs.container.ContainerRequestContext
-import javax.ws.rs.container.ContainerRequestFilter
-import javax.ws.rs.core.Context
-import javax.ws.rs.ext.Provider
+import jakarta.annotation.Priority
+import jakarta.inject.Singleton
+import jakarta.ws.rs.Priorities
+import jakarta.ws.rs.container.ContainerRequestContext
+import jakarta.ws.rs.container.ContainerRequestFilter
+import jakarta.ws.rs.core.Context
+import jakarta.ws.rs.ext.Provider
 
 /**
  * Authenticates user by a JWT in the bearer signed by the Management Portal.

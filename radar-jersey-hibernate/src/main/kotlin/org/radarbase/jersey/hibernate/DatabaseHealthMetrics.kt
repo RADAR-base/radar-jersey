@@ -7,10 +7,10 @@ import org.radarbase.jersey.service.HealthService.Metric
 import org.radarbase.jersey.util.CacheConfig
 import org.radarbase.jersey.util.CachedValue
 import java.time.Duration
-import javax.inject.Provider
+import jakarta.inject.Provider
 import javax.persistence.Cache
 import javax.persistence.EntityManager
-import javax.ws.rs.core.Context
+import jakarta.ws.rs.core.Context
 
 class DatabaseHealthMetrics(
         @Context private val entityManager: Provider<EntityManager>,
