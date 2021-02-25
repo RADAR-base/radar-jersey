@@ -3,12 +3,14 @@ import org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
 import org.gradle.kotlin.dsl.support.serviceOf
 import org.jetbrains.dokka.gradle.DokkaTask
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask
 
 plugins {
     kotlin("jvm") apply false
     `maven-publish`
     signing
     id("org.jetbrains.dokka") apply false
+    id("com.github.ben-manes.versions") version "0.36.0" apply false
 }
 
 subprojects {
@@ -26,7 +28,23 @@ subprojects {
         set("githubIssueUrl", githubIssueUrl)
     }
 
+    apply(plugin = "com.github.ben-manes.versions")
+
+    fun isNonStable(version: String): Boolean {
+        val stableKeyword = listOf("RELEASE", "FINAL", "GA").any { version.toUpperCase().contains(it) }
+        val regex = "^[0-9,.v-]+(-r)?$".toRegex()
+        val isStable = stableKeyword || regex.matches(version)
+        return isStable.not()
+    }
+
+    tasks.named<DependencyUpdatesTask>("dependencyUpdates").configure {
+        rejectVersionIf {
+            isNonStable(candidate.version)
+        }
+    }
+
     repositories {
+        mavenCentral()
         jcenter()
         maven(url = "https://dl.bintray.com/radar-cns/org.radarcns")
         maven(url = "https://dl.bintray.com/radar-base/org.radarbase")
