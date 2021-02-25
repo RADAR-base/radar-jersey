@@ -12,6 +12,11 @@ plugins {
 }
 
 subprojects {
+    apply(plugin = "maven-publish")
+    apply(plugin = "signing")
+    apply(plugin = "com.github.ben-manes.versions")
+    apply(plugin = "org.jetbrains.dokka")
+
     val myproject = this
     group = "org.radarbase"
     version = "0.5.0"
@@ -25,8 +30,6 @@ subprojects {
         set("githubUrl", githubUrl)
         set("githubIssueUrl", githubIssueUrl)
     }
-
-    apply(plugin = "com.github.ben-manes.versions")
 
     fun isNonStable(version: String): Boolean {
         val stableKeyword = listOf("RELEASE", "FINAL", "GA").any { version.toUpperCase().contains(it) }
@@ -56,7 +59,6 @@ subprojects {
         dependsOn(classes)
     }
 
-    apply(plugin = "org.jetbrains.dokka")
     dependencies {
         val dokkaVersion: String by project
         configurations["dokkaHtmlPlugin"]("org.jetbrains.dokka:kotlin-as-java-plugin:$dokkaVersion")
@@ -68,80 +70,6 @@ subprojects {
         val dokkaJavadoc by tasks
         dependsOn(dokkaJavadoc)
     }
-
-    apply(plugin = "maven-publish")
-    publishing {
-        publications {
-            create<MavenPublication>("mavenJar") {
-                afterEvaluate {
-                    from(components["java"])
-                }
-                artifact(sourcesJar)
-                artifact(dokkaJar)
-
-                pom {
-                    name.set(myproject.name)
-                    description.set(myproject.description)
-                    url.set(githubUrl)
-                    licenses {
-                        license {
-                            name.set("The Apache Software License, Version 2.0")
-                            url.set("http://www.apache.org/licenses/LICENSE-2.0.txt")
-                            distribution.set("repo")
-                        }
-                    }
-                    developers {
-                        developer {
-                            id.set("blootsvoets")
-                            name.set("Joris Borgdorff")
-                            email.set("joris@thehyve.nl")
-                            organization.set("The Hyve")
-                        }
-                        developer {
-                            id.set("nivemaham")
-                            name.set("Nivethika Mahasivam")
-                            email.set("nivethika@thehyve.nl")
-                            organization.set("The Hyve")
-                        }
-                    }
-                    issueManagement {
-                        system.set("GitHub")
-                        url.set(githubIssueUrl)
-                    }
-                    organization {
-                        name.set("RADAR-base")
-                        url.set("http://radar-base.org")
-                    }
-                    scm {
-                        connection.set("scm:git:$githubUrl")
-                        url.set(githubUrl)
-                    }
-                }
-            }
-        }
-        repositories {
-            fun Project.propertyOrEnv(propertyName: String, envName: String): String? {
-                return if (hasProperty(propertyName)) {
-                    property(propertyName)?.toString()
-                } else {
-                    System.getenv(envName)
-                }
-            }
-
-            maven {
-                name = "OSSRH"
-                credentials {
-                    username = propertyOrEnv("ossrh.user", "OSSRH_USER")
-                    password = propertyOrEnv("ossrh.password", "OSSRH_PASSWORD")
-                }
-
-                val releasesRepoUrl = uri("https://oss.sonatype.org/service/local/staging/deploy/maven2/")
-                val snapshotsRepoUrl = uri("https://oss.sonatype.org/content/repositories/snapshots/")
-                url = if (version.toString().endsWith("SNAPSHOT")) snapshotsRepoUrl else releasesRepoUrl
-            }
-        }
-    }
-
 
     afterEvaluate {
         tasks.withType<KotlinCompile> {
@@ -183,7 +111,78 @@ subprojects {
         assemble.dependsOn(sourcesJar)
         assemble.dependsOn(dokkaJar)
 
-        apply(plugin = "signing")
+
+        publishing {
+            publications {
+                create<MavenPublication>("mavenJar") {
+                    afterEvaluate {
+                        from(components["java"])
+                    }
+                    artifact(sourcesJar)
+                    artifact(dokkaJar)
+
+                    pom {
+                        name.set(myproject.name)
+                        description.set(myproject.description)
+                        url.set(githubUrl)
+                        licenses {
+                            license {
+                                name.set("The Apache Software License, Version 2.0")
+                                url.set("http://www.apache.org/licenses/LICENSE-2.0.txt")
+                                distribution.set("repo")
+                            }
+                        }
+                        developers {
+                            developer {
+                                id.set("blootsvoets")
+                                name.set("Joris Borgdorff")
+                                email.set("joris@thehyve.nl")
+                                organization.set("The Hyve")
+                            }
+                            developer {
+                                id.set("nivemaham")
+                                name.set("Nivethika Mahasivam")
+                                email.set("nivethika@thehyve.nl")
+                                organization.set("The Hyve")
+                            }
+                        }
+                        issueManagement {
+                            system.set("GitHub")
+                            url.set(githubIssueUrl)
+                        }
+                        organization {
+                            name.set("RADAR-base")
+                            url.set("http://radar-base.org")
+                        }
+                        scm {
+                            connection.set("scm:git:$githubUrl")
+                            url.set(githubUrl)
+                        }
+                    }
+                }
+            }
+            repositories {
+                fun Project.propertyOrEnv(propertyName: String, envName: String): String? {
+                    return if (hasProperty(propertyName)) {
+                        property(propertyName)?.toString()
+                    } else {
+                        System.getenv(envName)
+                    }
+                }
+
+                maven {
+                    name = "OSSRH"
+                    credentials {
+                        username = propertyOrEnv("ossrh.user", "OSSRH_USER")
+                        password = propertyOrEnv("ossrh.password", "OSSRH_PASSWORD")
+                    }
+
+                    val releasesRepoUrl = uri("https://oss.sonatype.org/service/local/staging/deploy/maven2/")
+                    val snapshotsRepoUrl = uri("https://oss.sonatype.org/content/repositories/snapshots/")
+                    url = if (version.toString().endsWith("SNAPSHOT")) snapshotsRepoUrl else releasesRepoUrl
+                }
+            }
+        }
 
         signing {
             useGpgCmd()
