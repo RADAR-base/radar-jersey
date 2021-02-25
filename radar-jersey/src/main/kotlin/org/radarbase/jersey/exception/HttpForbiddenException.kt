@@ -9,7 +9,7 @@
 
 package org.radarbase.jersey.exception
 
-import javax.ws.rs.core.Response
+import jakarta.ws.rs.core.Response
 
 class HttpForbiddenException(code: String, detailedMessage: String, additionalHeaders: List<Pair<String, String>> = listOf())
     : HttpApplicationException(Response.Status.FORBIDDEN, code, detailedMessage, additionalHeaders)

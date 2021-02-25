@@ -30,8 +30,8 @@ import java.security.interfaces.ECPublicKey
 import java.security.interfaces.RSAPublicKey
 import java.security.spec.X509EncodedKeySpec
 import java.util.*
-import javax.ws.rs.container.ContainerRequestContext
-import javax.ws.rs.core.Context
+import jakarta.ws.rs.container.ContainerRequestContext
+import jakarta.ws.rs.core.Context
 
 class EcdsaJwtTokenValidator constructor(@Context private val config: AuthConfig) : AuthValidator {
     private val verifiers: List<JWTVerifier>

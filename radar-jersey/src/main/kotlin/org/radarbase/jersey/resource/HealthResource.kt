@@ -1,13 +1,13 @@
 package org.radarbase.jersey.resource
 
 import org.radarbase.jersey.service.HealthService
-import javax.annotation.Resource
-import javax.inject.Singleton
-import javax.ws.rs.GET
-import javax.ws.rs.Path
-import javax.ws.rs.Produces
-import javax.ws.rs.core.Context
-import javax.ws.rs.core.MediaType.APPLICATION_JSON
+import jakarta.annotation.Resource
+import jakarta.inject.Singleton
+import jakarta.ws.rs.GET
+import jakarta.ws.rs.Path
+import jakarta.ws.rs.Produces
+import jakarta.ws.rs.core.Context
+import jakarta.ws.rs.core.MediaType.APPLICATION_JSON
 
 @Path("/health")
 @Resource

@@ -4,10 +4,10 @@ import org.glassfish.jersey.internal.inject.DisposableSupplier
 import org.hibernate.engine.spi.SharedSessionContractImplementor
 import org.hibernate.internal.SessionImpl
 import org.slf4j.LoggerFactory
-import javax.inject.Provider
+import jakarta.inject.Provider
 import javax.persistence.EntityManager
 import javax.persistence.EntityManagerFactory
-import javax.ws.rs.core.Context
+import jakarta.ws.rs.core.Context
 
 class RadarEntityManagerFactory(
         @Context private val emf: EntityManagerFactory

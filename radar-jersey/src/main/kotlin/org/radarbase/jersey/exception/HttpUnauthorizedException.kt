@@ -9,7 +9,7 @@
 
 package org.radarbase.jersey.exception
 
-import javax.ws.rs.core.Response
+import jakarta.ws.rs.core.Response
 
 class HttpUnauthorizedException(code: String, detailedMessage: String, additionalHeaders: List<Pair<String, String>> = listOf())
     : HttpApplicationException(Response.Status.UNAUTHORIZED, code, detailedMessage, additionalHeaders)

@@ -33,13 +33,13 @@ dependencies {
     implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:$jacksonVersion")
 
     // exception template rendering
-    implementation("com.github.spullara.mustache.java:compiler:0.9.6")
+    implementation("com.github.spullara.mustache.java:compiler:0.9.7")
 
     val slf4jVersion: String by project
     implementation("org.slf4j:slf4j-api:$slf4jVersion")
 
     val swaggerVersion: String by project
-    implementation("io.swagger.core.v3:swagger-jaxrs2:$swaggerVersion")
+    implementation("io.swagger.core.v3:swagger-jaxrs2-jakarta:$swaggerVersion")
 
     api("org.glassfish.jersey.inject:jersey-hk2:$jerseyVersion")
 
@@ -49,14 +49,14 @@ dependencies {
     runtimeOnly("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jacksonVersion")
     runtimeOnly("com.fasterxml.jackson.datatype:jackson-datatype-jdk8:$jacksonVersion")
 
-    val javaxXmlBindVersion: String by project
-    val javaxJaxbCoreVersion: String by project
-    val javaxJaxbRuntimeVersion: String by project
-    val javaxActivation: String by project
-    runtimeOnly("javax.xml.bind:jaxb-api:$javaxXmlBindVersion")
-    runtimeOnly("org.glassfish.jaxb:jaxb-core:$javaxJaxbCoreVersion")
-    runtimeOnly("org.glassfish.jaxb:jaxb-runtime:$javaxJaxbRuntimeVersion")
-    runtimeOnly("javax.activation:activation:$javaxActivation")
+    val jakartaXmlBindVersion: String by project
+    val jakartaJaxbCoreVersion: String by project
+    val jakartaJaxbRuntimeVersion: String by project
+    val jakartaActivation: String by project
+    runtimeOnly("jakarta.xml.bind:jakarta.xml.bind-api:$jakartaXmlBindVersion")
+    runtimeOnly("org.glassfish.jaxb:jaxb-core:$jakartaJaxbCoreVersion")
+    runtimeOnly("org.glassfish.jaxb:jaxb-runtime:$jakartaJaxbRuntimeVersion")
+    runtimeOnly("jakarta.activation:jakarta.activation-api:$jakartaActivation")
 
     val grizzlyVersion: String by project
     testRuntimeOnly("org.glassfish.grizzly:grizzly-http-server:$grizzlyVersion")

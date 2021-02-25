@@ -29,7 +29,7 @@ import org.radarcns.auth.authorization.Permission
 import java.time.Duration
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.ConcurrentMap
-import javax.ws.rs.core.Context
+import jakarta.ws.rs.core.Context
 
 class MPProjectService(
     @Context private val config: AuthConfig,

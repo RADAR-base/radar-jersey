@@ -6,7 +6,7 @@ import org.radarbase.jersey.config.JerseyResourceEnhancer
 import org.radarbase.jersey.hibernate.db.ProjectRepository
 import org.radarbase.jersey.hibernate.db.ProjectRepositoryImpl
 import org.radarbase.jersey.service.ProjectService
-import javax.inject.Singleton
+import jakarta.inject.Singleton
 
 class MockResourceEnhancer : JerseyResourceEnhancer {
     override val classes: Array<Class<*>> = arrayOf(

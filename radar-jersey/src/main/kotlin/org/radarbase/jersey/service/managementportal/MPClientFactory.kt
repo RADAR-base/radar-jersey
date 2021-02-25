@@ -5,7 +5,7 @@ import okhttp3.OkHttpClient
 import org.radarbase.jersey.auth.AuthConfig
 import org.radarbase.management.client.MPClient
 import java.util.function.Supplier
-import javax.ws.rs.core.Context
+import jakarta.ws.rs.core.Context
 
 class MPClientFactory(
     @Context private val authConfig: AuthConfig,

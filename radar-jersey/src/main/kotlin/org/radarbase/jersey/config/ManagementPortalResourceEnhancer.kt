@@ -21,7 +21,7 @@ import org.radarbase.jersey.service.managementportal.ProjectServiceWrapper
 import org.radarbase.jersey.service.managementportal.RadarProjectService
 import org.radarbase.management.client.MPClient
 import org.radarcns.auth.authentication.TokenValidator
-import javax.inject.Singleton
+import jakarta.inject.Singleton
 
 /**
  * Registration for authorization against a ManagementPortal. It requires managementPortalUrl and

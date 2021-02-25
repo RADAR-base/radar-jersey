@@ -11,7 +11,7 @@ package org.radarbase.jersey.auth
 
 import org.radarbase.jersey.auth.filter.AuthenticationFilter
 import org.radarcns.auth.exception.TokenValidationException
-import javax.ws.rs.container.ContainerRequestContext
+import jakarta.ws.rs.container.ContainerRequestContext
 import kotlin.jvm.Throws
 
 interface AuthValidator {

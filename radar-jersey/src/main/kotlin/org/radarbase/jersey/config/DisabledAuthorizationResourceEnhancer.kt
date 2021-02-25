@@ -12,7 +12,7 @@ package org.radarbase.jersey.config
 import org.glassfish.jersey.internal.inject.AbstractBinder
 import org.radarbase.jersey.auth.AuthValidator
 import org.radarbase.jersey.auth.disabled.DisabledAuthValidator
-import javax.inject.Singleton
+import jakarta.inject.Singleton
 
 /**
  * Registration for authorization against a ManagementPortal. It requires managementPortalUrl and

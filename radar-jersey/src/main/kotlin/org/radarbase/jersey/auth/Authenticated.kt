@@ -9,7 +9,7 @@
 
 package org.radarbase.jersey.auth
 
-import javax.ws.rs.NameBinding
+import jakarta.ws.rs.NameBinding
 
 /**
  * Annotation for requests that should be authenticated.

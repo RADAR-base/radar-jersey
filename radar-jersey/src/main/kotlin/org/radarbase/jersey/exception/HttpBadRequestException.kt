@@ -9,7 +9,7 @@
 
 package org.radarbase.jersey.exception
 
-import javax.ws.rs.core.Response
+import jakarta.ws.rs.core.Response
 
 class HttpBadRequestException(code: String, message: String) :
         HttpApplicationException(Response.Status.BAD_REQUEST, code, message)

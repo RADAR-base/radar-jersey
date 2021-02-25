@@ -9,7 +9,7 @@
 
 package org.radarbase.jersey.exception
 
-import javax.ws.rs.core.Response
+import jakarta.ws.rs.core.Response
 
 open class HttpApplicationException(val status: Int, val code: String, val detailedMessage: String? = null, val additionalHeaders: List<Pair<String, String>> = listOf()) : RuntimeException("[$status] $code: ${detailedMessage ?: "no message"}") {
     constructor(status: Response.Status, code: String, detailedMessage: String? = null, additionalHeaders: List<Pair<String, String>> = listOf())

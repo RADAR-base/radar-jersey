@@ -3,8 +3,8 @@ package org.radarbase.jersey.hibernate.mock.resource
 import org.radarbase.jersey.exception.HttpNotFoundException
 import org.radarbase.jersey.hibernate.db.ProjectDao
 import org.radarbase.jersey.hibernate.db.ProjectRepository
-import javax.ws.rs.*
-import javax.ws.rs.core.Context
+import jakarta.ws.rs.*
+import jakarta.ws.rs.core.Context
 
 @Path("projects")
 @Consumes("application/json")
