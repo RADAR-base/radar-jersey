@@ -6,7 +6,8 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     kotlin("jvm") apply false
-    id("maven-publish")
+    `maven-publish`
+    signing
     id("org.jetbrains.dokka") apply false
 }
 
@@ -134,33 +135,20 @@ subprojects {
                 }
             }
 
-            val nexusRepoBase = "https://repo.thehyve.nl/content/repositories"
-            if (version.toString().endsWith("SNAPSHOT")) {
-                maven(url = "$nexusRepoBase/snapshots") {
-                    name = "thehyveSnapshots"
-                    credentials {
-                        username = propertyOrEnv("nexusUser", "NEXUS_USER")
-                        password = propertyOrEnv("nexusPassword", "NEXUS_PASSWORD")
-                    }
+            maven {
+                name = "OSSRH"
+                credentials {
+                    username = propertyOrEnv("ossrh.user", "OSSRH_USER")
+                    password = propertyOrEnv("ossrh.password", "OSSRH_PASSWORD")
                 }
-            } else {
-                maven(url = "$nexusRepoBase/releases") {
-                    name = "thehyve"
-                    credentials {
-                        username = propertyOrEnv("nexusUser", "NEXUS_USER")
-                        password = propertyOrEnv("nexusPassword", "NEXUS_PASSWORD")
-                    }
-                }
-                maven(url = "https://api.bintray.com/maven/radar-base/org.radarbase/${myproject.name}/") {
-                    name = "bintray"
-                    credentials {
-                        username = propertyOrEnv("bintrayUser", "BINTRAY_USER")
-                        password = propertyOrEnv("bintrayApiKey", "BINTRAY_API_KEY")
-                    }
-                }
+
+                val releasesRepoUrl = uri("https://oss.sonatype.org/service/local/staging/deploy/maven2/")
+                val snapshotsRepoUrl = uri("https://oss.sonatype.org/content/repositories/snapshots/")
+                url = if (version.toString().endsWith("SNAPSHOT")) snapshotsRepoUrl else releasesRepoUrl
             }
         }
     }
+
 
     afterEvaluate {
         tasks.withType<KotlinCompile> {
@@ -188,8 +176,8 @@ subprojects {
         tasks.withType<Jar> {
             manifest {
                 attributes(
-                        "Implementation-Title" to myproject.name,
-                        "Implementation-Version" to myproject.version
+                    "Implementation-Title" to myproject.name,
+                    "Implementation-Version" to myproject.version
                 )
             }
         }
@@ -201,6 +189,15 @@ subprojects {
         val assemble by tasks
         assemble.dependsOn(sourcesJar)
         assemble.dependsOn(dokkaJar)
+
+
+        apply(plugin = "signing")
+        signing {
+            useGpgCmd()
+            isRequired = true
+            sign(tasks["sourcesJar"], tasks["dokkaJar"])
+            sign(publishing.publications["mavenJar"])
+        }
     }
 }
 
