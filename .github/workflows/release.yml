@@ -48,11 +48,11 @@ jobs:
                 gpg --list-secret-keys --keyid-format LONG
 
             - name: Publish
-              run: |
-                ./gradlew \
+              run: >
+                ./gradlew
                   -Possrh.user=${{ secrets.OSSRH_USER }}
                   -Possrh.password=${{ secrets.OSSRH_PASSWORD }}
-                  -Psigning.gnupg.keyName=CBEF2CF0  \
-                  -Psigning.gnupg.executable=gpg \
+                  -Psigning.gnupg.keyName=CBEF2CF0
+                  -Psigning.gnupg.executable=gpg
                   -Psigning.gnupg.passphrase=${{ secrets.OSSRH_GPG_SECRET_PASSWORD }}
                   publish
