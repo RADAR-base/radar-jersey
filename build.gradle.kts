@@ -1,6 +1,4 @@
-import org.gradle.api.internal.artifacts.ivyservice.ivyresolve.strategy.VersionSelectorScheme
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
-import org.gradle.kotlin.dsl.support.serviceOf
 import org.jetbrains.dokka.gradle.DokkaTask
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask
@@ -16,7 +14,7 @@ plugins {
 subprojects {
     val myproject = this
     group = "org.radarbase"
-    version = "0.5.0-SNAPSHOT"
+    version = "0.5.0"
 
     val githubRepoName = "RADAR-base/radar-jersey"
     val githubUrl = "https://github.com/$githubRepoName.git"
