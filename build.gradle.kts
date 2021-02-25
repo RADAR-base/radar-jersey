@@ -186,11 +186,16 @@ subprojects {
         assemble.dependsOn(dokkaJar)
 
         apply(plugin = "signing")
+
         signing {
             useGpgCmd()
             isRequired = true
             sign(tasks["sourcesJar"], tasks["dokkaJar"])
             sign(publishing.publications["mavenJar"])
+        }
+
+        tasks.withType<Sign>().configureEach {
+            onlyIf { gradle.taskGraph.hasTask("${project.path}:publish") }
         }
     }
 }
