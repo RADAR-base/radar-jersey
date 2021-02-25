@@ -51,29 +51,6 @@ subprojects {
         maven(url = "https://repo.thehyve.nl/content/repositories/snapshots")
     }
 
-    dependencyLocking {
-        lockAllConfigurations()
-    }
-
-    configurations {
-        // Avoid non-release versions from wildcards
-        all {
-            val versionSelectorScheme = serviceOf<VersionSelectorScheme>()
-            resolutionStrategy.componentSelection.all {
-                if (candidate.version.contains("-SNAPSHOT")
-                        || candidate.version.contains("-rc", ignoreCase = true)
-                        || candidate.version.contains(".Draft", ignoreCase = true)
-                        || candidate.version.contains("-alpha", ignoreCase = true)
-                        || candidate.version.contains("-beta", ignoreCase = true)) {
-                    val dependency = allDependencies.find { it.group == candidate.group && it.name == candidate.module }
-                    if (dependency != null && !versionSelectorScheme.parseSelector(dependency.version).matchesUniqueVersion()) {
-                        reject("only releases are allowed for $dependency")
-                    }
-                }
-            }
-        }
-    }
-
     val sourcesJar by tasks.registering(Jar::class) {
         from(myproject.the<SourceSetContainer>()["main"].allSource)
         archiveClassifier.set("sources")
@@ -207,7 +184,6 @@ subprojects {
         val assemble by tasks
         assemble.dependsOn(sourcesJar)
         assemble.dependsOn(dokkaJar)
-
 
         apply(plugin = "signing")
         signing {
