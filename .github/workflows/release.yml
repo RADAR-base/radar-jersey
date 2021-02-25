@@ -34,16 +34,25 @@ jobs:
             # Compile code
             - name: Compile code
               run: ./gradlew assemble
+
             # Upload it to GitHub
             - name: Upload to GitHub
               uses: AButler/upload-release-assets@v2.0
               with:
                   files: 'radar-jersey/build/libs/*;radar-jersey-hibernate/build/libs/*'
                   repo-token: ${{ secrets.GITHUB_TOKEN }}
-            - name: Publish to Maven repositories
-              env:
-                BINTRAY_USER: ${{ secrets.BINTRAY_USER }}
-                BINTRAY_API_KEY: ${{ secrets.BINTRAY_API_KEY }}
-                NEXUS_USER: ${{ secrets.NEXUS_USER }}
-                NEXUS_PASSWORD: ${{ secrets.NEXUS_PASSWORD }}
-              run: ./gradlew publish
+
+            - name: Install gpg secret key
+              run: |
+                cat <(echo -e "${{ secrets.OSSRH_GPG_SECRET_KEY }}") | gpg --batch --import
+                gpg --list-secret-keys --keyid-format LONG
+
+            - name: Publish
+              run: |
+                ./gradlew \
+                  -Possrh.user=${{ secrets.OSSRH_USER }}
+                  -Possrh.password=${{ secrets.OSSRH_PASSWORD }}
+                  -Psigning.gnupg.keyName=CBEF2CF0  \
+                  -Psigning.gnupg.executable=gpg \
+                  -Psigning.gnupg.passphrase=${{ secrets.OSSRH_GPG_SECRET_PASSWORD }}
+                  publish

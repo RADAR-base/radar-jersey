@@ -34,8 +34,17 @@ jobs:
           # Key for restoring and saving the cache
           key: ${{ runner.os }}-gradle
 
-      - name: Publish to nexus
-        env:
-          NEXUS_USER: ${{ secrets.NEXUS_USER }}
-          NEXUS_PASSWORD: ${{ secrets.NEXUS_PASSWORD }}
-        run: ./gradlew publish
+      - name: Install gpg secret key
+        run: |
+          cat <(echo -e "${{ secrets.OSSRH_GPG_SECRET_KEY }}") | gpg --batch --import
+          gpg --list-secret-keys --keyid-format LONG
+
+      - name: Publish
+        run: |
+          ./gradlew \
+            -Possrh.user=${{ secrets.OSSRH_USER }}
+            -Possrh.password=${{ secrets.OSSRH_PASSWORD }}
+            -Psigning.gnupg.keyName=CBEF2CF0  \
+            -Psigning.gnupg.executable=gpg \
+            -Psigning.gnupg.passphrase=${{ secrets.OSSRH_GPG_SECRET_PASSWORD }}
+            publish
