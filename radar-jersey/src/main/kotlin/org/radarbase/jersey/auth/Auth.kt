@@ -143,7 +143,9 @@ interface Auth {
             get() = methodName.isAuthMethodName || declaringClass.isAuthClass
 
         private val String.isAuthMethodName: Boolean
-            get() = startsWith("logPermission") || startsWith("checkPermission")
+            get() = startsWith("logPermission")
+                || startsWith("checkPermission")
+                || startsWith("invoke")
 
         private val Class<*>.isAuthClass: Boolean
             get() = isInstance(Auth::class.java) || isAnonymousClass || isLocalClass
