@@ -17,6 +17,10 @@ jobs:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
 
+      - name: Has SNAPSHOT version
+        id: is-snapshot
+        run: grep "version =\\? \\?'.*-SNAPSHOT'" build.gradle
+
       - uses: actions/setup-java@v1
         with:
           java-version: 11
