@@ -19,7 +19,7 @@ jobs:
 
       - name: Has SNAPSHOT version
         id: is-snapshot
-        run: grep "version =\\? \\?'.*-SNAPSHOT'" build.gradle
+        run: grep 'version = ".*-SNAPSHOT"' build.gradle.kts
 
       - uses: actions/setup-java@v1
         with:
