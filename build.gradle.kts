@@ -46,10 +46,9 @@ subprojects {
 
     repositories {
         mavenCentral()
-        jcenter()
-        maven(url = "https://dl.bintray.com/radar-cns/org.radarcns")
-        maven(url = "https://dl.bintray.com/radar-base/org.radarbase")
-        maven(url = "https://repo.thehyve.nl/content/repositories/snapshots")
+        // Temporary until Dokka is fully published on maven central.
+        // https://github.com/Kotlin/kotlinx.html/issues/81
+        maven(url = "https://maven.pkg.jetbrains.space/public/p/kotlinx-html/maven")
     }
 
     dependencies {
