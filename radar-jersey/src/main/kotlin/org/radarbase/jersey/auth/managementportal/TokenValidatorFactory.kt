@@ -9,9 +9,9 @@
 
 package org.radarbase.jersey.auth.managementportal
 
+import org.radarbase.auth.authentication.TokenValidator
+import org.radarbase.auth.config.TokenVerifierPublicKeyConfig
 import org.radarbase.jersey.auth.AuthConfig
-import org.radarcns.auth.authentication.TokenValidator
-import org.radarcns.auth.config.TokenVerifierPublicKeyConfig
 import java.net.URI
 import java.util.function.Supplier
 import jakarta.ws.rs.core.Context

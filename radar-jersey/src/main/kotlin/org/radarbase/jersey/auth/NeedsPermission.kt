@@ -9,7 +9,7 @@
 
 package org.radarbase.jersey.auth
 
-import org.radarcns.auth.authorization.Permission
+import org.radarbase.auth.authorization.Permission
 
 /**
  * Indicates that a method needs an authenticated user that has a certain permission.

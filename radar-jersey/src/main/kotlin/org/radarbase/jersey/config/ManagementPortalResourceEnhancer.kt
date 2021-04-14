@@ -10,6 +10,7 @@
 package org.radarbase.jersey.config
 
 import org.glassfish.jersey.internal.inject.AbstractBinder
+import org.radarbase.auth.authentication.TokenValidator
 import org.radarbase.jersey.auth.AuthConfig
 import org.radarbase.jersey.auth.AuthValidator
 import org.radarbase.jersey.auth.managementportal.ManagementPortalTokenValidator
@@ -20,7 +21,6 @@ import org.radarbase.jersey.service.managementportal.MPProjectService
 import org.radarbase.jersey.service.managementportal.ProjectServiceWrapper
 import org.radarbase.jersey.service.managementportal.RadarProjectService
 import org.radarbase.management.client.MPClient
-import org.radarcns.auth.authentication.TokenValidator
 import jakarta.inject.Singleton
 
 /**

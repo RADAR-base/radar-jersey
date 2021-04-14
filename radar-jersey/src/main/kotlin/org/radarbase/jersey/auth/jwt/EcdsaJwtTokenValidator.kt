@@ -15,10 +15,10 @@ import com.auth0.jwt.algorithms.Algorithm
 import com.auth0.jwt.exceptions.AlgorithmMismatchException
 import com.auth0.jwt.exceptions.JWTVerificationException
 import com.auth0.jwt.exceptions.SignatureVerificationException
+import org.radarbase.auth.exception.ConfigurationException
 import org.radarbase.jersey.auth.Auth
 import org.radarbase.jersey.auth.AuthConfig
 import org.radarbase.jersey.auth.AuthValidator
-import org.radarcns.auth.exception.ConfigurationException
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.nio.file.Files

@@ -9,11 +9,11 @@
 
 package org.radarbase.jersey.auth.filter
 
+import org.radarbase.auth.authorization.Permission
 import org.radarbase.jersey.auth.Auth
 import org.radarbase.jersey.auth.NeedsPermission
 import org.radarbase.jersey.exception.HttpForbiddenException
 import org.radarbase.jersey.service.ProjectService
-import org.radarcns.auth.authorization.Permission
 import jakarta.ws.rs.container.ContainerRequestContext
 import jakarta.ws.rs.container.ContainerRequestFilter
 import jakarta.ws.rs.container.ResourceInfo

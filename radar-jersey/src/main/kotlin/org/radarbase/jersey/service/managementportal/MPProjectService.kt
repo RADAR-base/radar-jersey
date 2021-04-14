@@ -16,6 +16,8 @@
 
 package org.radarbase.jersey.service.managementportal
 
+import jakarta.ws.rs.core.Context
+import org.radarbase.auth.authorization.Permission
 import org.radarbase.jersey.auth.Auth
 import org.radarbase.jersey.auth.AuthConfig
 import org.radarbase.jersey.exception.HttpNotFoundException
@@ -24,12 +26,9 @@ import org.radarbase.jersey.util.CachedMap
 import org.radarbase.management.client.MPClient
 import org.radarbase.management.client.MPProject
 import org.radarbase.management.client.MPSubject
-import org.radarbase.management.client.MPUser
-import org.radarcns.auth.authorization.Permission
 import java.time.Duration
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.ConcurrentMap
-import jakarta.ws.rs.core.Context
 
 class MPProjectService(
     @Context private val config: AuthConfig,
