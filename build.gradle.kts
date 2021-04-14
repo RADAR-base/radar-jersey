@@ -11,6 +11,11 @@ plugins {
     id("io.github.gradle-nexus.publish-plugin") version "1.0.0"
 }
 
+allprojects {
+    group = "org.radarbase"
+    version = "0.6.0-SNAPSHOT"
+}
+
 subprojects {
     apply(plugin = "maven-publish")
     apply(plugin = "signing")
@@ -18,8 +23,6 @@ subprojects {
     apply(plugin = "org.jetbrains.dokka")
 
     val myproject = this
-    group = "org.radarbase"
-    version = "0.6.0-SNAPSHOT"
 
     val githubRepoName = "RADAR-base/radar-jersey"
     val githubUrl = "https://github.com/$githubRepoName.git"
