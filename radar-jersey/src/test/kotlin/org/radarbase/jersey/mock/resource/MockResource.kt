@@ -9,14 +9,13 @@
 
 package org.radarbase.jersey.mock.resource
 
-import io.swagger.v3.oas.annotations.OpenAPIDefinition
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
+import org.radarbase.auth.authorization.Permission
 import org.radarbase.jersey.auth.Auth
 import org.radarbase.jersey.auth.Authenticated
 import org.radarbase.jersey.auth.NeedsPermission
-import org.radarcns.auth.authorization.Permission
 import jakarta.annotation.Resource
 import jakarta.ws.rs.*
 import jakarta.ws.rs.core.Context

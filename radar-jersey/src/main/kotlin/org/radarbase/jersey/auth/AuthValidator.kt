@@ -9,8 +9,8 @@
 
 package org.radarbase.jersey.auth
 
+import org.radarbase.auth.exception.TokenValidationException
 import org.radarbase.jersey.auth.filter.AuthenticationFilter
-import org.radarcns.auth.exception.TokenValidationException
 import jakarta.ws.rs.container.ContainerRequestContext
 import kotlin.jvm.Throws
 

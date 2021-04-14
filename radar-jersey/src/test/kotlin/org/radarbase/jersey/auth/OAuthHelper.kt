@@ -3,9 +3,9 @@ package org.radarbase.jersey.auth
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
 import okhttp3.Request
-import org.radarcns.auth.authentication.TokenValidator
-import org.radarcns.auth.authorization.Permission
-import org.radarcns.auth.config.TokenValidatorConfig
+import org.radarbase.auth.authentication.TokenValidator
+import org.radarbase.auth.authorization.Permission
+import org.radarbase.auth.config.TokenValidatorConfig
 import java.net.URI
 import java.security.KeyStore
 import java.security.interfaces.ECPrivateKey

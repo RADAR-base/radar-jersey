@@ -9,10 +9,10 @@
 
 package org.radarbase.jersey.auth.filter
 
+import org.radarbase.auth.exception.TokenValidationException
 import org.radarbase.jersey.auth.AuthValidator
 import org.radarbase.jersey.auth.Authenticated
 import org.radarbase.jersey.exception.HttpUnauthorizedException
-import org.radarcns.auth.exception.TokenValidationException
 import jakarta.annotation.Priority
 import jakarta.inject.Singleton
 import jakarta.ws.rs.Priorities

@@ -12,11 +12,11 @@ package org.radarbase.jersey.auth.jwt
 import com.auth0.jwt.interfaces.DecodedJWT
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.node.NullNode
+import org.radarbase.auth.authorization.Permission
+import org.radarbase.auth.authorization.Permission.Entity
+import org.radarbase.auth.token.JwtRadarToken
+import org.radarbase.auth.token.RadarToken
 import org.radarbase.jersey.auth.Auth
-import org.radarcns.auth.authorization.Permission
-import org.radarcns.auth.authorization.Permission.Entity
-import org.radarcns.auth.token.JwtRadarToken
-import org.radarcns.auth.token.RadarToken
 
 /**
  * Parsed JWT for validating authorization of data contents.

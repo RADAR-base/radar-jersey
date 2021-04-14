@@ -1,7 +1,6 @@
-import org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
-import org.jetbrains.dokka.gradle.DokkaTask
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask
+import org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     kotlin("jvm") apply false
@@ -9,6 +8,7 @@ plugins {
     signing
     id("org.jetbrains.dokka") apply false
     id("com.github.ben-manes.versions") version "0.36.0" apply false
+    id("io.github.gradle-nexus.publish-plugin") version "1.0.0"
 }
 
 subprojects {
@@ -19,7 +19,7 @@ subprojects {
 
     val myproject = this
     group = "org.radarbase"
-    version = "0.5.1-SNAPSHOT"
+    version = "0.6.0-SNAPSHOT"
 
     val githubRepoName = "RADAR-base/radar-jersey"
     val githubUrl = "https://github.com/$githubRepoName.git"
@@ -52,16 +52,16 @@ subprojects {
         maven(url = "https://repo.thehyve.nl/content/repositories/snapshots")
     }
 
+    dependencies {
+        val dokkaVersion: String by project
+        configurations["dokkaHtmlPlugin"]("org.jetbrains.dokka:kotlin-as-java-plugin:$dokkaVersion")
+    }
+
     val sourcesJar by tasks.registering(Jar::class) {
         from(myproject.the<SourceSetContainer>()["main"].allSource)
         archiveClassifier.set("sources")
         val classes by tasks
         dependsOn(classes)
-    }
-
-    dependencies {
-        val dokkaVersion: String by project
-        configurations["dokkaHtmlPlugin"]("org.jetbrains.dokka:kotlin-as-java-plugin:$dokkaVersion")
     }
 
     val dokkaJar by tasks.registering(Jar::class) {
@@ -103,14 +103,9 @@ subprojects {
             }
         }
 
-        tasks.withType<DokkaTask> {
-            logging.level = LogLevel.QUIET
-        }
-
         val assemble by tasks
         assemble.dependsOn(sourcesJar)
         assemble.dependsOn(dokkaJar)
-
 
         publishing {
             publications {
@@ -161,27 +156,6 @@ subprojects {
                     }
                 }
             }
-            repositories {
-                fun Project.propertyOrEnv(propertyName: String, envName: String): String? {
-                    return if (hasProperty(propertyName)) {
-                        property(propertyName)?.toString()
-                    } else {
-                        System.getenv(envName)
-                    }
-                }
-
-                maven {
-                    name = "OSSRH"
-                    credentials {
-                        username = propertyOrEnv("ossrh.user", "OSSRH_USER")
-                        password = propertyOrEnv("ossrh.password", "OSSRH_PASSWORD")
-                    }
-
-                    val releasesRepoUrl = uri("https://oss.sonatype.org/service/local/staging/deploy/maven2/")
-                    val snapshotsRepoUrl = uri("https://oss.sonatype.org/content/repositories/snapshots/")
-                    url = if (version.toString().endsWith("SNAPSHOT")) snapshotsRepoUrl else releasesRepoUrl
-                }
-            }
         }
 
         signing {
@@ -197,6 +171,23 @@ subprojects {
     }
 }
 
+fun Project.propertyOrEnv(propertyName: String, envName: String): String? {
+    return if (hasProperty(propertyName)) {
+        property(propertyName)?.toString()
+    } else {
+        System.getenv(envName)
+    }
+}
+
+nexusPublishing {
+    repositories {
+        sonatype {
+            username.set(propertyOrEnv("ossrh.user", "OSSRH_USER"))
+            password.set(propertyOrEnv("ossrh.password", "OSSRH_PASSWORD"))
+        }
+    }
+}
+
 tasks.wrapper {
-    gradleVersion = "6.8.3"
+    gradleVersion = "7.0"
 }

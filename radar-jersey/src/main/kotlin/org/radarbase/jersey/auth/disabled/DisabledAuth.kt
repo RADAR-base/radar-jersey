@@ -2,9 +2,9 @@ package org.radarbase.jersey.auth.disabled
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.node.NullNode
+import org.radarbase.auth.authorization.Permission
+import org.radarbase.auth.token.RadarToken
 import org.radarbase.jersey.auth.Auth
-import org.radarcns.auth.authorization.Permission
-import org.radarcns.auth.token.RadarToken
 import java.util.*
 
 /** Authorization that grants permission to all resources. */

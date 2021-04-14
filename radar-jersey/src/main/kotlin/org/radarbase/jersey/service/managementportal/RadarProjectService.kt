@@ -16,13 +16,13 @@
 
 package org.radarbase.jersey.service.managementportal
 
+import org.radarbase.auth.authorization.Permission
+import org.radarbase.auth.authorization.Permission.PROJECT_READ
 import org.radarbase.jersey.auth.Auth
 import org.radarbase.jersey.exception.HttpNotFoundException
 import org.radarbase.jersey.service.ProjectService
 import org.radarbase.management.client.MPProject
 import org.radarbase.management.client.MPSubject
-import org.radarcns.auth.authorization.Permission
-import org.radarcns.auth.authorization.Permission.PROJECT_READ
 
 
 interface RadarProjectService : ProjectService {

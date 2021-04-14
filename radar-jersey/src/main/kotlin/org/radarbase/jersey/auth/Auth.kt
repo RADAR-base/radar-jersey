@@ -10,10 +10,10 @@
 package org.radarbase.jersey.auth
 
 import com.fasterxml.jackson.databind.JsonNode
+import org.radarbase.auth.authorization.Permission
+import org.radarbase.auth.token.RadarToken
 import org.radarbase.jersey.exception.HttpBadRequestException
 import org.radarbase.jersey.exception.HttpForbiddenException
-import org.radarcns.auth.authorization.Permission
-import org.radarcns.auth.token.RadarToken
 import org.slf4j.LoggerFactory
 
 interface Auth {
@@ -148,6 +148,9 @@ interface Auth {
                 || startsWith("invoke")
 
         private val Class<*>.isAuthClass: Boolean
-            get() = isInstance(Auth::class.java) || isAnonymousClass || isLocalClass
+            get() = isInstance(Auth::class.java)
+                    || isAnonymousClass
+                    || isLocalClass
+                    || simpleName == "ReflectionHelper"
     }
 }

@@ -10,8 +10,11 @@ dependencies {
     api(kotlin("stdlib-jdk8", version=kotlinVersion))
 
     val managementPortalVersion: String by project
-    api("org.radarcns:radar-auth:$managementPortalVersion")
+    api("org.radarbase:radar-auth:$managementPortalVersion")
     api("org.radarbase:managementportal-client:$managementPortalVersion")
+
+    val javaJwtVersion: String by project
+    implementation("com.auth0:java-jwt:$javaJwtVersion")
 
     val jakartaWsRsVersion: String by project
     api("jakarta.ws.rs:jakarta.ws.rs-api:$jakartaWsRsVersion")
