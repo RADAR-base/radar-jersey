@@ -146,6 +146,7 @@ interface Auth {
             get() = startsWith("logPermission")
                 || startsWith("checkPermission")
                 || startsWith("invoke")
+                || startsWith("internal")
 
         private val Class<*>.isAuthClass: Boolean
             get() = isInstance(Auth::class.java)
