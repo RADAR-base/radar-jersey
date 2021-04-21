@@ -31,6 +31,8 @@
         <appender-ref ref="AUTH" />
     </logger>
 
+    <logger name="org.glassfish.jersey.internal.inject.Providers" level="SEVERE"/>
+
     <root level="INFO">
         <appender-ref ref="STDOUT" />
     </root>
