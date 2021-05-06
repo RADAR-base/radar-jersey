@@ -21,7 +21,7 @@ import jakarta.inject.Singleton
 class DisabledAuthorizationResourceEnhancer : JerseyResourceEnhancer {
     override fun AbstractBinder.enhance() {
         bind(DisabledAuthValidator::class.java)
-                .to(AuthValidator::class.java)
-                .`in`(Singleton::class.java)
+            .to(AuthValidator::class.java)
+            .`in`(Singleton::class.java)
     }
 }

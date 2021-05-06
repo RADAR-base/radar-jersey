@@ -29,7 +29,7 @@ import jakarta.ws.rs.ext.Provider
 @Priority(Priorities.AUTHENTICATION)
 @Singleton
 class AuthenticationFilter(
-        @Context private val validator: AuthValidator
+    @Context private val validator: AuthValidator,
 ) : ContainerRequestFilter {
 
     override fun filter(requestContext: ContainerRequestContext) {

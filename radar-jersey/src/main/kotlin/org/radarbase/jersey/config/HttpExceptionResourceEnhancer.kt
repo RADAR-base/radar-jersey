@@ -12,18 +12,18 @@ class HttpExceptionResourceEnhancer: JerseyResourceEnhancer {
 
     override fun AbstractBinder.enhance() {
         bind(HtmlTemplateExceptionRenderer::class.java)
-                .to(ExceptionRenderer::class.java)
-                .named("text/html")
-                .`in`(PerThread::class.java)
+            .to(ExceptionRenderer::class.java)
+            .named("text/html")
+            .`in`(PerThread::class.java)
 
         bind(DefaultJsonExceptionRenderer::class.java)
-                .to(ExceptionRenderer::class.java)
-                .named("application/json")
-                .`in`(Singleton::class.java)
+            .to(ExceptionRenderer::class.java)
+            .named("application/json")
+            .`in`(Singleton::class.java)
 
         bind(DefaultTextExceptionRenderer::class.java)
-                .to(ExceptionRenderer::class.java)
-                .named("text/plain")
-                .`in`(Singleton::class.java)
+            .to(ExceptionRenderer::class.java)
+            .named("text/plain")
+            .`in`(Singleton::class.java)
     }
 }

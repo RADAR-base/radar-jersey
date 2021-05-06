@@ -118,6 +118,7 @@ object ConfigLoader {
         val health = HealthResourceEnhancer()
         val httpException = HttpExceptionResourceEnhancer()
         val generalException = GeneralExceptionResourceEnhancer()
+        val utility = UtilityResourceEnhancer()
         fun swagger(openApi: OpenAPI, resourcePackages: Set<String>? = null) = SwaggerResourceEnhancer(openApi, resourcePackages)
     }
 

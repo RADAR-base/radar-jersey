@@ -79,7 +79,6 @@ internal class HibernateTest {
                     override fun writeTo(sink: BufferedSink) {
                         sink.writeUtf8("{\"name\": \"a\"}")
                     }
-
                 })
                 .url("http://localhost:9091/projects")
                 .build()).execute().use { response ->
