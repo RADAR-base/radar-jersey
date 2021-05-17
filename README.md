@@ -7,11 +7,11 @@ Library to facilitate using with a Jersey-based REST API. This includes OAuth 2.
 Add this library to your project using the following Gradle configuration:
 ```gradle
 repositories {
-    maven { url "https://dl.bintray.com/radar-base/org.radarbase" }
+    mavenCentral()
 }
 
 dependencies {
-    api("org.radarbase:radar-jersey:0.5.0")
+    api("org.radarbase:radar-jersey:0.6.1")
 }
 ```
 
