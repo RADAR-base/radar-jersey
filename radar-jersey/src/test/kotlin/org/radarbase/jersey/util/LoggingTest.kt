@@ -13,7 +13,7 @@ internal class LoggingTest {
 
     companion object {
         init {
-            Logging.initLog4J2()
+            Logging.initLog4j2()
         }
     }
 }

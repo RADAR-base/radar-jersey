@@ -3,12 +3,12 @@ package org.radarbase.jersey.util
 import org.slf4j.LoggerFactory
 
 object Logging {
-    fun initLog4J2() {
+    fun initLog4j2() {
         try {
             val logManagerClass = Class.forName("org.apache.logging.log4j.jul.LogManager")
             System.setProperty("java.util.logging.manager", logManagerClass.name)
         } catch (ex: ClassNotFoundException) {
-            LoggerFactory.getLogger(Logging::class.java).error("Cannot initialize full Log4J 2 logging. Please include the org.apache.logging.log4j:log4j-jul package as a runtime dependency.")
+            LoggerFactory.getLogger(Logging::class.java).error("Cannot initialize full Log4j 2 logging. Please include the org.apache.logging.log4j:log4j-jul package as a runtime dependency.")
         }
     }
 

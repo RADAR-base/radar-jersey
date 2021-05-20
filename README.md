@@ -113,7 +113,7 @@ To serve custom HTML error messages for error codes 400 to 599, add a Mustache t
 
 ## Logging
 
-To enable logging with radar-jersey, please set the following configurations. The default is Log4J 2. A configuration file is included in the classpath. First include the following dependencies:
+To enable logging with radar-jersey, please set the following configurations. For new projects, the default should be Log4j 2. A configuration file is included in the classpath. First include the following dependencies:
 
 ```kotlin
 dependencies {
