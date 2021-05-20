@@ -123,17 +123,27 @@ dependencies {
     runtimeOnly("org.apache.logging.log4j:log4j-api:$log4j2Version")
     runtimeOnly("org.apache.logging.log4j:log4j-jul:$log4j2Version")
 
-    // Or use logback
-    //runtimeOnly("ch.qos.logback:logback-classic:1.2.3")
-    //runtimeOnly("org.slf4j:jul-to-slf4j:1.7.30")
 }
 ```
 
-In your code, call either
+Then before any other command is made, set:
 ```kotlin
 // Initialize logging with log4j2
-Logging.initLog4j2()
-// If logback is used, use the following instead
-//Logging.initLogback()
+System.setProperty("java.util.logging.manager", "org.apache.logging.log4j.jul.LogManager")
 ```
-Call these commands before ANY logging or logging initialization code has been called, for example in the `init` of a companion object of the main class.
+Execute this statement before ANY logging or logging initialization code has been called, for example in the `init` of a companion object of the main class. Alternatively, set it as a Java system property in the command line, i.e. `-Djava.util.logging.manager=org.apache.logging.log4j.jul.LogManager`. 
+
+If Logback is used instead, import the following dependencies to gradle:
+
+```kotlin
+dependencies {
+    runtimeOnly("ch.qos.logback:logback-classic:1.2.3")
+    implementation("org.slf4j:jul-to-slf4j:1.7.30")
+}
+```
+
+Then before any logging code has been called, set:
+```kotlin
+SLF4JBridgeHandler.removeHandlersForRootLogger()
+SLF4JBridgeHandler.install()
+```
