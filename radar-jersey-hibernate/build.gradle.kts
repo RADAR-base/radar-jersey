@@ -36,6 +36,4 @@ dependencies {
     testImplementation("org.hamcrest:hamcrest-all:1.3")
     val okhttpVersion: String by project
     testImplementation("com.squareup.okhttp3:okhttp:$okhttpVersion")
-
-    testRuntimeOnly("ch.qos.logback:logback-classic:1.2.3")
 }

@@ -11,7 +11,7 @@ class HealthResourceEnhancer: JerseyResourceEnhancer {
 
     override fun AbstractBinder.enhance() {
         bind(ImmediateHealthService::class.java)
-                .to(HealthService::class.java)
-                .`in`(Singleton::class.java)
+            .to(HealthService::class.java)
+            .`in`(Singleton::class.java)
     }
 }

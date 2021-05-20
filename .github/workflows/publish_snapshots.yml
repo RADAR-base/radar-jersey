@@ -19,21 +19,23 @@ jobs:
 
       - name: Has SNAPSHOT version
         id: is-snapshot
-        run: grep "version =\\? \\?'.*-SNAPSHOT'" build.gradle
+        run: grep 'version = ".*-SNAPSHOT"' build.gradle.kts
 
       - uses: actions/setup-java@v1
         with:
           java-version: 11
 
       - name: Cache
-        uses: actions/cache@v2.0.0
+        uses: actions/cache@v2
         with:
           # Cache gradle directories
           path: |
             ~/.gradle/caches
             ~/.gradle/wrapper
           # Key for restoring and saving the cache
-          key: ${{ runner.os }}-gradle
+          key: ${{ runner.os }}-gradle-${{ hashFiles("**/*.gradle.kts", "gradle.properties" }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
 
       - name: Install gpg secret key
         run: |

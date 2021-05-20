@@ -7,11 +7,11 @@ Library to facilitate using with a Jersey-based REST API. This includes OAuth 2.
 Add this library to your project using the following Gradle configuration:
 ```gradle
 repositories {
-    maven { url "https://dl.bintray.com/radar-base/org.radarbase" }
+    mavenCentral()
 }
 
 dependencies {
-    api("org.radarbase:radar-jersey:0.5.0")
+    api("org.radarbase:radar-jersey:0.6.1")
 }
 ```
 
@@ -110,3 +110,40 @@ fun main(args: Array<String>) {
 This package adds some error handling. Specifically, `org.radarbase.jersey.exception.HttpApplicationException` and its subclasses can be used and extended to serve detailed error messages with customized logging and HTML templating. They can be thrown from any resource.
 
 To serve custom HTML error messages for error codes 400 to 599, add a Mustache template to the classpath in directory `org/radarbase/jersey/exception/mapper/<code>.html`. You can use special cases `4xx.html` and `5xx.html` as a catch-all template. The templates can use variables `status` for the HTTP status code, `code` for short-hand code for the specific error, and an optional `detailedMessage` for a human-readable message.
+
+## Logging
+
+To enable logging with radar-jersey, please set the following configurations. For new projects, the default should be Log4j 2. A configuration file is included in the classpath. First include the following dependencies:
+
+```kotlin
+dependencies {
+    // To enable logging either use log4j
+    val log4j2Version: String by project
+    runtimeOnly("org.apache.logging.log4j:log4j-slf4j-impl:$log4j2Version")
+    runtimeOnly("org.apache.logging.log4j:log4j-api:$log4j2Version")
+    runtimeOnly("org.apache.logging.log4j:log4j-jul:$log4j2Version")
+
+}
+```
+
+Then before any other command is made, set:
+```kotlin
+// Initialize logging with log4j2
+System.setProperty("java.util.logging.manager", "org.apache.logging.log4j.jul.LogManager")
+```
+Execute this statement before ANY logging or logging initialization code has been called, for example in the `init` of a companion object of the main class. Alternatively, set it as a Java system property in the command line, i.e. `-Djava.util.logging.manager=org.apache.logging.log4j.jul.LogManager`. 
+
+If Logback is used instead, import the following dependencies to gradle:
+
+```kotlin
+dependencies {
+    runtimeOnly("ch.qos.logback:logback-classic:1.2.3")
+    implementation("org.slf4j:jul-to-slf4j:1.7.30")
+}
+```
+
+Then before any logging code has been called, set:
+```kotlin
+SLF4JBridgeHandler.removeHandlersForRootLogger()
+SLF4JBridgeHandler.install()
+```

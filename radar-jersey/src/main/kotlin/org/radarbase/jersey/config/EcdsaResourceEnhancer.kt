@@ -24,7 +24,7 @@ import jakarta.inject.Singleton
 class EcdsaResourceEnhancer : JerseyResourceEnhancer {
     override fun AbstractBinder.enhance() {
         bind(EcdsaJwtTokenValidator::class.java)
-                .to(AuthValidator::class.java)
-                .`in`(Singleton::class.java)
+            .to(AuthValidator::class.java)
+            .`in`(Singleton::class.java)
     }
 }

@@ -68,8 +68,6 @@ dependencies {
     val junitVersion: String by project
     testImplementation("org.junit.jupiter:junit-jupiter:$junitVersion")
     testImplementation("org.hamcrest:hamcrest-all:1.3")
-
-    testRuntimeOnly("ch.qos.logback:logback-classic:1.2.3")
 }
 
 tasks.processResources {

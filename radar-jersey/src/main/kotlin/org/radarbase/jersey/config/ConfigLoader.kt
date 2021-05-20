@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory
 import com.fasterxml.jackson.module.kotlin.KotlinModule
 import io.swagger.v3.oas.models.OpenAPI
-import io.swagger.v3.oas.models.info.Info
 import org.glassfish.jersey.internal.inject.AbstractBinder
 import org.glassfish.jersey.server.ResourceConfig
 import org.radarbase.jersey.auth.AuthConfig
@@ -118,6 +117,7 @@ object ConfigLoader {
         val health = HealthResourceEnhancer()
         val httpException = HttpExceptionResourceEnhancer()
         val generalException = GeneralExceptionResourceEnhancer()
+        val utility = UtilityResourceEnhancer()
         fun swagger(openApi: OpenAPI, resourcePackages: Set<String>? = null) = SwaggerResourceEnhancer(openApi, resourcePackages)
     }
 

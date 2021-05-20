@@ -7,16 +7,32 @@ plugins {
     `maven-publish`
     signing
     id("org.jetbrains.dokka") apply false
-    id("com.github.ben-manes.versions") version "0.36.0" apply false
-    id("io.github.gradle-nexus.publish-plugin") version "1.0.0"
+    id("com.github.ben-manes.versions") version "0.38.0"
+    id("io.github.gradle-nexus.publish-plugin") version "1.1.0"
+}
+
+fun isNonStable(version: String): Boolean {
+    val stableKeyword = listOf("RELEASE", "FINAL", "GA").any { version.toUpperCase().contains(it) }
+    val regex = "^[0-9,.v-]+(-r)?$".toRegex()
+    val isStable = stableKeyword || regex.matches(version)
+    return isStable.not()
 }
 
 allprojects {
     group = "org.radarbase"
-    version = "0.6.0"
+    version = "0.6.1"
+
+    afterEvaluate {
+        tasks.withType<DependencyUpdatesTask> {
+            rejectVersionIf {
+                isNonStable(candidate.version)
+            }
+        }
+    }
 }
 
 subprojects {
+    apply(plugin = "kotlin")
     apply(plugin = "maven-publish")
     apply(plugin = "signing")
     apply(plugin = "com.github.ben-manes.versions")
@@ -34,19 +50,6 @@ subprojects {
         set("githubIssueUrl", githubIssueUrl)
     }
 
-    fun isNonStable(version: String): Boolean {
-        val stableKeyword = listOf("RELEASE", "FINAL", "GA").any { version.toUpperCase().contains(it) }
-        val regex = "^[0-9,.v-]+(-r)?$".toRegex()
-        val isStable = stableKeyword || regex.matches(version)
-        return isStable.not()
-    }
-
-    tasks.named<DependencyUpdatesTask>("dependencyUpdates").configure {
-        rejectVersionIf {
-            isNonStable(candidate.version)
-        }
-    }
-
     repositories {
         mavenCentral()
         // Temporary until Dokka is fully published on maven central.
@@ -57,6 +60,12 @@ subprojects {
     dependencies {
         val dokkaVersion: String by project
         configurations["dokkaHtmlPlugin"]("org.jetbrains.dokka:kotlin-as-java-plugin:$dokkaVersion")
+
+        val log4j2Version: String by project
+        val testRuntimeOnly by configurations
+        testRuntimeOnly("org.apache.logging.log4j:log4j-slf4j-impl:$log4j2Version")
+        testRuntimeOnly("org.apache.logging.log4j:log4j-api:$log4j2Version")
+        testRuntimeOnly("org.apache.logging.log4j:log4j-jul:$log4j2Version")
     }
 
     val sourcesJar by tasks.registering(Jar::class) {
@@ -89,6 +98,7 @@ subprojects {
                 exceptionFormat = FULL
             }
             useJUnitPlatform()
+            systemProperty("java.util.logging.manager", "org.apache.logging.log4j.jul.LogManager")
         }
 
         tasks.withType<Tar> {
@@ -191,5 +201,5 @@ nexusPublishing {
 }
 
 tasks.wrapper {
-    gradleVersion = "7.0"
+    gradleVersion = "7.0.2"
 }
