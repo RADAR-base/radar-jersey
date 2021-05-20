@@ -25,6 +25,7 @@ import org.radarbase.jersey.mock.MockResourceEnhancerFactory
 import java.net.URI
 
 internal class RadarJerseyResourceEnhancerTest {
+    private lateinit var oauthHelper: OAuthHelper
     private lateinit var client: OkHttpClient
     private lateinit var server: HttpServer
 
@@ -40,6 +41,7 @@ internal class RadarJerseyResourceEnhancerTest {
         server.start()
 
         client = OkHttpClient()
+        oauthHelper = OAuthHelper()
     }
 
     @AfterEach
@@ -171,16 +173,5 @@ internal class RadarJerseyResourceEnhancerTest {
         val body = response.body?.string()
 
         assertThat(body, containsString("<h1>Bad request (status code 404)</h1>"))
-    }
-
-
-    companion object {
-        lateinit var oauthHelper: OAuthHelper
-
-        @BeforeAll
-        @JvmStatic
-        fun setUpClass() {
-            oauthHelper = OAuthHelper()
-        }
     }
 }

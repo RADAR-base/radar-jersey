@@ -42,7 +42,7 @@ class RadarJerseyResourceEnhancer(
     }
 
     override fun AbstractBinder.enhance() {
-        bindFactory { config.withEnv() }
+        bind(config.withEnv())
             .to(AuthConfig::class.java)
             .`in`(Singleton::class.java)
 

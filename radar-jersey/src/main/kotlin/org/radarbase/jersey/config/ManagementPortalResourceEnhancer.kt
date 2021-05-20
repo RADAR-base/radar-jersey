@@ -39,7 +39,7 @@ class ManagementPortalResourceEnhancer(private val config: AuthConfig) : JerseyR
             .`in`(Singleton::class.java)
 
         if (config.managementPortal.clientId != null) {
-            bind(MPClientFactory::class.java)
+            bindFactory(MPClientFactory::class.java)
                 .to(MPClient::class.java)
                 .`in`(Singleton::class.java)
 

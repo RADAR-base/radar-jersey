@@ -1,12 +1,12 @@
 package org.radarbase.jersey.mock
 
-import org.radarbase.auth.authentication.TokenValidator
+import jakarta.inject.Singleton
 import org.glassfish.jersey.internal.inject.AbstractBinder
-import org.radarbase.jersey.auth.RadarJerseyResourceEnhancerTest
+import org.radarbase.auth.authentication.TokenValidator
+import org.radarbase.jersey.auth.OAuthHelper
 import org.radarbase.jersey.config.ConfigLoader
 import org.radarbase.jersey.config.JerseyResourceEnhancer
 import org.radarbase.jersey.service.ProjectService
-import jakarta.inject.Singleton
 
 class MockResourceEnhancer : JerseyResourceEnhancer {
     override val classes: Array<Class<*>> = arrayOf(
@@ -17,10 +17,10 @@ class MockResourceEnhancer : JerseyResourceEnhancer {
 
     override fun AbstractBinder.enhance() {
         bind(MockProjectService(listOf("a", "b")))
-                .to(ProjectService::class.java)
-                .`in`(Singleton::class.java)
+            .to(ProjectService::class.java)
+            .`in`(Singleton::class.java)
 
-        bindFactory { RadarJerseyResourceEnhancerTest.oauthHelper.tokenValidator }
-                .to(TokenValidator::class.java)
+        bind(OAuthHelper().tokenValidator)
+            .to(TokenValidator::class.java)
     }
 }
