@@ -32,6 +32,7 @@ allprojects {
 }
 
 subprojects {
+    apply(plugin = "kotlin")
     apply(plugin = "maven-publish")
     apply(plugin = "signing")
     apply(plugin = "com.github.ben-manes.versions")
@@ -59,6 +60,12 @@ subprojects {
     dependencies {
         val dokkaVersion: String by project
         configurations["dokkaHtmlPlugin"]("org.jetbrains.dokka:kotlin-as-java-plugin:$dokkaVersion")
+
+        val log4j2Version: String by project
+        val testRuntimeOnly by configurations
+        testRuntimeOnly("org.apache.logging.log4j:log4j-slf4j-impl:$log4j2Version")
+        testRuntimeOnly("org.apache.logging.log4j:log4j-api:$log4j2Version")
+        testRuntimeOnly("org.apache.logging.log4j:log4j-jul:$log4j2Version")
     }
 
     val sourcesJar by tasks.registering(Jar::class) {
@@ -91,6 +98,7 @@ subprojects {
                 exceptionFormat = FULL
             }
             useJUnitPlatform()
+            systemProperty("java.util.logging.manager", "org.apache.logging.log4j.jul.LogManager")
         }
 
         tasks.withType<Tar> {

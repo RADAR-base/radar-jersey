@@ -110,3 +110,30 @@ fun main(args: Array<String>) {
 This package adds some error handling. Specifically, `org.radarbase.jersey.exception.HttpApplicationException` and its subclasses can be used and extended to serve detailed error messages with customized logging and HTML templating. They can be thrown from any resource.
 
 To serve custom HTML error messages for error codes 400 to 599, add a Mustache template to the classpath in directory `org/radarbase/jersey/exception/mapper/<code>.html`. You can use special cases `4xx.html` and `5xx.html` as a catch-all template. The templates can use variables `status` for the HTTP status code, `code` for short-hand code for the specific error, and an optional `detailedMessage` for a human-readable message.
+
+## Logging
+
+To enable logging with radar-jersey, please set the following configurations. The default is Log4J 2. A configuration file is included in the classpath. First include the following dependencies:
+
+```kotlin
+dependencies {
+    // To enable logging either use log4j
+    val log4j2Version: String by project
+    runtimeOnly("org.apache.logging.log4j:log4j-slf4j-impl:$log4j2Version")
+    runtimeOnly("org.apache.logging.log4j:log4j-api:$log4j2Version")
+    runtimeOnly("org.apache.logging.log4j:log4j-jul:$log4j2Version")
+
+    // Or use logback
+    //runtimeOnly("ch.qos.logback:logback-classic:1.2.3")
+    //runtimeOnly("org.slf4j:jul-to-slf4j:1.7.30")
+}
+```
+
+In your code, call either
+```kotlin
+// Initialize logging with log4j2
+Logging.initLog4j2()
+// If logback is used, use the following instead
+//Logging.initLogback()
+```
+Call these commands before ANY logging or logging initialization code has been called, for example in the `init` of a companion object of the main class.

@@ -20,20 +20,20 @@ import jakarta.ws.rs.ext.Provider
 
 @Provider
 class DatabaseInitialization(
-        @Context private val entityManagerFactory: jakarta.inject.Provider<EntityManagerFactory>,
-        @Context private val dbConfig: DatabaseConfig,
+    @Context private val entityManagerFactory: jakarta.inject.Provider<EntityManagerFactory>,
+    @Context private val dbConfig: DatabaseConfig,
 ) : ApplicationEventListener {
+
     override fun onEvent(event: ApplicationEvent) {
-        logger.info("Application state: {}", event.type)
         if (event.type != ApplicationEvent.Type.INITIALIZATION_APP_FINISHED) return
         try {
             entityManagerFactory.get().useEntityManager {
-                    // make first connection
-                    it.connection().use { connection ->
-                        if (dbConfig.liquibase.enable) {
-                            initializeLiquibase(connection)
-                        }
+                // make first connection
+                it.connection().use { connection ->
+                    if (dbConfig.liquibase.enable) {
+                        initializeLiquibase(connection)
                     }
+                }
             }
         } catch (ex: Throwable) {
             throw IllegalStateException("Cannot initialize database.", ex)
@@ -43,11 +43,13 @@ class DatabaseInitialization(
     private fun initializeLiquibase(connection: Connection) {
         logger.info("Initializing Liquibase")
         val database = DatabaseFactory.getInstance()
-                .findCorrectDatabaseImplementation(
-                        JdbcConnection(connection))
-        Liquibase(dbConfig.liquibase.changelogs, ClassLoaderResourceAccessor(), database).use {
-            it.update(null as Contexts?)
-        }
+            .findCorrectDatabaseImplementation(JdbcConnection(connection))
+
+        Liquibase(
+            dbConfig.liquibase.changelogs,
+            ClassLoaderResourceAccessor(),
+            database,
+        ).use { it.update(null as Contexts?) }
     }
 
     override fun onRequest(requestEvent: RequestEvent?): RequestEventListener? = null
