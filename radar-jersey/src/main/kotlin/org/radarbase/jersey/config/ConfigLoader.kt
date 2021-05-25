@@ -105,20 +105,39 @@ object ConfigLoader {
     val logger: Logger = LoggerFactory.getLogger(ConfigLoader::class.java)
 
     object Filters {
+        /** Adds CORS headers to all responses. */
         val cors = CorsFilter::class.java
+        /** Log the HTTP status responses of all requests. */
         val logResponse = ResponseLoggerFilter::class.java
+        /** Add cache control headers to responses. */
         val cache = CacheControlFeature::class.java
     }
     object Enhancers {
+        /** Adds authorization framework, configuration and utilities. */
         fun radar(config: AuthConfig) = RadarJerseyResourceEnhancer(config)
+        /** Authorization via ManagementPortal. */
         fun managementPortal(config: AuthConfig) = ManagementPortalResourceEnhancer(config)
+        /** Disable all authorization. Useful for a public service. */
         val disabledAuthorization = DisabledAuthorizationResourceEnhancer()
+        /** Handle a generic ECDSA identity provider. */
         val ecdsa = EcdsaResourceEnhancer()
+        /** Adds a health endpoint. */
         val health = HealthResourceEnhancer()
+        /**
+         * Handles any HTTP application exceptions including an appropriate response to client.
+         * @see org.radarbase.jersey.exception.HttpApplicationException
+         */
         val httpException = HttpExceptionResourceEnhancer()
+        /** Handle unhandled exceptions. */
         val generalException = GeneralExceptionResourceEnhancer()
+        /** Adds OkHttp and ObjectMapper utilities. */
         val utility = UtilityResourceEnhancer()
-        fun swagger(openApi: OpenAPI, resourcePackages: Set<String>? = null) = SwaggerResourceEnhancer(openApi, resourcePackages)
+        /**
+         * Adds an OpenAPI endpoint to the stack at `/openapi.yaml` and `/openapi.json`.
+         * The description is given with [openApi]. Any routes provided in
+         * [ignoredRoutes] will not be shown in the endpoint.
+         */
+        fun swagger(openApi: OpenAPI, ignoredRoutes: Set<String>? = null) = SwaggerResourceEnhancer(openApi, ignoredRoutes)
     }
 
     inline fun <T> T.copyEnv(key: String, doCopy: T.(String?) -> T): T = copyOnChange<T, String?>(null, { System.getenv(key) }, doCopy)

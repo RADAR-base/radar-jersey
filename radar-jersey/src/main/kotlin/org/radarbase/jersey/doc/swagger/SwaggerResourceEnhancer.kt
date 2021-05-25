@@ -6,6 +6,11 @@ import io.swagger.v3.oas.models.OpenAPI
 import org.glassfish.jersey.server.ResourceConfig
 import org.radarbase.jersey.config.JerseyResourceEnhancer
 
+/**
+ * Adds an OpenAPI endpoint to the stack at `/openapi.yaml` and `/openapi.json`.
+ * The description is given with [openApi]. Any routes provided in
+ * [ignoredRoutes] will not be shown in the endpoint.
+ */
 class SwaggerResourceEnhancer(
     private val openApi: OpenAPI,
     private val ignoredRoutes: Set<String>? = null,
