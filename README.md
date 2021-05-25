@@ -163,7 +163,7 @@ bind(MyMetric::class.java)
     .named("mymetric")
     .to(HealthService.Metric::class.java)
 ```
-The implementation may optionall return health status `UP` or `DOWN` and may in addition expose custom metrics that should be serializable by Jackson.
+The implementation may optionally return health status `UP` or `DOWN` and may in addition expose custom metrics that should be serializable by Jackson.
 
 ### Caching
 
