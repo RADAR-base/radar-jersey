@@ -20,7 +20,7 @@ fun isNonStable(version: String): Boolean {
 
 allprojects {
     group = "org.radarbase"
-    version = "0.6.2"
+    version = "0.6.3-SNAPSHOT"
 
     afterEvaluate {
         tasks.withType<DependencyUpdatesTask> {
