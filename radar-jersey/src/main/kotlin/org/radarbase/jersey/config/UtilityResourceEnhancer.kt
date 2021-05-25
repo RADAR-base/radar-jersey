@@ -49,11 +49,11 @@ class UtilityResourceEnhancer: JerseyResourceEnhancer {
     }
 
     override fun AbstractBinder.enhance() {
-        bindFactory { client }
+        bind(client)
             .to(OkHttpClient::class.java)
             .`in`(Singleton::class.java)
 
-        bindFactory { mapper }
+        bind(mapper)
             .to(ObjectMapper::class.java)
             .`in`(Singleton::class.java)
 

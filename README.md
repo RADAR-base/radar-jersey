@@ -2,7 +2,7 @@
 
 Library to facilitate using with a Jersey-based REST API. This includes OAuth 2.0 integration, exception handling and resource configuration.
 
-# Usage
+## Usage
 
 Add this library to your project using the following Gradle configuration:
 ```gradle
@@ -11,7 +11,7 @@ repositories {
 }
 
 dependencies {
-    api("org.radarbase:radar-jersey:0.6.1")
+    api("org.radarbase:radar-jersey:0.6.2")
 }
 ```
 
@@ -49,37 +49,44 @@ class Users(
 These APIs are activated by adding an `EnhancerFactory` implementation to your resource definition:
 ```kotlin
 class MyEnhancerFactory(private val config: MyConfigClass): EnhancerFactory {
-    override fun createEnhancers() = listOf(
+    override fun createEnhancers(): List<JerseyResourceEnhancer> {
+        val authConfig = AuthConfig(
+            managementPortal = MPConfig(
+                url = "http://...",
+	    ),
+            jwtResourceName = "res_MyResource",
+	)
+        return listOf(
             // My own resource configuration
             MyResourceEnhancer(),
             // RADAR OAuth2 enhancement
-            ConfigLoader.Enhancers.radar(AuthConfig(
-                    managementPortal = MPConfig(
-                        url = "http://..."),
-                    jwtResourceName = "res_MyResource")),
+            ConfigLoader.Enhancers.radar(),
             // Use ManagementPortal OAuth implementation
             ConfigLoader.Enhancers.managementPortal,
             // HttpApplicationException handling
             ConfigLoader.Enhancers.httpException,
             // General error handling (WebApplicationException and any other Exception)
-            ConfigLoader.Enhancers.generalException)
+            ConfigLoader.Enhancers.generalException,
+        )
+    }
 
     class MyResourceEnhancer: JerseyResourceEnhancer {
         override val classes: Array<Class<*>> = arrayOf(
-	            ConfigLoader.Filters.logResponse,
-		        ConfigLoader.Filters.cors)
+	    ConfigLoader.Filters.logResponse,
+	    ConfigLoader.Filters.cors,
+	    ConfigLoader.Filters.cache,
+	)
+
+	overide val packages = arrayOf(
+	    "com.example.app.resources",
+	)
 
         override fun AbstractBinder.enhance() {
             bind(config)
-                  .to(MyConfigClass::class.java)
-
-            bind(MyProjectService::class.java)
-                  .to(ProjectService::class.java)
-                  .`in`(Singleton::class.java)
-
-            bind(MyProjectService::class.java)
-                  .to(MyProjectService::class.java)
-                  .`in`(Singleton::class.java)
+                .to(MyConfigClass::class.java)
+	    bind(MyService::class.java)
+	        .to(MyService::class.java)
+		.`in`(Singleton::class.java)
         }
     }
 }
@@ -105,13 +112,15 @@ fun main(args: Array<String>) {
 }
 ```
 
-## Error handling
+### Error handling
 
-This package adds some error handling. Specifically, `org.radarbase.jersey.exception.HttpApplicationException` and its subclasses can be used and extended to serve detailed error messages with customized logging and HTML templating. They can be thrown from any resource.
+Errors are handled by adding the `ConfigLoader.Enhancers.httpException` enhancer. This adds error handling for `org.radarbase.jersey.exception.HttpApplicationException` exceptions and its subclasses can be used and extended to serve detailed error messages with customized logging and HTML templating. They can be thrown from any resource.
 
 To serve custom HTML error messages for error codes 400 to 599, add a Mustache template to the classpath in directory `org/radarbase/jersey/exception/mapper/<code>.html`. You can use special cases `4xx.html` and `5xx.html` as a catch-all template. The templates can use variables `status` for the HTTP status code, `code` for short-hand code for the specific error, and an optional `detailedMessage` for a human-readable message.
 
-## Logging
+Any other uncaught exceptions can be handled by adding the `ConfigLoader.Enhancers.generalException`.
+
+### Logging
 
 To enable logging with radar-jersey, please set the following configurations. For new projects, the default should be Log4j 2. A configuration file is included in the classpath. First include the following dependencies:
 
@@ -147,3 +156,21 @@ Then before any logging code has been called, set:
 SLF4JBridgeHandler.removeHandlersForRootLogger()
 SLF4JBridgeHandler.install()
 ```
+
+### Health
+
+A `/health` endpoint can be added with `ConfigLoader.Enhancers.health`. It has the response structure `{"status":"UP","myhealth:{"status":"UP","numberOfSomething":5}}`. It reports main status `DOWN` if any metric status is `DOWN`, and `UP` otherwise. A health metric can be added by binding a `HealthService.Metric` named to your metric name, e.g.:
+```kotlin
+bind(MyMetric::class.java)
+    .named("mymetric")
+    .to(HealthService.Metric::class.java)
+```
+The implementation may optionally return health status `UP` or `DOWN` and may in addition expose custom metrics that should be serializable by Jackson. The status is not automatically shown in the response. It is only shown if it is added as part of the `metrics` property implementation of `HealthService.Metrics`. 
+
+### Caching
+
+Client side caching is enabled by the `ConfigLoader.Filters.cache` filter. When this is enabled, resource methods and classes can be annotated with a `org.radarbase.jersey.cache.Cache` or `NoCache` annotation. The fields of this annotation correspond to the [`Cache-Control` headers](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cache-Control).
+
+### OpenAPI / Swagger
+
+To automatically create a OpenAPI / Swagger endpoint for your API, add the `ConfigLoader.Enhancers.openapi` resource enhancer. Provide it with a general description of your API as specified by an `OpenAPI` object.
