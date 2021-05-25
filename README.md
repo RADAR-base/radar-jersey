@@ -155,7 +155,7 @@ SLF4JBridgeHandler.removeHandlersForRootLogger()
 SLF4JBridgeHandler.install()
 ```
 
-## Health
+### Health
 
 A `/health` endpoint can be added with `ConfigLoader.Enhancers.health`. It has the response structure `{"status":"UP","myhealth:{"status":"UP"}}`. It reports main status `DOWN` if any metric status is `DOWN`, and `UP` otherwise. A health metric can be added by binding a `HealthService.Metric` named to your metric name, e.g.:
 ```kotlin
