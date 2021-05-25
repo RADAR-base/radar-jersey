@@ -114,9 +114,11 @@ fun main(args: Array<String>) {
 
 ### Error handling
 
-This package adds some error handling. Specifically, `org.radarbase.jersey.exception.HttpApplicationException` and its subclasses can be used and extended to serve detailed error messages with customized logging and HTML templating. They can be thrown from any resource.
+Errors are handled by adding the `ConfigLoader.Enhancers.httpException` enhancer. This adds error handling for `org.radarbase.jersey.exception.HttpApplicationException` exceptions and its subclasses can be used and extended to serve detailed error messages with customized logging and HTML templating. They can be thrown from any resource.
 
 To serve custom HTML error messages for error codes 400 to 599, add a Mustache template to the classpath in directory `org/radarbase/jersey/exception/mapper/<code>.html`. You can use special cases `4xx.html` and `5xx.html` as a catch-all template. The templates can use variables `status` for the HTTP status code, `code` for short-hand code for the specific error, and an optional `detailedMessage` for a human-readable message.
+
+Any other uncaught exceptions can be handled by adding the `ConfigLoader.Enhancers.generalException`.
 
 ### Logging
 
@@ -157,13 +159,13 @@ SLF4JBridgeHandler.install()
 
 ### Health
 
-A `/health` endpoint can be added with `ConfigLoader.Enhancers.health`. It has the response structure `{"status":"UP","myhealth:{"status":"UP"}}`. It reports main status `DOWN` if any metric status is `DOWN`, and `UP` otherwise. A health metric can be added by binding a `HealthService.Metric` named to your metric name, e.g.:
+A `/health` endpoint can be added with `ConfigLoader.Enhancers.health`. It has the response structure `{"status":"UP","myhealth:{"status":"UP","numberOfSomething":5}}`. It reports main status `DOWN` if any metric status is `DOWN`, and `UP` otherwise. A health metric can be added by binding a `HealthService.Metric` named to your metric name, e.g.:
 ```kotlin
 bind(MyMetric::class.java)
     .named("mymetric")
     .to(HealthService.Metric::class.java)
 ```
-The implementation may optionally return health status `UP` or `DOWN` and may in addition expose custom metrics that should be serializable by Jackson.
+The implementation may optionally return health status `UP` or `DOWN` and may in addition expose custom metrics that should be serializable by Jackson. The status is not automatically shown in the response. It is only shown if it is added as part of the `metrics` property implementation of `HealthService.Metrics`. 
 
 ### Caching
 
