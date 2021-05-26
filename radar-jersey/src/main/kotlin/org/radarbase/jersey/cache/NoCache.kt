@@ -1,7 +1,7 @@
 package org.radarbase.jersey.cache
 
 /**
- * Set Cache-Control response header of "nocache"
+ * Set Cache-Control response header of `no-cache`.
  *
  * @author [Bill Burke](mailto:bill@burkecentral.com)
  * @version $Revision: 1 $
@@ -15,5 +15,6 @@ package org.radarbase.jersey.cache
 )
 @kotlin.annotation.Retention(AnnotationRetention.RUNTIME)
 annotation class NoCache(
+    /** Additional Cache-Control fields to include along with the `no-cache` field. */
     val fields: Array<String> = [],
 )
