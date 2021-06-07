@@ -130,8 +130,10 @@ object ConfigLoader {
         val httpException = HttpExceptionResourceEnhancer()
         /** Handle unhandled exceptions. */
         val generalException = GeneralExceptionResourceEnhancer()
-        /** Adds OkHttp and ObjectMapper utilities. */
-        val utility = UtilityResourceEnhancer()
+        /** Adds OkHttpClient utility. */
+        val okhttp = OkHttpResourceEnhancer()
+        /** Add ObjectMapper utility. */
+        val mapper = MapperResourceEnhancer()
         /**
          * Adds an OpenAPI endpoint to the stack at `/openapi.yaml` and `/openapi.json`.
          * The description is given with [openApi]. Any routes provided in

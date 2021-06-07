@@ -22,7 +22,7 @@ import jakarta.ws.rs.ext.Provider
 @Provider
 @Singleton
 class WebApplicationExceptionMapper(
-        @Context private val uriInfo: UriInfo
+    @Context private val uriInfo: UriInfo,
 ) : ExceptionMapper<WebApplicationException> {
 
     override fun toResponse(exception: WebApplicationException): Response {

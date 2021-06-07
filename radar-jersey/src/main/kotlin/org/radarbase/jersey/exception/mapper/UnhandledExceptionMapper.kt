@@ -22,16 +22,16 @@ import jakarta.ws.rs.ext.Provider
 @Provider
 @Singleton
 class UnhandledExceptionMapper(
-        @Context private val uriInfo: UriInfo,
-        @Context private val requestContext: ContainerRequestContext,
+    @Context private val uriInfo: UriInfo,
+    @Context private val requestContext: ContainerRequestContext,
 ) : ExceptionMapper<Throwable> {
 
     override fun toResponse(exception: Throwable): Response {
         logger.error("[500] {} {}", requestContext.method, uriInfo.path, exception)
         return Response.serverError()
-                .header("Content-Type", "application/json; charset=utf-8")
-                .entity("""{"error":"unknown","error_description":"Unknown exception."}""")
-                .build()
+            .header("Content-Type", "application/json; charset=utf-8")
+            .entity("""{"error":"unknown","error_description":"Unknown exception."}""")
+            .build()
     }
 
     companion object {
