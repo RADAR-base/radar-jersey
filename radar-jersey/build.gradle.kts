@@ -36,7 +36,8 @@ dependencies {
     implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:$jacksonVersion")
 
     // exception template rendering
-    implementation("com.github.spullara.mustache.java:compiler:0.9.7")
+    val mustacheVersion: String by project
+    implementation("com.github.spullara.mustache.java:compiler:$mustacheVersion")
 
     val slf4jVersion: String by project
     implementation("org.slf4j:slf4j-api:$slf4jVersion")
@@ -67,7 +68,8 @@ dependencies {
 
     val junitVersion: String by project
     testImplementation("org.junit.jupiter:junit-jupiter:$junitVersion")
-    testImplementation("org.hamcrest:hamcrest-all:1.3")
+    val hamcrestVersion: String by project
+    testImplementation("org.hamcrest:hamcrest:$hamcrestVersion")
 }
 
 tasks.processResources {

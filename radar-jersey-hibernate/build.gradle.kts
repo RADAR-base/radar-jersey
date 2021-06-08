@@ -33,7 +33,8 @@ dependencies {
 
     val junitVersion: String by project
     testImplementation("org.junit.jupiter:junit-jupiter:$junitVersion")
-    testImplementation("org.hamcrest:hamcrest-all:1.3")
+    val hamcrestVersion: String by project
+    testImplementation("org.hamcrest:hamcrest:$hamcrestVersion")
     val okhttpVersion: String by project
     testImplementation("com.squareup.okhttp3:okhttp:$okhttpVersion")
 }

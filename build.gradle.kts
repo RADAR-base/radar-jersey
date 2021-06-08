@@ -7,35 +7,19 @@ plugins {
     `maven-publish`
     signing
     id("org.jetbrains.dokka") apply false
-    id("com.github.ben-manes.versions") version "0.38.0"
+    id("com.github.ben-manes.versions") version "0.39.0"
     id("io.github.gradle-nexus.publish-plugin") version "1.1.0"
-}
-
-fun isNonStable(version: String): Boolean {
-    val stableKeyword = listOf("RELEASE", "FINAL", "GA").any { version.toUpperCase().contains(it) }
-    val regex = "^[0-9,.v-]+(-r)?$".toRegex()
-    val isStable = stableKeyword || regex.matches(version)
-    return isStable.not()
 }
 
 allprojects {
     group = "org.radarbase"
     version = "0.6.3-SNAPSHOT"
-
-    afterEvaluate {
-        tasks.withType<DependencyUpdatesTask> {
-            rejectVersionIf {
-                isNonStable(candidate.version)
-            }
-        }
-    }
 }
 
 subprojects {
     apply(plugin = "kotlin")
     apply(plugin = "maven-publish")
     apply(plugin = "signing")
-    apply(plugin = "com.github.ben-manes.versions")
     apply(plugin = "org.jetbrains.dokka")
 
     val myproject = this
@@ -180,6 +164,20 @@ subprojects {
         tasks.withType<Sign>().configureEach {
             onlyIf { gradle.taskGraph.hasTask("${project.path}:publish") }
         }
+    }
+}
+
+val stableVersionRegex = "[0-9,.v-]+(-r)?".toRegex()
+
+fun isNonStable(version: String): Boolean {
+    val stableKeyword = listOf("RELEASE", "FINAL", "GA")
+        .any { version.toUpperCase().contains(it) }
+    return !stableKeyword && !stableVersionRegex.matches(version)
+}
+
+tasks.withType<DependencyUpdatesTask> {
+    rejectVersionIf {
+        isNonStable(candidate.version)
     }
 }
 

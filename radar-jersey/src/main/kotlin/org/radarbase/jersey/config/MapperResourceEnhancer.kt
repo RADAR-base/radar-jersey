@@ -14,7 +14,8 @@ import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
-import com.fasterxml.jackson.module.kotlin.KotlinModule
+import com.fasterxml.jackson.module.kotlin.jsonMapper
+import com.fasterxml.jackson.module.kotlin.kotlinModule
 import jakarta.inject.Singleton
 import jakarta.ws.rs.ext.ContextResolver
 import org.glassfish.jersey.internal.inject.AbstractBinder
@@ -42,15 +43,16 @@ class MapperResourceEnhancer: JerseyResourceEnhancer {
     }
 
     companion object {
-        fun createDefaultMapper(): ObjectMapper = ObjectMapper()
-            .setSerializationInclusion(JsonInclude.Include.NON_NULL)
-            .registerModule(JavaTimeModule())
-            .registerModule(KotlinModule(
-                nullToEmptyMap = true,
-                nullToEmptyCollection = true,
-                nullIsSameAsDefault = true,
-            ))
-            .configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false)
-            .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+        fun createDefaultMapper(): ObjectMapper = jsonMapper {
+            serializationInclusion(JsonInclude.Include.NON_NULL)
+            addModule(JavaTimeModule())
+            addModule(kotlinModule {
+                nullToEmptyMap(true)
+                nullToEmptyCollection(true)
+                nullIsSameAsDefault(true)
+            })
+            configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false)
+            configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+        }
     }
 }
