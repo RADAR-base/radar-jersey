@@ -83,14 +83,14 @@ internal class HibernateTest {
                 .url("http://localhost:9091/projects")
                 .build()).execute().use { response ->
             assertThat(response.isSuccessful, `is`(true))
-            assertThat(response.body?.string(), equalTo("{\"id\":1000,\"name\":\"a\"}"))
+            assertThat(response.body?.string(), equalTo("{\"id\":1000,\"name\":\"a\",\"description\":null}"))
         }
 
         client.newCall(Request.Builder()
                 .url("http://localhost:9091/projects/1000")
                 .build()).execute().use { response ->
             assertThat(response.isSuccessful, `is`(true))
-            assertThat(response.body?.string(), equalTo("{\"id\":1000,\"name\":\"a\"}"))
+            assertThat(response.body?.string(), equalTo("{\"id\":1000,\"name\":\"a\",\"description\":null}"))
         }
 
 
@@ -98,7 +98,7 @@ internal class HibernateTest {
                 .url("http://localhost:9091/projects")
                 .build()).execute().use { response ->
             assertThat(response.isSuccessful, `is`(true))
-            assertThat(response.body?.string(), equalTo("[{\"id\":1000,\"name\":\"a\"}]"))
+            assertThat(response.body?.string(), equalTo("[{\"id\":1000,\"name\":\"a\",\"description\":null}]"))
         }
 
         client.newCall(Request.Builder()

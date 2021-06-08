@@ -14,6 +14,9 @@ dependencies {
     api("org.hibernate:hibernate-core:$hibernateVersion")
     runtimeOnly("org.hibernate:hibernate-c3p0:$hibernateVersion")
 
+    val javaxValidationVersion: String by project
+    implementation("javax.validation:validation-api:$javaxValidationVersion")
+
     val slf4jVersion: String by project
     implementation("org.slf4j:slf4j-api:$slf4jVersion")
 

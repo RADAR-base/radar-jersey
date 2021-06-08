@@ -21,8 +21,10 @@ dependencies {
     val jakartaAnnotationVersion: String by project
     api("jakarta.annotation:jakarta.annotation-api:$jakartaAnnotationVersion")
     val hk2Version: String by project
-    api("org.glassfish.hk2.external:jakarta.inject:$hk2Version")
+    api("org.glassfish.hk2:hk2:$hk2Version")
+
     val jerseyVersion: String by project
+    api("org.glassfish.jersey.inject:jersey-hk2:$jerseyVersion")
     api("org.glassfish.jersey.core:jersey-server:$jerseyVersion")
 
     val jacksonVersion: String by project
@@ -44,8 +46,6 @@ dependencies {
 
     val swaggerVersion: String by project
     implementation("io.swagger.core.v3:swagger-jaxrs2-jakarta:$swaggerVersion")
-
-    api("org.glassfish.jersey.inject:jersey-hk2:$jerseyVersion")
 
     runtimeOnly("org.glassfish.jersey.media:jersey-media-json-jackson:$jerseyVersion")
 
