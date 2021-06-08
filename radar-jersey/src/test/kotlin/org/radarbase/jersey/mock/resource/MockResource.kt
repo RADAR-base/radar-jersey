@@ -20,6 +20,8 @@ import jakarta.annotation.Resource
 import jakarta.ws.rs.*
 import jakarta.ws.rs.core.Context
 import jakarta.ws.rs.core.MediaType
+import org.radarbase.jersey.exception.HttpBadRequestException
+import java.io.IOException
 
 @Path("/")
 @Resource
@@ -58,6 +60,18 @@ class MockResource {
             @PathParam("subjectId") userId: String): Map<String, String> {
         return mapOf("projectId" to projectId, "userId" to userId)
     }
+
+    @GET
+    @Path("exception")
+    fun withException(): Unit = throw IOException("Test")
+
+    @GET
+    @Path("badrequest")
+    fun withBadRequestException(): Unit = throw HttpBadRequestException("code", "message")
+
+    @GET
+    @Path("jerseybadrequest")
+    fun withJerseyBadRequestException(): Unit = throw BadRequestException("test")
 
     data class DetailedUser(val accessToken: String, val name: String)
 }
