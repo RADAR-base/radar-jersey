@@ -22,7 +22,7 @@ subprojects {
     apply(plugin = "signing")
     apply(plugin = "org.jetbrains.dokka")
 
-    val myproject = this
+    val myProject = this
 
     val githubRepoName = "RADAR-base/radar-jersey"
     val githubUrl = "https://github.com/$githubRepoName.git"
@@ -53,7 +53,7 @@ subprojects {
     }
 
     val sourcesJar by tasks.registering(Jar::class) {
-        from(myproject.the<SourceSetContainer>()["main"].allSource)
+        from(myProject.the<SourceSetContainer>()["main"].allSource)
         archiveClassifier.set("sources")
         val classes by tasks
         dependsOn(classes)
@@ -93,8 +93,8 @@ subprojects {
         tasks.withType<Jar> {
             manifest {
                 attributes(
-                    "Implementation-Title" to myproject.name,
-                    "Implementation-Version" to myproject.version
+                    "Implementation-Title" to myProject.name,
+                    "Implementation-Version" to myProject.version
                 )
             }
         }
@@ -113,8 +113,8 @@ subprojects {
                     artifact(dokkaJar)
 
                     pom {
-                        name.set(myproject.name)
-                        description.set(myproject.description)
+                        name.set(myProject.name)
+                        description.set(myProject.description)
                         url.set(githubUrl)
                         licenses {
                             license {
@@ -199,5 +199,5 @@ nexusPublishing {
 }
 
 tasks.wrapper {
-    gradleVersion = "7.0.2"
+    gradleVersion = "7.1"
 }
