@@ -18,21 +18,27 @@ package org.radarbase.jersey.util
 
 import java.time.Duration
 
-/** Set of data that is cached for a duration of time. */
+/**
+ * Set of data that is cached for a duration of time.
+ *
+ * @param supplier How to update the cache.
+ */
 class CachedSet<T>(
-        cacheConfig: CacheConfig = CacheConfig(),
-        /** How to update the cache. */
-        supplier: () -> Set<T>
+    cacheConfig: CacheConfig = CacheConfig(),
+    supplier: () -> Set<T>,
 ): CachedValue<Set<T>>(cacheConfig, supplier, ::emptySet) {
 
     constructor(
-            refreshDuration: Duration,
-            retryDuration: Duration,
-            supplier: () -> Set<T>) : this(
-            CacheConfig(
-                    refreshDuration = refreshDuration,
-                    retryDuration = retryDuration,
-            ), supplier)
+        refreshDuration: Duration,
+        retryDuration: Duration,
+        supplier: () -> Set<T>,
+    ) : this(
+        CacheConfig(
+            refreshDuration = refreshDuration,
+            retryDuration = retryDuration,
+        ),
+        supplier,
+    )
 
     /** Whether the cache contains [value]. If it does not contain the value and [CacheConfig.retryDuration]
      * has passed since the last try, it will update the cache and try once more. */
