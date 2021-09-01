@@ -131,7 +131,6 @@ dependencies {
     runtimeOnly("org.apache.logging.log4j:log4j-slf4j-impl:$log4j2Version")
     runtimeOnly("org.apache.logging.log4j:log4j-api:$log4j2Version")
     runtimeOnly("org.apache.logging.log4j:log4j-jul:$log4j2Version")
-
 }
 ```
 

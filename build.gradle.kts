@@ -66,15 +66,19 @@ subprojects {
         dependsOn(dokkaJavadoc)
     }
 
-    afterEvaluate {
-        tasks.withType<KotlinCompile> {
-            kotlinOptions {
-                jvmTarget = "11"
-                apiVersion = "1.4"
-                languageVersion = "1.4"
-            }
-        }
+    tasks.withType<JavaCompile> {
+        options.release.set(11)
+    }
 
+    tasks.withType<KotlinCompile> {
+        kotlinOptions {
+            jvmTarget = "11"
+            apiVersion = "1.5"
+            languageVersion = "1.5"
+        }
+    }
+
+    afterEvaluate {
         tasks.withType<Test> {
             testLogging {
                 events("passed", "skipped", "failed")
@@ -199,5 +203,5 @@ nexusPublishing {
 }
 
 tasks.wrapper {
-    gradleVersion = "7.1"
+    gradleVersion = "7.2"
 }
