@@ -25,7 +25,7 @@ class ClientAbortExceptionWriterInterceptor : WriterInterceptor {
             var cause: Throwable? = ex
             while (cause != null) {
                 if (cause is IOException && cause.message == "Connection is closed") {
-                    logger.warn("Client aborted request.", cause)
+                    logger.warn("Client aborted request.")
                     return
                 }
                 cause = cause.cause
