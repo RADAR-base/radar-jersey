@@ -45,7 +45,7 @@ class SwaggerResourceEnhancerTest {
             .use { response ->
                 assertThat(response.code, equalTo(200))
                 val responseString = response.body?.string()
-                assertThat(responseString, not(isEmptyOrNullString()))
+                assertThat(responseString, not(emptyOrNullString()))
                 println(responseString)
             }
     }
@@ -58,7 +58,7 @@ class SwaggerResourceEnhancerTest {
             .use { response ->
                 assertThat(response.code, equalTo(200))
                 val responseString = response.body?.string()
-                assertThat(responseString, not(isEmptyOrNullString()))
+                assertThat(responseString, not(emptyOrNullString()))
                 println(responseString)
             }
     }

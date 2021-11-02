@@ -16,7 +16,6 @@ import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.*
 import org.junit.jupiter.api.AfterEach
-import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.radarbase.jersey.auth.OAuthHelper.Companion.bearerHeader
@@ -144,34 +143,78 @@ internal class RadarJerseyResourceEnhancerTest {
 
     @Test
     fun testNonExistingGetHtml() {
-        val response = client.newCall(Request.Builder()
+        client.newCall(Request.Builder()
                 .url("http://localhost:9091/projects/c/users/b")
                 .bearerHeader(oauthHelper)
                 .header("Accept", "text/html,application/json")
-                .build()).execute()
+                .build()).execute().use { response ->
 
-        assertThat(response.isSuccessful, `is`(false))
-        assertThat(response.code, `is`(404))
+            assertThat(response.isSuccessful, `is`(false))
+            assertThat(response.code, `is`(404))
 
-        val body = response.body?.string()
+            val body = response.body?.string()
 
-        assertThat(body, containsString("<h1>Bad request (status code 404)</h1>"))
+            assertThat(body, containsString("<h1>Bad request (status code 404)</h1>"))
+        }
     }
 
 
     @Test
     fun testNonExistingGetBrowser() {
-        val response = client.newCall(Request.Builder()
+        client.newCall(Request.Builder()
                 .url("http://localhost:9091/projects/c/users/b")
                 .bearerHeader(oauthHelper)
                 .header("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8")
-                .build()).execute()
+                .build()).execute().use { response ->
 
-        assertThat(response.isSuccessful, `is`(false))
-        assertThat(response.code, `is`(404))
+            assertThat(response.isSuccessful, `is`(false))
+            assertThat(response.code, `is`(404))
 
-        val body = response.body?.string()
+            val body = response.body?.string()
 
-        assertThat(body, containsString("<h1>Bad request (status code 404)</h1>"))
+            assertThat(body, containsString("<h1>Bad request (status code 404)</h1>"))
+        }
+    }
+
+    @Test
+    fun exceptionTest() {
+        client.newCall(
+            Request.Builder().apply {
+                url("http://localhost:9091/exception")
+                header("Accept", "application/json")
+            }.build()
+        ).execute().use { response ->
+            assertThat(response.code, `is`(500))
+            val body = response.body?.string()
+            assertThat(body, equalTo("""{"error":"unknown","error_description":"Unknown exception."}"""))
+        }
+    }
+
+    @Test
+    fun badRequestTest() {
+        client.newCall(
+            Request.Builder().apply {
+                url("http://localhost:9091/badrequest")
+                header("Accept", "application/json")
+            }.build()
+        ).execute().use { response ->
+            assertThat(response.code, `is`(400))
+            val body = response.body?.string()
+            assertThat(body, equalTo("""{"error":"code","error_description":"message"}"""))
+        }
+    }
+
+    @Test
+    fun jerseyBadRequestTest() {
+        client.newCall(
+            Request.Builder().apply {
+                url("http://localhost:9091/jerseybadrequest")
+                header("Accept", "application/json")
+            }.build()
+        ).execute().use { response ->
+            assertThat(response.code, `is`(400))
+            val body = response.body?.string()
+            assertThat(body, equalTo(""))
+        }
     }
 }

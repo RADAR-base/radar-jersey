@@ -21,17 +21,20 @@ import java.time.Duration
 /** Set of data that is cached for a duration of time. */
 class CachedMap<K,V>(
         cacheConfig: CacheConfig = CacheConfig(),
-        supplier: () -> Map<K,V>
+        supplier: () -> Map<K,V>,
 ): CachedValue<Map<K, V>>(cacheConfig, supplier, ::emptyMap) {
 
     constructor(
-            refreshDuration: Duration,
-            retryDuration: Duration,
-            supplier: () -> Map<K, V>) : this(
-            CacheConfig(
-                    refreshDuration = refreshDuration,
-                    retryDuration = retryDuration,
-            ), supplier)
+        refreshDuration: Duration,
+        retryDuration: Duration,
+        supplier: () -> Map<K, V>,
+    ) : this(
+        CacheConfig(
+            refreshDuration = refreshDuration,
+            retryDuration = retryDuration,
+        ),
+        supplier,
+    )
 
     /** Whether the cache contains [key]. If it does not contain the value and [CacheConfig.retryDuration]
      * has passed since the last try, it will update the cache and try once more. */
@@ -43,11 +46,14 @@ class CachedMap<K,V>(
      * has passed since the last try, it will update the cache and try once more.
      * @return value if found and null otherwise
      */
-    fun find(predicate: (K, V) -> Boolean): Pair<K, V>? = state.query({
-        it.filter { e -> predicate(e.key, e.value) }
-                .toList()
-                .firstOrNull()
-    }, { it != null })
+    fun find(predicate: (K, V) -> Boolean): Pair<K, V>? = state.query(
+        { map ->
+            map.entries
+                .firstOrNull { (k, v) -> predicate(k, v) }
+                ?.toPair()
+        },
+        { it != null },
+    )
 
     /**
      * Find a pair matching [predicate].
@@ -55,12 +61,10 @@ class CachedMap<K,V>(
      * has passed since the last try, it will update the cache and try once more.
      * @return value if found and null otherwise
      */
-    fun findValue(predicate: (V) -> Boolean): V? = state.query({
-        it.filterValues(predicate)
-                .toList()
-                .firstOrNull()
-                ?.second
-    }, { it != null })
+    fun findValue(predicate: (V) -> Boolean): V? = state.query(
+        { it.values.firstOrNull(predicate) },
+        { it != null },
+    )
 
     /**
      * Get the value.
@@ -76,4 +80,3 @@ class CachedMap<K,V>(
      */
     operator fun get(key: K): V? = state.query({ it[key] }, { it != null })
 }
-

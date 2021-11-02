@@ -114,7 +114,11 @@ object ConfigLoader {
     }
     object Enhancers {
         /** Adds authorization framework, configuration and utilities. */
-        fun radar(config: AuthConfig) = RadarJerseyResourceEnhancer(config)
+        fun radar(
+            config: AuthConfig,
+            includeMapper: Boolean = true,
+            includeHttpClient: Boolean = true,
+        ) = RadarJerseyResourceEnhancer(config, includeMapper = includeMapper, includeHttpClient = includeHttpClient)
         /** Authorization via ManagementPortal. */
         fun managementPortal(config: AuthConfig) = ManagementPortalResourceEnhancer(config)
         /** Disable all authorization. Useful for a public service. */
@@ -130,8 +134,10 @@ object ConfigLoader {
         val httpException = HttpExceptionResourceEnhancer()
         /** Handle unhandled exceptions. */
         val generalException = GeneralExceptionResourceEnhancer()
-        /** Adds OkHttp and ObjectMapper utilities. */
-        val utility = UtilityResourceEnhancer()
+        /** Adds OkHttpClient utility. Not needed if radar(includeHttpClient = true). */
+        val okhttp = OkHttpResourceEnhancer()
+        /** Add ObjectMapper utility. Not needed if radar(includeMapper = true). */
+        val mapper = MapperResourceEnhancer()
         /**
          * Adds an OpenAPI endpoint to the stack at `/openapi.yaml` and `/openapi.json`.
          * The description is given with [openApi]. Any routes provided in

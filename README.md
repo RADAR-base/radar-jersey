@@ -11,7 +11,7 @@ repositories {
 }
 
 dependencies {
-    api("org.radarbase:radar-jersey:0.6.2")
+    api("org.radarbase:radar-jersey:0.7.0")
 }
 ```
 
@@ -131,7 +131,6 @@ dependencies {
     runtimeOnly("org.apache.logging.log4j:log4j-slf4j-impl:$log4j2Version")
     runtimeOnly("org.apache.logging.log4j:log4j-api:$log4j2Version")
     runtimeOnly("org.apache.logging.log4j:log4j-jul:$log4j2Version")
-
 }
 ```
 

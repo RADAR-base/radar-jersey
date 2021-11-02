@@ -7,38 +7,22 @@ plugins {
     `maven-publish`
     signing
     id("org.jetbrains.dokka") apply false
-    id("com.github.ben-manes.versions") version "0.38.0"
+    id("com.github.ben-manes.versions") version "0.39.0"
     id("io.github.gradle-nexus.publish-plugin") version "1.1.0"
-}
-
-fun isNonStable(version: String): Boolean {
-    val stableKeyword = listOf("RELEASE", "FINAL", "GA").any { version.toUpperCase().contains(it) }
-    val regex = "^[0-9,.v-]+(-r)?$".toRegex()
-    val isStable = stableKeyword || regex.matches(version)
-    return isStable.not()
 }
 
 allprojects {
     group = "org.radarbase"
-    version = "0.6.2"
-
-    afterEvaluate {
-        tasks.withType<DependencyUpdatesTask> {
-            rejectVersionIf {
-                isNonStable(candidate.version)
-            }
-        }
-    }
+    version = "0.7.0"
 }
 
 subprojects {
     apply(plugin = "kotlin")
     apply(plugin = "maven-publish")
     apply(plugin = "signing")
-    apply(plugin = "com.github.ben-manes.versions")
     apply(plugin = "org.jetbrains.dokka")
 
-    val myproject = this
+    val myProject = this
 
     val githubRepoName = "RADAR-base/radar-jersey"
     val githubUrl = "https://github.com/$githubRepoName.git"
@@ -69,7 +53,7 @@ subprojects {
     }
 
     val sourcesJar by tasks.registering(Jar::class) {
-        from(myproject.the<SourceSetContainer>()["main"].allSource)
+        from(myProject.the<SourceSetContainer>()["main"].allSource)
         archiveClassifier.set("sources")
         val classes by tasks
         dependsOn(classes)
@@ -82,15 +66,19 @@ subprojects {
         dependsOn(dokkaJavadoc)
     }
 
-    afterEvaluate {
-        tasks.withType<KotlinCompile> {
-            kotlinOptions {
-                jvmTarget = "11"
-                apiVersion = "1.4"
-                languageVersion = "1.4"
-            }
-        }
+    tasks.withType<JavaCompile> {
+        options.release.set(11)
+    }
 
+    tasks.withType<KotlinCompile> {
+        kotlinOptions {
+            jvmTarget = "11"
+            apiVersion = "1.5"
+            languageVersion = "1.5"
+        }
+    }
+
+    afterEvaluate {
         tasks.withType<Test> {
             testLogging {
                 events("passed", "skipped", "failed")
@@ -109,8 +97,8 @@ subprojects {
         tasks.withType<Jar> {
             manifest {
                 attributes(
-                    "Implementation-Title" to myproject.name,
-                    "Implementation-Version" to myproject.version
+                    "Implementation-Title" to myProject.name,
+                    "Implementation-Version" to myProject.version
                 )
             }
         }
@@ -129,8 +117,8 @@ subprojects {
                     artifact(dokkaJar)
 
                     pom {
-                        name.set(myproject.name)
-                        description.set(myproject.description)
+                        name.set(myProject.name)
+                        description.set(myProject.description)
                         url.set(githubUrl)
                         licenses {
                             license {
@@ -183,6 +171,20 @@ subprojects {
     }
 }
 
+val stableVersionRegex = "[0-9,.v-]+(-r)?".toRegex()
+
+fun isNonStable(version: String): Boolean {
+    val stableKeyword = listOf("RELEASE", "FINAL", "GA")
+        .any { version.toUpperCase().contains(it) }
+    return !stableKeyword && !stableVersionRegex.matches(version)
+}
+
+tasks.withType<DependencyUpdatesTask> {
+    rejectVersionIf {
+        isNonStable(candidate.version)
+    }
+}
+
 fun Project.propertyOrEnv(propertyName: String, envName: String): String? {
     return if (hasProperty(propertyName)) {
         property(propertyName)?.toString()
@@ -201,5 +203,5 @@ nexusPublishing {
 }
 
 tasks.wrapper {
-    gradleVersion = "7.0.2"
+    gradleVersion = "7.2"
 }

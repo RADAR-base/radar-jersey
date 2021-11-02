@@ -13,8 +13,11 @@ inline fun <T> Lock.locked(method: () -> T): T {
     }
 }
 
-inline fun <T> Semaphore.tryAcquired(nanos: Long? = null, method: () -> T): T? {
-    val isAcquired = nanos?.let { tryAcquire(it, TimeUnit.NANOSECONDS) } ?: tryAcquire()
+inline fun <T> Semaphore.tryAcquired(
+    nanos: Long? = null,
+    method: () -> T,
+): T? {
+    val isAcquired = if (nanos != null) tryAcquire(nanos, TimeUnit.NANOSECONDS) else tryAcquire()
     return if (isAcquired) {
         try {
             method()

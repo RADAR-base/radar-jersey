@@ -22,15 +22,21 @@ import org.radarbase.jersey.auth.jwt.AuthFactory
 /**
  * Add RADAR auth to a Jersey project. This requires a {@link ProjectService} implementation to be
  * added to the Binder first.
+ *
+ * @param includeMapper is set, this also instantiates [MapperResourceEnhancer].
+ * @param includeHttpClient is set, this also includes [OkHttpResourceEnhancer].
  */
 class RadarJerseyResourceEnhancer(
     private val config: AuthConfig,
+    includeMapper: Boolean = true,
+    includeHttpClient: Boolean = true,
 ): JerseyResourceEnhancer {
     /**
      * Utilities. Set to `null` to avoid injection. Modify utility mapper or client to inject
      * a different mapper or client.
      */
-    var utilityResourceEnhancer: UtilityResourceEnhancer? = UtilityResourceEnhancer()
+    private val okHttpResourceEnhancer: OkHttpResourceEnhancer? = if (includeHttpClient) OkHttpResourceEnhancer() else null
+    private val mapperResourceEnhancer: MapperResourceEnhancer? = if (includeMapper) MapperResourceEnhancer() else null
 
     override val classes = arrayOf(
         AuthenticationFilter::class.java,
@@ -38,7 +44,8 @@ class RadarJerseyResourceEnhancer(
     )
 
     override fun ResourceConfig.enhance() {
-        utilityResourceEnhancer?.enhanceResources(this)
+        okHttpResourceEnhancer?.enhanceResources(this)
+        mapperResourceEnhancer?.enhanceResources(this)
     }
 
     override fun AbstractBinder.enhance() {
@@ -53,6 +60,7 @@ class RadarJerseyResourceEnhancer(
             .to(Auth::class.java)
             .`in`(RequestScoped::class.java)
 
-        utilityResourceEnhancer?.enhanceBinder(this)
+        okHttpResourceEnhancer?.enhanceBinder(this)
+        mapperResourceEnhancer?.enhanceBinder(this)
     }
 }

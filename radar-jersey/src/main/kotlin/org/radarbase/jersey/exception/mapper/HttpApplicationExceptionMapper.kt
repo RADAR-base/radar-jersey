@@ -24,9 +24,9 @@ import jakarta.ws.rs.ext.Provider
 @Provider
 @Singleton
 class HttpApplicationExceptionMapper(
-        @Context private val uriInfo: UriInfo,
-        @Context private val requestContext: ContainerRequestContext,
-        @Context private val renderers: IterableProvider<ExceptionRenderer>
+    @Context private val uriInfo: UriInfo,
+    @Context private val requestContext: ContainerRequestContext,
+    @Context private val renderers: IterableProvider<ExceptionRenderer>
 ) : ExceptionMapper<HttpApplicationException> {
     override fun toResponse(exception: HttpApplicationException): Response {
         val mediaType = requestContext.acceptableMediaTypes

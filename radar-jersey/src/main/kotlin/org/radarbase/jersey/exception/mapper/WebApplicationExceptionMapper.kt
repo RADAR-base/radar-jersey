@@ -9,7 +9,6 @@
 
 package org.radarbase.jersey.exception.mapper
 
-import org.slf4j.LoggerFactory
 import jakarta.inject.Singleton
 import jakarta.ws.rs.WebApplicationException
 import jakarta.ws.rs.core.Context
@@ -17,12 +16,13 @@ import jakarta.ws.rs.core.Response
 import jakarta.ws.rs.core.UriInfo
 import jakarta.ws.rs.ext.ExceptionMapper
 import jakarta.ws.rs.ext.Provider
+import org.slf4j.LoggerFactory
 
 /** Handle WebApplicationException. This uses the status code embedded in the exception. */
 @Provider
 @Singleton
 class WebApplicationExceptionMapper(
-        @Context private val uriInfo: UriInfo
+    @Context private val uriInfo: UriInfo,
 ) : ExceptionMapper<WebApplicationException> {
 
     override fun toResponse(exception: WebApplicationException): Response {

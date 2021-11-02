@@ -14,6 +14,9 @@ dependencies {
     api("org.hibernate:hibernate-core:$hibernateVersion")
     runtimeOnly("org.hibernate:hibernate-c3p0:$hibernateVersion")
 
+    val javaxValidationVersion: String by project
+    implementation("javax.validation:validation-api:$javaxValidationVersion")
+
     val slf4jVersion: String by project
     implementation("org.slf4j:slf4j-api:$slf4jVersion")
 
@@ -33,7 +36,8 @@ dependencies {
 
     val junitVersion: String by project
     testImplementation("org.junit.jupiter:junit-jupiter:$junitVersion")
-    testImplementation("org.hamcrest:hamcrest-all:1.3")
+    val hamcrestVersion: String by project
+    testImplementation("org.hamcrest:hamcrest:$hamcrestVersion")
     val okhttpVersion: String by project
     testImplementation("com.squareup.okhttp3:okhttp:$okhttpVersion")
 }

@@ -38,8 +38,7 @@ class MPProjectService(
             refreshDuration = config.managementPortal.syncProjectsInterval,
             retryDuration = RETRY_INTERVAL)) {
         mpClient.requestProjects()
-                .map { it.id to it }
-                .toMap()
+            .associateBy { it.id }
     }
 
     private val participants: ConcurrentMap<String, CachedMap<String, MPSubject>> = ConcurrentHashMap()
@@ -81,8 +80,7 @@ class MPProjectService(
                 refreshDuration = config.managementPortal.syncParticipantsInterval,
                 retryDuration = RETRY_INTERVAL)) {
             mpClient.requestSubjects(projectId)
-                    .mapNotNull { subject -> subject.id?.let { it to subject } }
-                    .toMap()
+                .associateBy { checkNotNull(it.id) }
         }
     }
 
