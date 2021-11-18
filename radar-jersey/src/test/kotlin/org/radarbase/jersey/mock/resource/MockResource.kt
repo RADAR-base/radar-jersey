@@ -51,7 +51,7 @@ class MockResource {
     @Authenticated
     @GET
     @Path("projects/{projectId}/users/{subjectId}")
-    @NeedsPermission(Permission.Entity.SUBJECT, Permission.Operation.READ, "projectId", "subjectId")
+    @NeedsPermission(Permission.SUBJECT_READ, "projectId", "subjectId")
     @Operation(description = "Get user that is subject in given project")
     @ApiResponses(value = [
         ApiResponse(description = "User")

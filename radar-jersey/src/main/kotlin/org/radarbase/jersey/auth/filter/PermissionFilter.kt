@@ -31,10 +31,8 @@ class PermissionFilter(
 ) : ContainerRequestFilter {
     override fun filter(requestContext: ContainerRequestContext) {
         val resourceMethod = resourceInfo.resourceMethod
-
         val annotation = resourceMethod.getAnnotation(NeedsPermission::class.java)
-
-        val permission = Permission.of(annotation.entity, annotation.operation)
+        val permission = annotation.permission
 
         val projectId = annotation.projectPathParam
                 .takeIf { it.isNotEmpty() }
