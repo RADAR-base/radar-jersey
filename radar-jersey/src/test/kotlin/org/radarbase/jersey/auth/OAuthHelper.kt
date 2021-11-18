@@ -77,10 +77,7 @@ class OAuthHelper {
     companion object {
         private const val TEST_SIGNKEY_ALIAS = "radarbase-managementportal-ec"
         private const val TEST_KEYSTORE_PASSWORD = "radarbase"
-        private val SCOPES = Permission.allPermissions()
-                .map { it.scopeName() }
-                .toTypedArray()
-
+        private val SCOPES = Permission.scopes()
         private val AUTHORITIES = arrayOf("ROLE_SYS_ADMIN")
         private val ROLES = arrayOf<String>()
         private val SOURCES = arrayOf<String>()
