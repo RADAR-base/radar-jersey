@@ -6,7 +6,6 @@ import jakarta.ws.rs.ext.WriterInterceptor
 import kotlin.Throws
 import jakarta.ws.rs.ext.WriterInterceptorContext
 import org.glassfish.jersey.server.internal.process.MappableException
-import org.radarbase.jersey.exception.ClientAbortExceptionWriterInterceptor
 import org.slf4j.LoggerFactory
 import java.io.IOException
 

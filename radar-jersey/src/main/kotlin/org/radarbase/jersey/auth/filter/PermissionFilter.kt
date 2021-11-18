@@ -34,7 +34,7 @@ class PermissionFilter(
 
         val annotation = resourceMethod.getAnnotation(NeedsPermission::class.java)
 
-        val permission = Permission(annotation.entity, annotation.operation)
+        val permission = Permission.of(annotation.entity, annotation.operation)
 
         val projectId = annotation.projectPathParam
                 .takeIf { it.isNotEmpty() }

@@ -31,7 +31,7 @@ class JwtAuth(project: String?, private val jwt: DecodedJWT) : Auth {
 
         override fun hasPermissionOnSubject(permission: Permission, projectId: String, userId: String): Boolean {
             return hasPermissionOnProject(permission, projectId)
-                    && (userId == this@JwtAuth.userId || hasPermission(Permission(Entity.PROJECT, permission.operation)))
+                    && (userId == this@JwtAuth.userId || hasPermission(Permission.of(Entity.PROJECT, permission.operation)))
         }
 
         override fun hasPermissionOnSource(permission: Permission, projectId: String, userId: String, sourceId: String): Boolean {

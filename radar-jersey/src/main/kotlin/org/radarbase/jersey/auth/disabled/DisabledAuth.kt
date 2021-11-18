@@ -31,6 +31,8 @@ class DisabledAuth(
 
         override fun getSubject(): String = "anonymous"
 
+        override fun getUsername(): String = "anonymous"
+
         override fun getIssuedAt(): Date = Date()
 
         override fun getExpiresAt(): Date = Date(Long.MAX_VALUE)
