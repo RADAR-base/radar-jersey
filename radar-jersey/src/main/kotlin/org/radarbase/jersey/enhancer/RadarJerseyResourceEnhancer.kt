@@ -7,10 +7,11 @@
  * See the file LICENSE in the root of this repository.
  */
 
-package org.radarbase.jersey.config
+package org.radarbase.jersey.enhancer
 
 import jakarta.inject.Singleton
 import org.glassfish.jersey.internal.inject.AbstractBinder
+import org.glassfish.jersey.jackson.JacksonFeature
 import org.glassfish.jersey.process.internal.RequestScoped
 import org.glassfish.jersey.server.ResourceConfig
 import org.radarbase.jersey.auth.Auth
@@ -44,6 +45,7 @@ class RadarJerseyResourceEnhancer(
     )
 
     override fun ResourceConfig.enhance() {
+        register(JacksonFeature.withoutExceptionMappers())
         okHttpResourceEnhancer?.enhanceResources(this)
         mapperResourceEnhancer?.enhanceResources(this)
     }

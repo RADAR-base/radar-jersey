@@ -1,4 +1,4 @@
-package org.radarbase.jersey.config
+package org.radarbase.jersey.enhancer
 
 /**
  * Factory to create resource enhancers with.

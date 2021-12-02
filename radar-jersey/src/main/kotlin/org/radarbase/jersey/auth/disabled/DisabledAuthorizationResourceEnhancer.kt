@@ -7,12 +7,12 @@
  * See the file LICENSE in the root of this repository.
  */
 
-package org.radarbase.jersey.config
+package org.radarbase.jersey.auth.disabled
 
 import org.glassfish.jersey.internal.inject.AbstractBinder
 import org.radarbase.jersey.auth.AuthValidator
-import org.radarbase.jersey.auth.disabled.DisabledAuthValidator
 import jakarta.inject.Singleton
+import org.radarbase.jersey.enhancer.JerseyResourceEnhancer
 
 /**
  * Registration for authorization against a ManagementPortal. It requires managementPortalUrl and

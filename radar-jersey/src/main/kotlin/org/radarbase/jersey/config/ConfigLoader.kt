@@ -3,14 +3,9 @@ package org.radarbase.jersey.config
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory
 import com.fasterxml.jackson.module.kotlin.KotlinModule
-import io.swagger.v3.oas.models.OpenAPI
 import org.glassfish.jersey.internal.inject.AbstractBinder
 import org.glassfish.jersey.server.ResourceConfig
-import org.radarbase.jersey.auth.AuthConfig
-import org.radarbase.jersey.cache.CacheControlFeature
-import org.radarbase.jersey.doc.swagger.SwaggerResourceEnhancer
-import org.radarbase.jersey.filter.CorsFilter
-import org.radarbase.jersey.filter.ResponseLoggerFilter
+import org.radarbase.jersey.enhancer.*
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.io.BufferedInputStream
@@ -103,48 +98,6 @@ object ConfigLoader {
     }
 
     val logger: Logger = LoggerFactory.getLogger(ConfigLoader::class.java)
-
-    object Filters {
-        /** Adds CORS headers to all responses. */
-        val cors = CorsFilter::class.java
-        /** Log the HTTP status responses of all requests. */
-        val logResponse = ResponseLoggerFilter::class.java
-        /** Add cache control headers to responses. */
-        val cache = CacheControlFeature::class.java
-    }
-    object Enhancers {
-        /** Adds authorization framework, configuration and utilities. */
-        fun radar(
-            config: AuthConfig,
-            includeMapper: Boolean = true,
-            includeHttpClient: Boolean = true,
-        ) = RadarJerseyResourceEnhancer(config, includeMapper = includeMapper, includeHttpClient = includeHttpClient)
-        /** Authorization via ManagementPortal. */
-        fun managementPortal(config: AuthConfig) = ManagementPortalResourceEnhancer(config)
-        /** Disable all authorization. Useful for a public service. */
-        val disabledAuthorization = DisabledAuthorizationResourceEnhancer()
-        /** Handle a generic ECDSA identity provider. */
-        val ecdsa = EcdsaResourceEnhancer()
-        /** Adds a health endpoint. */
-        val health = HealthResourceEnhancer()
-        /**
-         * Handles any HTTP application exceptions including an appropriate response to client.
-         * @see org.radarbase.jersey.exception.HttpApplicationException
-         */
-        val httpException = HttpExceptionResourceEnhancer()
-        /** Handle unhandled exceptions. */
-        val generalException = GeneralExceptionResourceEnhancer()
-        /** Adds OkHttpClient utility. Not needed if radar(includeHttpClient = true). */
-        val okhttp = OkHttpResourceEnhancer()
-        /** Add ObjectMapper utility. Not needed if radar(includeMapper = true). */
-        val mapper = MapperResourceEnhancer()
-        /**
-         * Adds an OpenAPI endpoint to the stack at `/openapi.yaml` and `/openapi.json`.
-         * The description is given with [openApi]. Any routes provided in
-         * [ignoredRoutes] will not be shown in the endpoint.
-         */
-        fun swagger(openApi: OpenAPI, ignoredRoutes: Set<String>? = null) = SwaggerResourceEnhancer(openApi, ignoredRoutes)
-    }
 
     inline fun <T> T.copyEnv(key: String, doCopy: T.(String?) -> T): T = copyOnChange<T, String?>(null, { System.getenv(key) }, doCopy)
 

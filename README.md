@@ -11,7 +11,7 @@ repositories {
 }
 
 dependencies {
-    api("org.radarbase:radar-jersey:0.7.0")
+    api("org.radarbase:radar-jersey:0.8.0")
 }
 ```
 
@@ -21,14 +21,14 @@ Any path or resource that should be authenticated against the ManagementPortal, 
 @Path("/projects")
 @Authenticated
 class Users(
-        @Context projectService: MyProjectService
+    @Context projectService: MyProjectService
 ) {
     @GET
     @NeedsPermission(PROJECT, READ)
     fun getProjects(@Context auth: Auth): List<Project> {
         return projectService.read()
             .filter { auth.token.hasPermissionOnProject(PROJECT_READ, it.name) }
-    } 
+    }
 
     @POST
     @Path("/{projectId}")
@@ -53,40 +53,38 @@ class MyEnhancerFactory(private val config: MyConfigClass): EnhancerFactory {
         val authConfig = AuthConfig(
             managementPortal = MPConfig(
                 url = "http://...",
-	    ),
+            ),
             jwtResourceName = "res_MyResource",
-	)
+        )
         return listOf(
             // My own resource configuration
             MyResourceEnhancer(),
             // RADAR OAuth2 enhancement
-            ConfigLoader.Enhancers.radar(),
+            Enhancers.radar(authConfig),
             // Use ManagementPortal OAuth implementation
-            ConfigLoader.Enhancers.managementPortal,
-            // HttpApplicationException handling
-            ConfigLoader.Enhancers.httpException,
-            // General error handling (WebApplicationException and any other Exception)
-            ConfigLoader.Enhancers.generalException,
+            Enhancers.managementPortal(authConfig),
+            // Error handling
+            Enhancers.exception,
         )
     }
 
     class MyResourceEnhancer: JerseyResourceEnhancer {
         override val classes: Array<Class<*>> = arrayOf(
-	    ConfigLoader.Filters.logResponse,
-	    ConfigLoader.Filters.cors,
-	    ConfigLoader.Filters.cache,
-	)
+            Filters.logResponse,
+            Filters.cors,
+            Filters.cache,
+        )
 
-	overide val packages = arrayOf(
-	    "com.example.app.resources",
-	)
+        override val packages = arrayOf(
+            "com.example.app.resources",
+        )
 
         override fun AbstractBinder.enhance() {
             bind(config)
                 .to(MyConfigClass::class.java)
-	    bind(MyService::class.java)
-	        .to(MyService::class.java)
-		.`in`(Singleton::class.java)
+            bind(MyService::class.java)
+                .to(MyService::class.java)
+                .`in`(Singleton::class.java)
         }
     }
 }
@@ -168,8 +166,8 @@ The implementation may optionally return health status `UP` or `DOWN` and may in
 
 ### Caching
 
-Client side caching is enabled by the `ConfigLoader.Filters.cache` filter. When this is enabled, resource methods and classes can be annotated with a `org.radarbase.jersey.cache.Cache` or `NoCache` annotation. The fields of this annotation correspond to the [`Cache-Control` headers](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cache-Control).
+Client side caching is enabled by the `Filters.cache` filter. When this is enabled, resource methods and classes can be annotated with a `org.radarbase.jersey.cache.Cache` or `NoCache` annotation. The fields of this annotation correspond to the [`Cache-Control` headers](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cache-Control).
 
 ### OpenAPI / Swagger
 
-To automatically create a OpenAPI / Swagger endpoint for your API, add the `ConfigLoader.Enhancers.openapi` resource enhancer. Provide it with a general description of your API as specified by an `OpenAPI` object.
+To automatically create a OpenAPI / Swagger endpoint for your API, add the `Enhancers.openapi` resource enhancer. Provide it with a general description of your API as specified by an `OpenAPI` object.

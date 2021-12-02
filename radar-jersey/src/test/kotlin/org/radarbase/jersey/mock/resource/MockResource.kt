@@ -22,6 +22,7 @@ import jakarta.ws.rs.core.Context
 import jakarta.ws.rs.core.MediaType
 import org.radarbase.jersey.exception.HttpBadRequestException
 import java.io.IOException
+import java.time.Instant
 
 @Path("/")
 @Resource
@@ -73,5 +74,15 @@ class MockResource {
     @Path("jerseybadrequest")
     fun withJerseyBadRequestException(): Unit = throw BadRequestException("test")
 
-    data class DetailedUser(val accessToken: String, val name: String)
+    @POST
+    @Path("user")
+    fun updateUser(user: DetailedUser): DetailedUser {
+        return user
+    }
+
+    data class DetailedUser(
+        val accessToken: String,
+        val name: String,
+        val createdAt: Instant = Instant.ofEpochSecond(3600),
+    )
 }

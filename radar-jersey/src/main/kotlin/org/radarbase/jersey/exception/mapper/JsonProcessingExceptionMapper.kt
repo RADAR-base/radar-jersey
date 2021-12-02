@@ -9,6 +9,8 @@
 
 package org.radarbase.jersey.exception.mapper
 
+import com.fasterxml.jackson.core.JsonProcessingException
+import org.slf4j.LoggerFactory
 import jakarta.inject.Singleton
 import jakarta.ws.rs.container.ContainerRequestContext
 import jakarta.ws.rs.core.Context
@@ -16,30 +18,25 @@ import jakarta.ws.rs.core.Response
 import jakarta.ws.rs.core.UriInfo
 import jakarta.ws.rs.ext.ExceptionMapper
 import jakarta.ws.rs.ext.Provider
-import org.radarbase.jersey.exception.HttpApplicationException
-import org.slf4j.LoggerFactory
+import org.radarbase.jersey.exception.HttpBadRequestException
 
+/** Handle exceptions without a specific mapper. */
 @Provider
 @Singleton
-class HttpApplicationExceptionMapper(
+class JsonProcessingExceptionMapper(
     @Context private val uriInfo: UriInfo,
     @Context private val requestContext: ContainerRequestContext,
     @Context private val renderers: ExceptionRenderers,
-) : ExceptionMapper<HttpApplicationException> {
-    override fun toResponse(exception: HttpApplicationException): Response {
-        logger.error(
-            "[{}] {} {} - {}: {}",
-            exception.status,
-            requestContext.method,
-            uriInfo.path,
-            exception.code,
-            exception.detailedMessage
-        )
+) : ExceptionMapper<JsonProcessingException> {
 
-        return renderers.render(exception).build()
+    override fun toResponse(exception: JsonProcessingException): Response {
+        logger.error("[400] {} {} {}", requestContext.method, uriInfo.path, exception.toString())
+        return renderers
+            .render(HttpBadRequestException("json_processing", "Failed to map JSON: $exception"))
+            .build()
     }
 
     companion object {
-        private val logger = LoggerFactory.getLogger(HttpApplicationExceptionMapper::class.java)
+        private val logger = LoggerFactory.getLogger(JsonProcessingExceptionMapper::class.java)
     }
 }

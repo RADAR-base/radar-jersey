@@ -4,9 +4,9 @@ import io.swagger.v3.oas.models.OpenAPI
 import io.swagger.v3.oas.models.info.Info
 import io.swagger.v3.oas.models.info.License
 import org.radarbase.jersey.auth.AuthConfig
-import org.radarbase.jersey.config.ConfigLoader
-import org.radarbase.jersey.config.EnhancerFactory
-import org.radarbase.jersey.config.JerseyResourceEnhancer
+import org.radarbase.jersey.enhancer.EnhancerFactory
+import org.radarbase.jersey.enhancer.Enhancers
+import org.radarbase.jersey.enhancer.JerseyResourceEnhancer
 import java.util.*
 
 class MockSwaggerResourceEnhancerFactory(private val config: AuthConfig) : EnhancerFactory {
@@ -16,9 +16,9 @@ class MockSwaggerResourceEnhancerFactory(private val config: AuthConfig) : Enhan
         }
         return listOf(
             MockResourceEnhancer(),
-            ConfigLoader.Enhancers.radar(config),
-            ConfigLoader.Enhancers.disabledAuthorization,
-            ConfigLoader.Enhancers.swagger(OpenAPI().apply {
+            Enhancers.radar(config),
+            Enhancers.disabledAuthorization,
+            Enhancers.swagger(OpenAPI().apply {
                 info = Info().apply {
                     version = properties.getProperty("version")
                     description = "MockProject"

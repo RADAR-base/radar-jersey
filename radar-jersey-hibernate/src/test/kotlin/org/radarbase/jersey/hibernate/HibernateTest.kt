@@ -77,20 +77,20 @@ internal class HibernateTest {
                     override fun contentType() = "application/json".toMediaTypeOrNull()
 
                     override fun writeTo(sink: BufferedSink) {
-                        sink.writeUtf8("{\"name\": \"a\"}")
+                        sink.writeUtf8("""{"name": "a"}""")
                     }
                 })
                 .url("http://localhost:9091/projects")
                 .build()).execute().use { response ->
             assertThat(response.isSuccessful, `is`(true))
-            assertThat(response.body?.string(), equalTo("{\"id\":1000,\"name\":\"a\",\"description\":null}"))
+            assertThat(response.body?.string(), equalTo("""{"id":1000,"name":"a"}"""))
         }
 
         client.newCall(Request.Builder()
                 .url("http://localhost:9091/projects/1000")
                 .build()).execute().use { response ->
             assertThat(response.isSuccessful, `is`(true))
-            assertThat(response.body?.string(), equalTo("{\"id\":1000,\"name\":\"a\",\"description\":null}"))
+            assertThat(response.body?.string(), equalTo("""{"id":1000,"name":"a"}"""))
         }
 
 
@@ -98,7 +98,7 @@ internal class HibernateTest {
                 .url("http://localhost:9091/projects")
                 .build()).execute().use { response ->
             assertThat(response.isSuccessful, `is`(true))
-            assertThat(response.body?.string(), equalTo("[{\"id\":1000,\"name\":\"a\",\"description\":null}]"))
+            assertThat(response.body?.string(), equalTo("""[{"id":1000,"name":"a"}]"""))
         }
 
         client.newCall(Request.Builder()
@@ -106,13 +106,13 @@ internal class HibernateTest {
                     override fun contentType() = "application/json".toMediaTypeOrNull()
 
                     override fun writeTo(sink: BufferedSink) {
-                        sink.writeUtf8("{\"name\": \"a\",\"description\":\"d\"}")
+                        sink.writeUtf8("""{"name": "a","description":"d"}""")
                     }
                 })
                 .url("http://localhost:9091/projects/1000")
                 .build()).execute().use { response ->
             assertThat(response.isSuccessful, `is`(true))
-            assertThat(response.body?.string(), equalTo("{\"id\":1000,\"name\":\"a\",\"description\":\"d\"}"))
+            assertThat(response.body?.string(), equalTo("""{"id":1000,"name":"a","description":"d"}"""))
         }
         client.newCall(Request.Builder()
                 .delete()

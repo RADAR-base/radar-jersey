@@ -4,7 +4,7 @@ import io.swagger.v3.jaxrs2.integration.JaxrsOpenApiContextBuilder
 import io.swagger.v3.oas.integration.SwaggerConfiguration
 import io.swagger.v3.oas.models.OpenAPI
 import org.glassfish.jersey.server.ResourceConfig
-import org.radarbase.jersey.config.JerseyResourceEnhancer
+import org.radarbase.jersey.enhancer.JerseyResourceEnhancer
 
 /**
  * Adds an OpenAPI endpoint to the stack at `/openapi.yaml` and `/openapi.json`.
