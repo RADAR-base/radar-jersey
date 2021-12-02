@@ -1,4 +1,4 @@
-package org.radarbase.jersey.config
+package org.radarbase.jersey.enhancer
 
 import org.glassfish.jersey.internal.inject.AbstractBinder
 import org.glassfish.jersey.internal.inject.PerThread

@@ -72,10 +72,20 @@ internal class RadarJerseyResourceEnhancerTest {
                 .bearerHeader(oauthHelper)
                 .build()).execute().use { response ->
             assertThat(response.isSuccessful, `is`(true))
-            assertThat(response.body?.string(), equalTo("{\"accessToken\":\"${oauthHelper.validEcToken}\"}"))
+            assertThat(response.body?.string(), equalTo("""{"accessToken":"${oauthHelper.validEcToken}"}"""))
         }
     }
 
+    @Test
+    fun testAuthenticatedGetDetailed() {
+        client.newCall(Request.Builder()
+            .url("http://localhost:9091/user/detailed")
+            .bearerHeader(oauthHelper)
+            .build()).execute().use { response ->
+            assertThat(response.isSuccessful, `is`(true))
+            assertThat(response.body?.string(), equalTo("""{"accessToken":"${oauthHelper.validEcToken}","name":"name","createdAt":"1970-01-01T01:00:00Z"}"""))
+        }
+    }
 
     @Test
     fun testUnauthenticatedGet() {

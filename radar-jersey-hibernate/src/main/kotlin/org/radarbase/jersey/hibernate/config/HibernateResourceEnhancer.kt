@@ -2,7 +2,7 @@ package org.radarbase.jersey.hibernate.config
 
 import org.glassfish.jersey.internal.inject.AbstractBinder
 import org.glassfish.jersey.process.internal.RequestScoped
-import org.radarbase.jersey.config.JerseyResourceEnhancer
+import org.radarbase.jersey.enhancer.JerseyResourceEnhancer
 import org.radarbase.jersey.hibernate.DatabaseHealthMetrics
 import org.radarbase.jersey.hibernate.DatabaseInitialization
 import org.radarbase.jersey.hibernate.RadarEntityManagerFactory

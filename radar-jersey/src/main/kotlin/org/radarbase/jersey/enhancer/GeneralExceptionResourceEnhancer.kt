@@ -1,4 +1,4 @@
-package org.radarbase.jersey.config
+package org.radarbase.jersey.enhancer
 
 import org.radarbase.jersey.exception.ClientAbortExceptionWriterInterceptor
 import org.radarbase.jersey.exception.mapper.UnhandledExceptionMapper

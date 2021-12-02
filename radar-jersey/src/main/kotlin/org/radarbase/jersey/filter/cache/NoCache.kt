@@ -1,4 +1,4 @@
-package org.radarbase.jersey.cache
+package org.radarbase.jersey.filter.cache
 
 /**
  * Set Cache-Control response header of `no-cache`.

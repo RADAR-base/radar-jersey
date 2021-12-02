@@ -1,16 +1,16 @@
 package org.radarbase.jersey.hibernate.mock
 
 import org.glassfish.jersey.internal.inject.AbstractBinder
-import org.radarbase.jersey.config.ConfigLoader
-import org.radarbase.jersey.config.JerseyResourceEnhancer
+import org.radarbase.jersey.enhancer.JerseyResourceEnhancer
 import org.radarbase.jersey.hibernate.db.ProjectRepository
 import org.radarbase.jersey.hibernate.db.ProjectRepositoryImpl
 import org.radarbase.jersey.service.ProjectService
 import jakarta.inject.Singleton
+import org.radarbase.jersey.filter.Filters
 
 class MockResourceEnhancer : JerseyResourceEnhancer {
     override val classes: Array<Class<*>> = arrayOf(
-            ConfigLoader.Filters.logResponse)
+            Filters.logResponse)
 
     override val packages: Array<String> = arrayOf(
             "org.radarbase.jersey.hibernate.mock.resource")

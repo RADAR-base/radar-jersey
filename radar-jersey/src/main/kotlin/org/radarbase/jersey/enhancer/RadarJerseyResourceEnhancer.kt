@@ -7,7 +7,7 @@
  * See the file LICENSE in the root of this repository.
  */
 
-package org.radarbase.jersey.config
+package org.radarbase.jersey.enhancer
 
 import jakarta.inject.Singleton
 import org.glassfish.jersey.internal.inject.AbstractBinder

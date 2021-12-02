@@ -1,4 +1,4 @@
-package org.radarbase.jersey.cache
+package org.radarbase.jersey.filter.cache
 
 import java.lang.reflect.AnnotatedElement
 import jakarta.ws.rs.GET
