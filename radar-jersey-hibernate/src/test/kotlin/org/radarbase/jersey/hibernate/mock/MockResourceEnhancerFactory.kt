@@ -10,11 +10,11 @@ import org.radarbase.jersey.hibernate.config.HibernateResourceEnhancer
 class MockResourceEnhancerFactory(private val config: AuthConfig, private val databaseConfig: DatabaseConfig) :
     EnhancerFactory {
     override fun createEnhancers(): List<JerseyResourceEnhancer> = listOf(
-            MockResourceEnhancer(),
-            Enhancers.radar(config),
-            HibernateResourceEnhancer(databaseConfig),
-            Enhancers.disabledAuthorization,
-            Enhancers.health,
-            Enhancers.httpException,
-            Enhancers.generalException)
+        MockResourceEnhancer(),
+        Enhancers.radar(config),
+        HibernateResourceEnhancer(databaseConfig),
+        Enhancers.disabledAuthorization,
+        Enhancers.health,
+        Enhancers.exception,
+    )
 }

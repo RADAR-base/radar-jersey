@@ -26,10 +26,13 @@ dependencies {
     val jerseyVersion: String by project
     api("org.glassfish.jersey.inject:jersey-hk2:$jerseyVersion")
     api("org.glassfish.jersey.core:jersey-server:$jerseyVersion")
+    implementation("org.glassfish.jersey.media:jersey-media-json-jackson:$jerseyVersion")
 
     val jacksonVersion: String by project
     api("com.fasterxml.jackson.core:jackson-databind:$jacksonVersion")
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jacksonVersion")
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:$jacksonVersion")
+    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jdk8:$jacksonVersion")
 
     val okhttpVersion: String by project
     implementation("com.squareup.okhttp3:okhttp:$okhttpVersion")
@@ -47,11 +50,6 @@ dependencies {
     val swaggerVersion: String by project
     implementation("io.swagger.core.v3:swagger-jaxrs2-jakarta:$swaggerVersion")
 
-    runtimeOnly("org.glassfish.jersey.media:jersey-media-json-jackson:$jerseyVersion")
-
-    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:$jacksonVersion")
-    runtimeOnly("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jacksonVersion")
-    runtimeOnly("com.fasterxml.jackson.datatype:jackson-datatype-jdk8:$jacksonVersion")
 
     val jakartaXmlBindVersion: String by project
     val jakartaJaxbCoreVersion: String by project
@@ -70,6 +68,9 @@ dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter:$junitVersion")
     val hamcrestVersion: String by project
     testImplementation("org.hamcrest:hamcrest:$hamcrestVersion")
+
+    val mockitoKotlinVersion: String by project
+    testImplementation("org.mockito.kotlin:mockito-kotlin:$mockitoKotlinVersion")
 }
 
 tasks.processResources {

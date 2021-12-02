@@ -74,6 +74,12 @@ class MockResource {
     @Path("jerseybadrequest")
     fun withJerseyBadRequestException(): Unit = throw BadRequestException("test")
 
+    @POST
+    @Path("user")
+    fun updateUser(user: DetailedUser): DetailedUser {
+        return user
+    }
+
     data class DetailedUser(
         val accessToken: String,
         val name: String,

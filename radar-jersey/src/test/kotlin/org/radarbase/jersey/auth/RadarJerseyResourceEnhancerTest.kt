@@ -9,8 +9,10 @@
 
 package org.radarbase.jersey.auth
 
+import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
+import okhttp3.RequestBody.Companion.toRequestBody
 import org.glassfish.grizzly.http.server.HttpServer
 import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory
 import org.hamcrest.MatcherAssert.assertThat
@@ -88,6 +90,30 @@ internal class RadarJerseyResourceEnhancerTest {
     }
 
     @Test
+    fun testAuthenticatedPostDetailed() {
+        client.newCall(Request.Builder()
+            .url("http://localhost:9091/user")
+            .bearerHeader(oauthHelper)
+            .post("""{"accessToken":"${oauthHelper.validEcToken}","name":"name","createdAt":"1970-01-01T01:00:00Z"}""".toRequestBody("application/json".toMediaType()))
+            .build()).execute().use { response ->
+            assertThat(response.isSuccessful, `is`(true))
+            assertThat(response.body?.string(), equalTo("""{"accessToken":"${oauthHelper.validEcToken}","name":"name","createdAt":"1970-01-01T01:00:00Z"}"""))
+        }
+    }
+
+    @Test
+    fun testAuthenticatedPostDetailedBadRequest() {
+        client.newCall(Request.Builder()
+            .url("http://localhost:9091/user")
+            .bearerHeader(oauthHelper)
+            .post("""{}""".toRequestBody("application/json".toMediaType()))
+            .build()).execute().use { response ->
+            assertThat(response.code, `is`(400))
+        }
+    }
+
+
+    @Test
     fun testUnauthenticatedGet() {
         client.newCall(Request.Builder()
                 .url("http://localhost:9091/user")
@@ -135,7 +161,6 @@ internal class RadarJerseyResourceEnhancerTest {
             assertThat(response.body?.string(), equalTo("{\"projectId\":\"a\",\"userId\":\"b\"}"))
         }
     }
-
 
     @Test
     fun testNonExistingGet() {

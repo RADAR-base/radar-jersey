@@ -2,7 +2,11 @@ package org.radarbase.jersey.enhancer
 
 import io.swagger.v3.oas.models.OpenAPI
 import org.radarbase.jersey.auth.AuthConfig
+import org.radarbase.jersey.auth.disabled.DisabledAuthorizationResourceEnhancer
+import org.radarbase.jersey.auth.jwt.EcdsaResourceEnhancer
+import org.radarbase.jersey.auth.managementportal.ManagementPortalResourceEnhancer
 import org.radarbase.jersey.doc.swagger.SwaggerResourceEnhancer
+import org.radarbase.jersey.exception.ExceptionResourceEnhancer
 
 object Enhancers {
     /** Adds authorization framework, configuration and utilities. */
@@ -20,12 +24,10 @@ object Enhancers {
     /** Adds a health endpoint. */
     val health = HealthResourceEnhancer()
     /**
-     * Handles any HTTP application exceptions including an appropriate response to client.
+     * Handles any application exceptions including an appropriate response to client.
      * @see org.radarbase.jersey.exception.HttpApplicationException
      */
-    val httpException = HttpExceptionResourceEnhancer()
-    /** Handle unhandled exceptions. */
-    val generalException = GeneralExceptionResourceEnhancer()
+    val exception = ExceptionResourceEnhancer()
     /** Adds OkHttpClient utility. Not needed if radar(includeHttpClient = true). */
     val okhttp = OkHttpResourceEnhancer()
     /** Add ObjectMapper utility. Not needed if radar(includeMapper = true). */

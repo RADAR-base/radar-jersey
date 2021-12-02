@@ -7,12 +7,12 @@
  * See the file LICENSE in the root of this repository.
  */
 
-package org.radarbase.jersey.enhancer
+package org.radarbase.jersey.auth.jwt
 
 import org.glassfish.jersey.internal.inject.AbstractBinder
 import org.radarbase.jersey.auth.AuthValidator
-import org.radarbase.jersey.auth.jwt.EcdsaJwtTokenValidator
 import jakarta.inject.Singleton
+import org.radarbase.jersey.enhancer.JerseyResourceEnhancer
 
 /**
  * Registration for authorization against a generic OAuth 2.0 provider.

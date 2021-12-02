@@ -10,6 +10,6 @@ class MockDisabledAuthResourceEnhancerFactory(private val config: AuthConfig) : 
             MockResourceEnhancer(),
             Enhancers.radar(config),
             Enhancers.disabledAuthorization,
-            Enhancers.httpException,
-            Enhancers.generalException)
+            Enhancers.exception,
+    )
 }

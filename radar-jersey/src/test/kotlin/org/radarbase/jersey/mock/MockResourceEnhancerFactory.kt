@@ -12,7 +12,6 @@ class MockResourceEnhancerFactory(
         MockResourceEnhancer(),
         Enhancers.radar(config),
         Enhancers.managementPortal(config),
-        Enhancers.httpException,
-        Enhancers.generalException,
+        Enhancers.exception,
     )
 }

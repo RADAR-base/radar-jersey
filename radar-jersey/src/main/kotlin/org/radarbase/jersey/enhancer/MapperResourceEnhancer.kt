@@ -13,7 +13,9 @@ import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.SerializationFeature
+import com.fasterxml.jackson.datatype.jdk8.Jdk8Module
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
+import com.fasterxml.jackson.module.kotlin.jsonMapper
 import com.fasterxml.jackson.module.kotlin.kotlinModule
 import jakarta.inject.Singleton
 import jakarta.ws.rs.ext.ContextResolver
@@ -33,8 +35,7 @@ class MapperResourceEnhancer: JerseyResourceEnhancer {
         get() = mapper ?: createDefaultMapper().also { mapper = it }
 
     override fun ResourceConfig.enhance() {
-        logger.info("Adding mapper to resources")
-        register(ContextResolver { latestMapper })
+        register(ObjectMapperResolver())
     }
 
     override fun AbstractBinder.enhance() {
@@ -43,28 +44,23 @@ class MapperResourceEnhancer: JerseyResourceEnhancer {
     }
 
     companion object {
-        private val logger = LoggerFactory.getLogger(MapperResourceEnhancer::class.java)
-        fun createDefaultMapper(): ObjectMapper = ObjectMapper()
-                    .setSerializationInclusion(JsonInclude.Include.NON_NULL)
-                    .registerModule(JavaTimeModule())
-                    .registerModule(kotlinModule {
-                        nullToEmptyMap(true)
-                        nullToEmptyCollection(true)
-                        nullIsSameAsDefault(true)
-                    })
-                    .configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false)
-                    .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
-//
-//        jsonMapper {
-//            configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false)
-//            configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
-//            serializationInclusion(JsonInclude.Include.NON_NULL)
-//            addModule(JavaTimeModule())
-//            addModule(kotlinModule {
-//                nullToEmptyMap(true)
-//                nullToEmptyCollection(true)
-//                nullIsSameAsDefault(true)
-//            })
-//        }
+        fun createDefaultMapper(): ObjectMapper = jsonMapper {
+            disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
+            disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
+            serializationInclusion(JsonInclude.Include.NON_NULL)
+            addModule(kotlinModule {
+                nullToEmptyMap(true)
+                nullToEmptyCollection(true)
+                nullIsSameAsDefault(true)
+            })
+            addModule(JavaTimeModule())
+            addModule(Jdk8Module())
+        }
+    }
+
+    private inner class ObjectMapperResolver : ContextResolver<ObjectMapper> {
+        override fun getContext(type: Class<*>?): ObjectMapper {
+            return latestMapper
+        }
     }
 }
