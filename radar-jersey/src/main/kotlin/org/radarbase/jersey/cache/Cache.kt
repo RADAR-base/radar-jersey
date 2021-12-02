@@ -1,4 +1,4 @@
-package org.radarbase.jersey.filter.cache
+package org.radarbase.jersey.cache
 
 /**
  * Set response Cache-Control header automatically. For the interpretation of the headers.

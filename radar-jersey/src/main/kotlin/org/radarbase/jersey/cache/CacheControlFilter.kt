@@ -1,4 +1,4 @@
-package org.radarbase.jersey.filter.cache
+package org.radarbase.jersey.cache
 
 import java.io.IOException
 import jakarta.annotation.Priority

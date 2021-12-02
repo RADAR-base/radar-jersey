@@ -1,6 +1,6 @@
 package org.radarbase.jersey.filter
 
-import org.radarbase.jersey.filter.cache.CacheControlFeature
+import org.radarbase.jersey.cache.CacheControlFeature
 
 object Filters {
     /** Adds CORS headers to all responses. */
