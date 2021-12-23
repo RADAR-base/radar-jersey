@@ -13,7 +13,7 @@ plugins {
 
 allprojects {
     group = "org.radarbase"
-    version = "0.8.0.1"
+    version = "0.8.1"
 }
 
 subprojects {
@@ -36,9 +36,6 @@ subprojects {
 
     repositories {
         mavenCentral()
-        // Temporary until Dokka is fully published on maven central.
-        // https://github.com/Kotlin/kotlinx.html/issues/81
-        maven(url = "https://maven.pkg.jetbrains.space/public/p/kotlinx-html/maven")
     }
 
     dependencies {
@@ -203,5 +200,5 @@ nexusPublishing {
 }
 
 tasks.wrapper {
-    gradleVersion = "7.3.1"
+    gradleVersion = "7.3.3"
 }
