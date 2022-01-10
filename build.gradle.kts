@@ -7,13 +7,13 @@ plugins {
     `maven-publish`
     signing
     id("org.jetbrains.dokka") apply false
-    id("com.github.ben-manes.versions") version "0.39.0"
+    id("com.github.ben-manes.versions") version "0.41.0"
     id("io.github.gradle-nexus.publish-plugin") version "1.1.0"
 }
 
 allprojects {
     group = "org.radarbase"
-    version = "0.8.1-SNAPSHOT"
+    version = "0.8.1"
 }
 
 subprojects {
@@ -41,6 +41,14 @@ subprojects {
     dependencies {
         val dokkaVersion: String by project
         configurations["dokkaHtmlPlugin"]("org.jetbrains.dokka:kotlin-as-java-plugin:$dokkaVersion")
+
+        val jacksonVersion: String by project
+        configurations["dokkaPlugin"](platform("com.fasterxml.jackson:jackson-bom:$jacksonVersion"))
+        configurations["dokkaRuntime"](platform("com.fasterxml.jackson:jackson-bom:$jacksonVersion"))
+
+        val jsoupVersion: String by project
+        configurations["dokkaPlugin"]("org.jsoup:jsoup:$jsoupVersion")
+        configurations["dokkaRuntime"]("org.jsoup:jsoup:$jsoupVersion")
 
         val log4j2Version: String by project
         val testRuntimeOnly by configurations
