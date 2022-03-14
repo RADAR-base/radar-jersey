@@ -21,7 +21,7 @@ jobs:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         run: >
           snyk test
-            --all-projects
+            --all-sub-projects
             --configuration-matching='^(compile|runtime)Classpath$'
             --json-file-output=${{ env.REPORT_FILE }}
             --org=radar-base
