@@ -23,7 +23,9 @@ jobs:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         run: >
           snyk test
-          --all-sub-projects
-          --configuration-matching='^(compile|runtime)Classpath$'
+          --configuration-matching='^runtimeClasspath$'
+          --configuration-matching='^compileClasspath$'
           --fail-on=upgradable
           --org=radar-base
+          --sub-project=radar-jersey
+          --sub-project=radar-jersey-hibernate
