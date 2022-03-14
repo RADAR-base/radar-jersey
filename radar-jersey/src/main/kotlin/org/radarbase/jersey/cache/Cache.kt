@@ -15,7 +15,7 @@ package org.radarbase.jersey.cache
     AnnotationTarget.PROPERTY_GETTER,
     AnnotationTarget.PROPERTY_SETTER
 )
-@kotlin.annotation.Retention(AnnotationRetention.RUNTIME)
+@Retention(AnnotationRetention.RUNTIME)
 annotation class Cache(
     /** Corresponds to the `max-age` cache control directive. */
     val maxAge: Int = -1,

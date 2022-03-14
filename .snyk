@@ -6,4 +6,9 @@ ignore:
     - '*':
         reason: No path to create alias
         expires: 2022-02-22T00:00:00.000Z
+  SNYK-JAVA-ORGJETBRAINSKOTLIN-2393744:
+    - '*':
+        reason: Not using Kotlin Files interface
+        expires: 2022-12-13T08:35:54.696Z
+        created: 2022-03-14T08:35:54.706Z
 patch: {}

@@ -36,7 +36,7 @@ class RadarEntityManagerFactoryFactory(
 
         /**
          * Use an EntityManager for the duration of [method]. No reference of the passed
-         * [EntityManager] should be returned back, either directly or indirectly.
+         * [EntityManager] should be returned, either directly or indirectly.
          */
         @Suppress("unused")
         inline fun <T> EntityManagerFactory.useEntityManager(method: (EntityManager) -> T): T {

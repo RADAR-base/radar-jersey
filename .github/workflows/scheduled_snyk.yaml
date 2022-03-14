@@ -9,13 +9,25 @@ jobs:
       REPORT_FILE: test.json
     steps:
       - uses: actions/checkout@master
-      - name: Run Snyk to check for vulnerabilities
-        uses: snyk/actions/gradle-jdk11@master
+      - uses: snyk/actions/setup@master
+
+      - uses: actions/setup-java@v2
+        with:
+          distribution: zulu
+          java-version: 11
+
+      - name: Run Snyk
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-        with:
-          command: test
-          args: --json-file-output=${{ env.REPORT_FILE }}
+        run: >
+          snyk test
+          --configuration-matching='^runtimeClasspath$'
+          --configuration-matching='^compileClasspath$'
+          --json-file-output=${{ env.REPORT_FILE }}
+          --org=radar-base
+          --sub-project=radar-jersey
+          --sub-project=radar-jersey-hibernate
+
       - name: Report new vulnerabilities
         uses: thehyve/report-vulnerability@master
         with:

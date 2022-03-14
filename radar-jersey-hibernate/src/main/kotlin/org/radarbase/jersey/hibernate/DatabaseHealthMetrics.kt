@@ -1,5 +1,7 @@
 package org.radarbase.jersey.hibernate
 
+import jakarta.inject.Provider
+import jakarta.ws.rs.core.Context
 import org.radarbase.jersey.hibernate.RadarEntityManagerFactory.Companion.connection
 import org.radarbase.jersey.hibernate.config.DatabaseConfig
 import org.radarbase.jersey.service.HealthService
@@ -7,10 +9,7 @@ import org.radarbase.jersey.service.HealthService.Metric
 import org.radarbase.jersey.util.CacheConfig
 import org.radarbase.jersey.util.CachedValue
 import java.time.Duration
-import jakarta.inject.Provider
-import javax.persistence.Cache
 import javax.persistence.EntityManager
-import jakarta.ws.rs.core.Context
 
 class DatabaseHealthMetrics(
         @Context private val entityManager: Provider<EntityManager>,
