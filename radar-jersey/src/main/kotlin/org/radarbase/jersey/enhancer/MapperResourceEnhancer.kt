@@ -15,13 +15,12 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
+import com.fasterxml.jackson.module.kotlin.KotlinFeature
 import com.fasterxml.jackson.module.kotlin.jsonMapper
 import com.fasterxml.jackson.module.kotlin.kotlinModule
-import jakarta.inject.Singleton
 import jakarta.ws.rs.ext.ContextResolver
 import org.glassfish.jersey.internal.inject.AbstractBinder
 import org.glassfish.jersey.server.ResourceConfig
-import org.slf4j.LoggerFactory
 
 /**
  * Add utilities such as a reusable ObjectMapper and OkHttpClient to inject.
@@ -49,9 +48,9 @@ class MapperResourceEnhancer: JerseyResourceEnhancer {
             disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
             serializationInclusion(JsonInclude.Include.NON_NULL)
             addModule(kotlinModule {
-                nullToEmptyMap(true)
-                nullToEmptyCollection(true)
-                nullIsSameAsDefault(true)
+                enable(KotlinFeature.NullToEmptyMap)
+                enable(KotlinFeature.NullToEmptyCollection)
+                enable(KotlinFeature.NullIsSameAsDefault)
             })
             addModule(JavaTimeModule())
             addModule(Jdk8Module())

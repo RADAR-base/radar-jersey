@@ -31,8 +31,14 @@ dependencies {
     val jacksonVersion: String by project
     api("com.fasterxml.jackson.core:jackson-databind:$jacksonVersion")
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jacksonVersion")
-    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:$jacksonVersion")
+    val jacksonKotlinModuleVersion: String by project
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:$jacksonKotlinModuleVersion") {
+        version {
+            strictly(jacksonKotlinModuleVersion)
+        }
+    }
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jdk8:$jacksonVersion")
+    implementation("com.fasterxml.jackson.jakarta.rs:jackson-jakarta-rs-json-provider:$jacksonVersion")
 
     val okhttpVersion: String by project
     implementation("com.squareup.okhttp3:okhttp:$okhttpVersion")
@@ -48,8 +54,9 @@ dependencies {
     implementation("org.slf4j:slf4j-api:$slf4jVersion")
 
     val swaggerVersion: String by project
-    implementation("io.swagger.core.v3:swagger-jaxrs2-jakarta:$swaggerVersion")
-
+    implementation("io.swagger.core.v3:swagger-jaxrs2-jakarta:$swaggerVersion") {
+        exclude(group = "com.fasterxml.jackson.jaxrs", module = "jackson-jaxrs-json-provider")
+    }
 
     val jakartaXmlBindVersion: String by project
     val jakartaJaxbCoreVersion: String by project

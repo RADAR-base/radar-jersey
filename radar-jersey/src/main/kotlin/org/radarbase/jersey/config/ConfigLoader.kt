@@ -2,7 +2,7 @@ package org.radarbase.jersey.config
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory
-import com.fasterxml.jackson.module.kotlin.KotlinModule
+import com.fasterxml.jackson.module.kotlin.kotlinModule
 import org.glassfish.jersey.internal.inject.AbstractBinder
 import org.glassfish.jersey.server.ResourceConfig
 import org.radarbase.jersey.enhancer.*
@@ -45,7 +45,7 @@ object ConfigLoader {
         logger.info("Reading configuration from {}", configFile.toAbsolutePath())
         try {
             val localMapper = mapper ?: ObjectMapper(YAMLFactory())
-                    .registerModule(KotlinModule())
+                    .registerModule(kotlinModule())
             return Files.newInputStream(configFile).use { input ->
                 BufferedInputStream(input).use { bufInput ->
                     localMapper.readValue(bufInput, clazz)

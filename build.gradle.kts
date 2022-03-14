@@ -7,7 +7,7 @@ plugins {
     `maven-publish`
     signing
     id("org.jetbrains.dokka") apply false
-    id("com.github.ben-manes.versions") version "0.41.0"
+    id("com.github.ben-manes.versions") version "0.42.0"
     id("io.github.gradle-nexus.publish-plugin") version "1.1.0"
 }
 
@@ -78,8 +78,8 @@ subprojects {
     tasks.withType<KotlinCompile> {
         kotlinOptions {
             jvmTarget = "11"
-            apiVersion = "1.5"
-            languageVersion = "1.5"
+            apiVersion = "1.6"
+            languageVersion = "1.6"
         }
     }
 
@@ -128,7 +128,7 @@ subprojects {
                         licenses {
                             license {
                                 name.set("The Apache Software License, Version 2.0")
-                                url.set("http://www.apache.org/licenses/LICENSE-2.0.txt")
+                                url.set("https://www.apache.org/licenses/LICENSE-2.0.txt")
                                 distribution.set("repo")
                             }
                         }
@@ -152,7 +152,7 @@ subprojects {
                         }
                         organization {
                             name.set("RADAR-base")
-                            url.set("http://radar-base.org")
+                            url.set("https://radar-base.org")
                         }
                         scm {
                             connection.set("scm:git:$githubUrl")
@@ -208,5 +208,5 @@ nexusPublishing {
 }
 
 tasks.wrapper {
-    gradleVersion = "7.3.3"
+    gradleVersion = "7.4.1"
 }
