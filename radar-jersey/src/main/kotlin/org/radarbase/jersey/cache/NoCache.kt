@@ -13,7 +13,7 @@ package org.radarbase.jersey.cache
     AnnotationTarget.PROPERTY_GETTER,
     AnnotationTarget.PROPERTY_SETTER
 )
-@kotlin.annotation.Retention(AnnotationRetention.RUNTIME)
+@Retention(AnnotationRetention.RUNTIME)
 annotation class NoCache(
     /** Additional Cache-Control fields to include along with the `no-cache` field. */
     val fields: Array<String> = [],

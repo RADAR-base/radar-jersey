@@ -20,20 +20,21 @@ import jakarta.ws.rs.core.Context
 
 /** Creates a TokenValidator based on the current management portal configuration. */
 class ManagementPortalTokenValidator(
-        @Context private val tokenValidator: TokenValidator) : AuthValidator {
+    @Context private val tokenValidator: TokenValidator
+) : AuthValidator {
     init {
         try {
             this.tokenValidator.refresh()
             logger.debug("Refreshed Token Validator keys")
         } catch (ex: Exception) {
             logger.error("Failed to immediately initialize token validator, will try again later: {}",
-                    ex.toString())
+                ex.toString())
         }
     }
 
-    override fun verify(token: String, request: ContainerRequestContext): Auth? {
+    override fun verify(token: String, request: ContainerRequestContext): Auth {
         val jwt = try {
-            JWT.decode(token)!!
+            JWT.decode(token)
         } catch (ex: Exception) {
             throw TokenValidationException("JWT cannot be decoded")
         }

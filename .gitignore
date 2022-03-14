@@ -154,8 +154,5 @@ Desktop.ini
 ######################
 .eslintcache
 
-# output directory
-out/
-
 # don't ignore jars in /libs
 !libs/**/*.jar

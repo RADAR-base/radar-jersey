@@ -68,7 +68,7 @@ internal class DatabaseHealthMetricsTest {
 
     @Test
     fun databaseIsDisabledTest() {
-        val tcp = org.h2.tools.Server.createTcpServer("-tcpPort", "9999", "-baseDir", "build/resources/test", "-ifNotExists");
+        val tcp = org.h2.tools.Server.createTcpServer("-tcpPort", "9999", "-baseDir", "build/resources/test", "-ifNotExists")
         tcp.start()
 
         val authConfig = AuthConfig(
