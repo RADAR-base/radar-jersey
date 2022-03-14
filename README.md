@@ -144,7 +144,7 @@ If Logback is used instead, import the following dependencies to gradle:
 ```kotlin
 dependencies {
     runtimeOnly("ch.qos.logback:logback-classic:1.2.3")
-    implementation("org.slf4j:jul-to-slf4j:1.7.30")
+    implementation("org.slf4j:jul-to-slf4j:1.7.32")
 }
 ```
 
