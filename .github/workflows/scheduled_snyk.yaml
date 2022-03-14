@@ -21,10 +21,10 @@ jobs:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         run: >
           snyk test
-            --all-sub-projects
-            --configuration-matching='^(compile|runtime)Classpath$'
-            --json-file-output=${{ env.REPORT_FILE }}
-            --org=radar-base
+          --all-sub-projects
+          --configuration-matching='^(compile|runtime)Classpath$'
+          --json-file-output=${{ env.REPORT_FILE }}
+          --org=radar-base
 
       - name: Report new vulnerabilities
         uses: thehyve/report-vulnerability@master
