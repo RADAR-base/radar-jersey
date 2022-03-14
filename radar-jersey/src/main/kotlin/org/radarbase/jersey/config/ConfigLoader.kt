@@ -99,9 +99,29 @@ object ConfigLoader {
 
     val logger: Logger = LoggerFactory.getLogger(ConfigLoader::class.java)
 
-    inline fun <T> T.copyEnv(key: String, doCopy: T.(String?) -> T): T = copyOnChange<T, String?>(null, { System.getenv(key) }, doCopy)
+    /**
+     * Perform copy if environment value with [key] is present. Otherwise, do not call [doCopy].
+     * Mainly intended to use with the copy operation of data classes.
+     */
+    inline fun <T> T.copyEnv(
+        key: String,
+        doCopy: T.(String?) -> T,
+    ): T = copyOnChange<T, String?>(
+        original = null,
+        modification = { System.getenv(key) },
+        doCopy = doCopy,
+    )
 
-    inline fun <T, V> T.copyOnChange(original: V, modification: (V) -> V, doCopy: T.(V) -> T): T {
+    /**
+     * Perform copy if the [modification] function makes any change to an [original] value.
+     * Mainly intended to use with data classes, where a copy is only performed if a new value is
+     * present. The copy operation is used in [doCopy].
+     */
+    inline fun <T, V> T.copyOnChange(
+        original: V,
+        modification: (V) -> V,
+        doCopy: T.(V) -> T,
+    ): T {
         val newValue = modification(original)
         return if (newValue != original) {
             doCopy(newValue)
