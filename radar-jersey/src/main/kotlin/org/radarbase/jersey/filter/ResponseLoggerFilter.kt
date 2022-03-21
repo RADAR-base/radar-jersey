@@ -19,7 +19,10 @@ import jakarta.ws.rs.ext.Provider
 @Provider
 @Singleton
 class ResponseLoggerFilter : ContainerResponseFilter {
-    override fun filter(requestContext: ContainerRequestContext?, responseContext: ContainerResponseContext?) {
+    override fun filter(
+        requestContext: ContainerRequestContext?,
+        responseContext: ContainerResponseContext?,
+    ) {
         val path = requestContext?.uriInfo?.path
         val status = responseContext?.status
         when {
