@@ -20,23 +20,36 @@ import jakarta.ws.rs.ext.Provider
 @Singleton
 class ResponseLoggerFilter : ContainerResponseFilter {
     override fun filter(requestContext: ContainerRequestContext?, responseContext: ContainerResponseContext?) {
+        val path = requestContext?.uriInfo?.path
+        val status = responseContext?.status
         when {
-            requestContext == null || responseContext == null -> return
+            path == null -> return
+            status == null -> return
+            path.endsWith("/health") && status == 200 -> return
             requestContext.mediaType == null -> logger.info(
-                    "[{}] {} {} -- <{}> ",
-                    responseContext.status,
-                    requestContext.method, requestContext.uriInfo.path,
-                    responseContext.mediaType)
+                "[{}] {} {} -- <{}> ",
+                status,
+                requestContext.method,
+                path,
+                responseContext.mediaType,
+            )
             requestContext.length < 0 -> logger.info(
-                    "[{}] {} {} <{}> -- <{}> ",
-                    responseContext.status,
-                    requestContext.method, requestContext.uriInfo.path, requestContext.mediaType,
-                    responseContext.mediaType)
+                "[{}] {} {} <{}> -- <{}> ",
+                status,
+                requestContext.method,
+                path,
+                requestContext.mediaType,
+                responseContext.mediaType,
+            )
             else -> logger.info(
-                    "[{}] {} {} <{}: {}> -- <{}> ",
-                    responseContext.status,
-                    requestContext.method, requestContext.uriInfo.path, requestContext.mediaType, requestContext.length,
-                    responseContext.mediaType)
+                "[{}] {} {} <{}: {}> -- <{}> ",
+                status,
+                requestContext.method,
+                path,
+                requestContext.mediaType,
+                requestContext.length,
+                responseContext.mediaType,
+            )
         }
     }
 
