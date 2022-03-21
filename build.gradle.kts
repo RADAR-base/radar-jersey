@@ -46,18 +46,6 @@ subprojects {
         configurations["dokkaPlugin"](platform("com.fasterxml.jackson:jackson-bom:$jacksonVersion"))
         configurations["dokkaRuntime"](platform("com.fasterxml.jackson:jackson-bom:$jacksonVersion"))
 
-        val jacksonKotlinModuleVersion: String by project
-        configurations["dokkaPlugin"]("com.fasterxml.jackson.module:jackson-module-kotlin:$jacksonKotlinModuleVersion") {
-            version {
-                strictly(jacksonKotlinModuleVersion)
-            }
-        }
-        configurations["dokkaRuntime"]("com.fasterxml.jackson.module:jackson-module-kotlin:$jacksonKotlinModuleVersion") {
-            version {
-                strictly(jacksonKotlinModuleVersion)
-            }
-        }
-
         val jsoupVersion: String by project
         configurations["dokkaPlugin"]("org.jsoup:jsoup:$jsoupVersion")
         configurations["dokkaRuntime"]("org.jsoup:jsoup:$jsoupVersion")
