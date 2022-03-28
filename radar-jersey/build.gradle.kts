@@ -40,7 +40,7 @@ dependencies {
     implementation("com.squareup.okhttp3:okhttp:$okhttpVersion")
 
     implementation("org.glassfish.jersey.containers:jersey-container-grizzly2-http:$jerseyVersion")
-    implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:$jacksonVersion")
+    implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml")
 
     // exception template rendering
     val mustacheVersion: String by project
