@@ -30,4 +30,5 @@ data class DatabaseConfig(
 data class LiquibaseConfig(
     val enable: Boolean = true,
     val changelogs: String = "db/changelog/changes/db.changelog-master.xml",
+    val contexts: List<String> = listOf("production"),
 )

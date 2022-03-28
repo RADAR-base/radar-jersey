@@ -29,22 +29,18 @@ dependencies {
     implementation("org.glassfish.jersey.media:jersey-media-json-jackson:$jerseyVersion")
 
     val jacksonVersion: String by project
-    api("com.fasterxml.jackson.core:jackson-databind:$jacksonVersion")
-    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jacksonVersion")
-    val jacksonKotlinModuleVersion: String by project
-    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:$jacksonKotlinModuleVersion") {
-        version {
-            strictly(jacksonKotlinModuleVersion)
-        }
-    }
-    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jdk8:$jacksonVersion")
-    implementation("com.fasterxml.jackson.jakarta.rs:jackson-jakarta-rs-json-provider:$jacksonVersion")
+    api(platform("com.fasterxml.jackson:jackson-bom:$jacksonVersion"))
+    api("com.fasterxml.jackson.core:jackson-databind")
+    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
+    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jdk8")
+    implementation("com.fasterxml.jackson.jakarta.rs:jackson-jakarta-rs-json-provider")
 
     val okhttpVersion: String by project
     implementation("com.squareup.okhttp3:okhttp:$okhttpVersion")
 
     implementation("org.glassfish.jersey.containers:jersey-container-grizzly2-http:$jerseyVersion")
-    implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:$jacksonVersion")
+    implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml")
 
     // exception template rendering
     val mustacheVersion: String by project
