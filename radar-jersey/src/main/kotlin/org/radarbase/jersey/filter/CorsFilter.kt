@@ -21,14 +21,25 @@ import kotlin.jvm.Throws
 @Singleton
 class CorsFilter : ContainerResponseFilter {
     @Throws(IOException::class)
-    override fun filter(request: ContainerRequestContext,
-               response: ContainerResponseContext) {
-        response.headers.add("Access-Control-Allow-Origin",
-                request.getHeaderString("Origin") ?: "*")
-        response.headers.add("Access-Control-Allow-Headers",
-                "origin, content-type, accept, authorization")
-        response.headers.add("Access-Control-Allow-Credentials", "true")
-        response.headers.add("Access-Control-Allow-Methods",
-                "GET, POST, PUT, DELETE, OPTIONS, HEAD")
+    override fun filter(
+        request: ContainerRequestContext,
+        response: ContainerResponseContext,
+    ) {
+        response.headers.add(
+            "Access-Control-Allow-Origin",
+            request.getHeaderString("Origin") ?: "*",
+        )
+        response.headers.add(
+            "Access-Control-Allow-Headers",
+            "origin, content-type, accept, authorization",
+        )
+        response.headers.add(
+            "Access-Control-Allow-Credentials",
+            "true",
+        )
+        response.headers.add(
+            "Access-Control-Allow-Methods",
+            "GET, POST, PUT, DELETE, OPTIONS, HEAD",
+        )
     }
 }

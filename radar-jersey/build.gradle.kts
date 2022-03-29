@@ -29,16 +29,18 @@ dependencies {
     implementation("org.glassfish.jersey.media:jersey-media-json-jackson:$jerseyVersion")
 
     val jacksonVersion: String by project
-    api("com.fasterxml.jackson.core:jackson-databind:$jacksonVersion")
-    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jacksonVersion")
-    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:$jacksonVersion")
-    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jdk8:$jacksonVersion")
+    api(platform("com.fasterxml.jackson:jackson-bom:$jacksonVersion"))
+    api("com.fasterxml.jackson.core:jackson-databind")
+    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
+    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jdk8")
+    implementation("com.fasterxml.jackson.jakarta.rs:jackson-jakarta-rs-json-provider")
 
     val okhttpVersion: String by project
     implementation("com.squareup.okhttp3:okhttp:$okhttpVersion")
 
     implementation("org.glassfish.jersey.containers:jersey-container-grizzly2-http:$jerseyVersion")
-    implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:$jacksonVersion")
+    implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml")
 
     // exception template rendering
     val mustacheVersion: String by project
@@ -48,8 +50,9 @@ dependencies {
     implementation("org.slf4j:slf4j-api:$slf4jVersion")
 
     val swaggerVersion: String by project
-    implementation("io.swagger.core.v3:swagger-jaxrs2-jakarta:$swaggerVersion")
-
+    implementation("io.swagger.core.v3:swagger-jaxrs2-jakarta:$swaggerVersion") {
+        exclude(group = "com.fasterxml.jackson.jaxrs", module = "jackson-jaxrs-json-provider")
+    }
 
     val jakartaXmlBindVersion: String by project
     val jakartaJaxbCoreVersion: String by project

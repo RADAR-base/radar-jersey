@@ -49,7 +49,7 @@ class DatabaseInitialization(
             dbConfig.liquibase.changelogs,
             ClassLoaderResourceAccessor(),
             database,
-        ).use { it.update(null as Contexts?) }
+        ).use { it.update(Contexts(dbConfig.liquibase.contexts)) }
     }
 
     override fun onRequest(requestEvent: RequestEvent?): RequestEventListener? = null

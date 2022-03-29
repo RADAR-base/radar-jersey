@@ -52,10 +52,11 @@ data class MPConfig(
         val syncParticipantsIntervalMin: Long = 5,
 ) {
     @JsonIgnore
-    val httpUrl: HttpUrl? = url?.toHttpUrlOrNull()
-            ?.let { url ->
-                url.newBuilder().addPathSegment("").build()
-            }
+    val httpUrl: HttpUrl? = url
+        ?.toHttpUrlOrNull()
+        ?.newBuilder()
+        ?.addPathSegment("")
+        ?.build()
 
     /** Interval after which the list of projects should be refreshed. */
     @JsonIgnore

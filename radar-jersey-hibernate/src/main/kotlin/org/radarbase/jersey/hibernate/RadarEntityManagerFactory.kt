@@ -1,13 +1,12 @@
 package org.radarbase.jersey.hibernate
 
+import jakarta.ws.rs.core.Context
 import org.glassfish.jersey.internal.inject.DisposableSupplier
-import org.hibernate.engine.spi.SharedSessionContractImplementor
 import org.hibernate.internal.SessionImpl
 import org.slf4j.LoggerFactory
-import jakarta.inject.Provider
+import java.sql.Connection
 import javax.persistence.EntityManager
 import javax.persistence.EntityManagerFactory
-import jakarta.ws.rs.core.Context
 
 class RadarEntityManagerFactory(
         @Context private val emf: EntityManagerFactory
@@ -28,6 +27,6 @@ class RadarEntityManagerFactory(
     companion object {
         private val logger = LoggerFactory.getLogger(RadarEntityManagerFactory::class.java)
 
-        fun EntityManager.connection() = unwrap(SessionImpl::class.java).connection()
+        fun EntityManager.connection(): Connection = unwrap(SessionImpl::class.java).connection()
     }
 }

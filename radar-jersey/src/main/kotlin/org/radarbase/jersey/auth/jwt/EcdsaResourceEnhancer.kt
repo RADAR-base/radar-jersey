@@ -17,7 +17,7 @@ import org.radarbase.jersey.enhancer.JerseyResourceEnhancer
 /**
  * Registration for authorization against a generic OAuth 2.0 provider.
  *
- * It requires jwtResourceName to be set in the AuthConfig. It also needs to have an signature
+ * It requires jwtResourceName to be set in the AuthConfig. It also needs to have a signature
  * validation set, e.g. jwtECPublicKeys, jwtRSAPublicKeys or jwtKeystorePath with jwtKeystorePassword
  * and jwtKeystoreAlias. If jwtIssuer is set, the issuer of the JWT will also be validated.
  */

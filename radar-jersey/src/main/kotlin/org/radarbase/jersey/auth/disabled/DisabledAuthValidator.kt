@@ -10,7 +10,7 @@ import jakarta.ws.rs.core.Context
 class DisabledAuthValidator(
         @Context private val config: AuthConfig
 ) : AuthValidator {
-    override fun getToken(request: ContainerRequestContext): String? = ""
-    override fun verify(token: String, request: ContainerRequestContext): Auth? = DisabledAuth(
+    override fun getToken(request: ContainerRequestContext): String = ""
+    override fun verify(token: String, request: ContainerRequestContext): Auth = DisabledAuth(
             config.jwtResourceName)
 }
