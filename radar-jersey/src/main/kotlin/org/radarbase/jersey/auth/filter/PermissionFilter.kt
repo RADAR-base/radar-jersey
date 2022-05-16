@@ -9,7 +9,6 @@
 
 package org.radarbase.jersey.auth.filter
 
-import org.radarbase.auth.authorization.Permission
 import org.radarbase.jersey.auth.Auth
 import org.radarbase.jersey.auth.NeedsPermission
 import org.radarbase.jersey.exception.HttpForbiddenException
@@ -19,6 +18,8 @@ import jakarta.ws.rs.container.ContainerRequestFilter
 import jakarta.ws.rs.container.ResourceInfo
 import jakarta.ws.rs.core.Context
 import jakarta.ws.rs.core.UriInfo
+import org.radarbase.auth.authorization.Permission
+import org.radarbase.jersey.exception.HttpNotFoundException
 
 /**
  * Check that the token has given permissions.
@@ -33,24 +34,44 @@ class PermissionFilter(
         val resourceMethod = resourceInfo.resourceMethod
         val annotation = resourceMethod.getAnnotation(NeedsPermission::class.java)
         val permission = annotation.permission
+        val location = "${requestContext.method} ${requestContext.uriInfo.path}"
 
-        val projectId = annotation.projectPathParam
-                .takeIf { it.isNotEmpty() }
-                ?.let { uriInfo.pathParameters[it] }
-                ?.firstOrNull()
-        val userId = annotation.userPathParam
-                .takeIf { it.isNotEmpty() }
-                ?.let { uriInfo.pathParameters[it] }
-                ?.firstOrNull()
-
-        val isAuthorized = when {
-            userId != null -> projectId != null && auth.token.hasPermissionOnSubject(permission, projectId, userId)
-            projectId != null -> auth.token.hasPermissionOnProject(permission, projectId)
-            else -> auth.token.hasPermission(permission)
+        if (!auth.token.hasPermission(permission)) {
+            throw reject(permission)
         }
 
-        val location = "${requestContext.method} ${requestContext.uriInfo.path}"
-        auth.logPermission(isAuthorized, permission, location, projectId, userId)
+        val projectId = annotation.projectPathParam.fetchPathParam()
+        val userId = annotation.userPathParam.fetchPathParam()
+        var organizationId = annotation.organizationPathParam.fetchPathParam()
+
+        val projectIds = when {
+            projectId != null -> {
+                projectService.ensureProject(projectId)
+                val projectOrganization = projectService.projectOrganization(projectId)
+                if (organizationId == null) {
+                    organizationId = projectOrganization
+                } else if (organizationId != projectId) {
+                    throw HttpNotFoundException(
+                        "organization_not_found",
+                        "Organization $organizationId not found for project $projectId."
+                    )
+                }
+                listOf(projectId)
+            }
+            organizationId != null -> {
+                projectService.ensureOrganization(organizationId)
+                projectService.listProjects(organizationId)
+            }
+            else -> emptyList()
+        }
+
+        val isAuthorized = when {
+            userId != null -> projectIds.any { auth.token.hasPermissionOnSubject(permission, it, userId) }
+            organizationId != null -> auth.token.hasPermissionOnOrganization(permission, organizationId) || projectIds.any { auth.token.hasPermissionOnOrganizationAndProject(permission, organizationId, it) }
+            else -> true
+        }
+
+        auth.logPermission(isAuthorized, permission, location, organizationId, projectIds, userId)
 
         if (!isAuthorized) {
             val message = "$permission permission not given."
@@ -60,6 +81,20 @@ class PermissionFilter(
                     + " error_description=\"$message\""
                     + " scope=\"$permission\"")))
         }
-        projectId?.let { projectService.ensureProject(it) }
+        if (projectId != null) projectService.ensureProject(projectId)
+        if (organizationId != null) projectService.ensureOrganization(organizationId)
     }
+
+    private fun reject(permission: Permission): HttpForbiddenException {
+        val message = "$permission permission not given."
+        return HttpForbiddenException("insufficient_scope", message, additionalHeaders = listOf(
+            "WWW-Authenticate" to (AuthenticationFilter.BEARER_REALM
+                + " error=\"insufficient_scope\""
+                + " error_description=\"$message\""
+                + " scope=\"$permission\"")))
+    }
+
+    private fun String.fetchPathParam(): String? = if (isNotEmpty()) {
+        uriInfo.pathParameters[this]?.firstOrNull()
+    } else null
 }

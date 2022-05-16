@@ -3,8 +3,14 @@ package org.radarbase.jersey.util
 import com.fasterxml.jackson.databind.ObjectReader
 import okhttp3.OkHttpClient
 import okhttp3.Request
+import okhttp3.Response
 import org.radarbase.jersey.exception.HttpBadGatewayException
 import org.slf4j.LoggerFactory
+
+inline fun <T> OkHttpClient.request(builder: Request.Builder.() -> Unit, callback: (Response) -> T): T =
+    newCall(
+        Request.Builder().apply(builder).build()
+    ).execute().use(callback)
 
 /**
  * Make a [request] and resolves it as JSON using given object reader. [T] is the type that the

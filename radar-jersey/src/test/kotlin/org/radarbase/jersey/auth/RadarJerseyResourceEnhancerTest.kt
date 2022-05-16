@@ -182,10 +182,9 @@ internal class RadarJerseyResourceEnhancerTest {
             .header("Accept", "application/json")
             .build()
         ).execute().use { response ->
-
+            assertThat(response.body?.string(), equalTo("{\"error\":\"project_not_found\",\"error_description\":\"Project c not found.\"}"))
             assertThat(response.isSuccessful, `is`(false))
             assertThat(response.code, `is`(404))
-            assertThat(response.body?.string(), equalTo("{\"error\":\"project_not_found\",\"error_description\":\"Project c not found.\"}"))
         }
     }
 

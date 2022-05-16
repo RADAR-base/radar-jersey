@@ -32,6 +32,7 @@ import java.security.spec.X509EncodedKeySpec
 import java.util.*
 import jakarta.ws.rs.container.ContainerRequestContext
 import jakarta.ws.rs.core.Context
+import kotlin.io.path.inputStream
 
 class EcdsaJwtTokenValidator constructor(@Context private val config: AuthConfig) : AuthValidator {
     private val verifiers: List<JWTVerifier>
@@ -49,7 +50,7 @@ class EcdsaJwtTokenValidator constructor(@Context private val config: AuthConfig
             algorithms.add(try {
                 val pkcs12Store = KeyStore.getInstance("pkcs12")
                 val keyStorePath = Paths.get(keyStorePathString)
-                pkcs12Store.load(Files.newInputStream(keyStorePath), config.jwtKeystorePassword?.toCharArray())
+                pkcs12Store.load(keyStorePath.inputStream(), config.jwtKeystorePassword?.toCharArray())
                 val publicKey: ECPublicKey = pkcs12Store.getCertificate(config.jwtKeystoreAlias).publicKey as ECPublicKey
                 Algorithm.ECDSA256(publicKey, null)
             } catch (ex: Exception) {

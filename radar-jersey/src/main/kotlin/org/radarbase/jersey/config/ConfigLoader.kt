@@ -12,6 +12,8 @@ import java.io.BufferedInputStream
 import java.io.IOException
 import java.nio.file.Files
 import java.nio.file.Paths
+import kotlin.io.path.exists
+import kotlin.io.path.inputStream
 import kotlin.system.exitProcess
 
 object ConfigLoader {
@@ -38,16 +40,21 @@ object ConfigLoader {
 
     @JvmOverloads
     fun <T> loadConfig(fileNames: List<String>, args: Array<String>, clazz: Class<T>, mapper: ObjectMapper? = null): T {
-        val configFile = if (args.size == 1) Paths.get(args[0])
-                else fileNames.map { Paths.get(it) }.find { Files.exists(it) }
+        val configFile = if (args.size == 1) {
+            Paths.get(args[0])
+        } else {
+            fileNames
+                .map { Paths.get(it) }
+                .find { it.exists() }
+        }
         requireNotNull(configFile) { "Configuration not provided." }
 
         logger.info("Reading configuration from {}", configFile.toAbsolutePath())
         try {
             val localMapper = mapper ?: ObjectMapper(YAMLFactory())
                     .registerModule(kotlinModule())
-            return Files.newInputStream(configFile).use { input ->
-                BufferedInputStream(input).use { bufInput ->
+            return configFile.inputStream().use { input ->
+                input.buffered().use { bufInput ->
                     localMapper.readValue(bufInput, clazz)
                 }
             }

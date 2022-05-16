@@ -16,6 +16,24 @@ import org.radarbase.jersey.exception.HttpApplicationException
  */
 interface ProjectService {
     /**
+     * Ensure that given organization ID is valid.
+     * @throws HttpApplicationException if the organization ID is not a valid organization ID.
+     */
+    fun ensureOrganization(organizationId: String)
+
+    /**
+     * List all project IDs in an organization
+     * @throws HttpApplicationException if the organization ID is not a valid organization ID.
+     */
+    fun listProjects(organizationId: String): List<String>
+
+    /**
+     * Find the organization of a project
+     * @throws HttpApplicationException if the organization ID is not a valid organization ID.
+     */
+    fun projectOrganization(projectId: String): String
+
+    /**
      * Ensure that given project ID is valid.
      * @throws HttpApplicationException if the project ID is not a valid project ID.
      */

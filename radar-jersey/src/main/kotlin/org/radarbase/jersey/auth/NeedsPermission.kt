@@ -17,6 +17,7 @@ import org.radarbase.auth.authorization.Permission
 @Target(AnnotationTarget.FUNCTION,
     AnnotationTarget.PROPERTY_GETTER, AnnotationTarget.PROPERTY_SETTER)
 @Retention(AnnotationRetention.RUNTIME)
+@MustBeDocumented
 annotation class NeedsPermission(
     /** Permission that is needed. */
     val permission: Permission,
@@ -24,4 +25,6 @@ annotation class NeedsPermission(
     val projectPathParam: String = "",
     /** User path parameter. */
     val userPathParam: String = "",
+    /** Organization path parameter */
+    val organizationPathParam: String = "",
 )

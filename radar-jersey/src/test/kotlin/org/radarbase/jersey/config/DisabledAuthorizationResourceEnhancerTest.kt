@@ -1,7 +1,6 @@
 package org.radarbase.jersey.config
 
 import okhttp3.OkHttpClient
-import okhttp3.Request
 import org.glassfish.grizzly.http.server.HttpServer
 import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory
 import org.hamcrest.MatcherAssert.assertThat
@@ -12,6 +11,7 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.radarbase.jersey.auth.AuthConfig
 import org.radarbase.jersey.mock.MockDisabledAuthResourceEnhancerFactory
+import org.radarbase.jersey.util.request
 import java.net.URI
 
 internal class DisabledAuthorizationResourceEnhancerTest {
@@ -39,9 +39,9 @@ internal class DisabledAuthorizationResourceEnhancerTest {
 
     @Test
     fun testBasicGet() {
-        client.newCall(Request.Builder()
-                .url("http://localhost:9091/")
-                .build()).execute().use { response ->
+        client.request({
+            url("http://localhost:9091/")
+        }) { response ->
             assertThat(response.isSuccessful, `is`(true))
             assertThat(response.body?.string(), equalTo("{\"this\":\"that\"}"))
         }
@@ -50,10 +50,10 @@ internal class DisabledAuthorizationResourceEnhancerTest {
 
     @Test
     fun testAuthenticatedGet() {
-        client.newCall(Request.Builder()
-                .url("http://localhost:9091/user")
-                .header("Authorization", "Bearer none")
-                .build()).execute().use { response ->
+        client.request({
+            url("http://localhost:9091/user")
+            header("Authorization", "Bearer none")
+        }) { response ->
             assertThat(response.isSuccessful, `is`(true))
             assertThat(response.body?.string(), equalTo("{\"accessToken\":\"\"}"))
         }
@@ -62,10 +62,9 @@ internal class DisabledAuthorizationResourceEnhancerTest {
 
     @Test
     fun testExistingGet() {
-        client.newCall(Request.Builder()
-                .url("http://localhost:9091/projects/a/users/b")
-                .build()).execute().use { response ->
-
+        client.request({
+            url("http://localhost:9091/projects/a/users/b")
+        }) { response ->
             assertThat(response.isSuccessful, `is`(true))
             assertThat(response.body?.string(), equalTo("{\"projectId\":\"a\",\"userId\":\"b\"}"))
         }
@@ -74,11 +73,10 @@ internal class DisabledAuthorizationResourceEnhancerTest {
 
     @Test
     fun testNonExistingGet() {
-        client.newCall(Request.Builder()
-                .url("http://localhost:9091/projects/c/users/b")
-                .header("Accept", "application/json")
-                .build()).execute().use { response ->
-
+        client.request({
+            url("http://localhost:9091/projects/c/users/b")
+            header("Accept", "application/json")
+        }) { response ->
             assertThat(response.isSuccessful, `is`(false))
             assertThat(response.code, `is`(404))
             assertThat(response.body?.string(), equalTo("{\"error\":\"project_not_found\",\"error_description\":\"Project c not found.\"}"))

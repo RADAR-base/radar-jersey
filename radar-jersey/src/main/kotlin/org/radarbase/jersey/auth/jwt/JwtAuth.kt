@@ -23,7 +23,7 @@ import org.radarbase.jersey.auth.Auth
  */
 class JwtAuth(project: String?, private val jwt: DecodedJWT) : Auth {
     override val token: RadarToken = object : JwtRadarToken(jwt) {
-        override fun hasPermission(permission: Permission) = scopes.contains(permission.scopeName())
+        override fun hasPermission(permission: Permission) = scopes.contains(permission.scope())
 
         override fun hasPermissionOnProject(permission: Permission, projectId: String): Boolean {
             return hasPermission(permission) && (claimProject != null && projectId == claimProject)

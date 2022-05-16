@@ -37,16 +37,33 @@ interface Auth {
      * @throws HttpForbiddenException if the current authentication does not authorize for the permission.
      */
     fun checkPermissionOnSubject(permission: Permission, projectId: String?, userId: String?, location: String? = null) {
-        if (!token.hasPermissionOnSubject(permission,
-                        projectId ?: throw HttpBadRequestException("project_id_missing", "Missing project ID in request"),
-                        userId ?: throw HttpBadRequestException("user_id_missing", "Missing user ID in request")
-                        )) {
-            logPermission(false, permission, location, projectId, userId)
-            throw HttpForbiddenException("permission_mismatch", "No permission '$permission' " +
-                    "project $projectId with user $userId")
+        if (
+            !token.hasPermissionOnSubject(
+                permission,
+                projectId ?: throw HttpBadRequestException("project_id_missing", "Missing project ID in request"),
+                userId ?: throw HttpBadRequestException("user_id_missing", "Missing user ID in request"),
+            )
+        ) {
+            logPermission(
+                isAuthorized = false,
+                permission = permission,
+                location = location,
+                projectIds = listOf(projectId),
+                userId = userId,
+            )
+            throw HttpForbiddenException(
+                "permission_mismatch",
+                "No permission '$permission' project $projectId with user $userId",
+            )
         }
 
-        logPermission(true, permission, location, projectId, userId)
+        logPermission(
+            isAuthorized = true,
+            permission = permission,
+            location = location,
+            projectIds = listOf(projectId),
+            userId = userId
+        )
     }
 
     /**
@@ -56,14 +73,24 @@ interface Auth {
      * @throws HttpForbiddenException if the current authentication does not authorize for the permission.
      */
     fun checkPermissionOnProject(permission: Permission, projectId: String?, location: String? = null) {
-        if (!token.hasPermissionOnProject(permission,
-                        projectId ?: throw HttpBadRequestException("project_id_missing", "Missing project ID in request")
-                        )) {
-            logPermission(false, permission, location, projectId)
-            throw HttpForbiddenException("permission_mismatch", "No permission '$permission' for " +
-                    "project $projectId")
+        if (
+            !token.hasPermissionOnProject(
+                permission,
+                projectId ?: throw HttpBadRequestException("project_id_missing", "Missing project ID in request"),
+            )
+        ) {
+            logPermission(
+                isAuthorized = false,
+                permission = permission,
+                location = location,
+                projectIds = listOf(projectId),
+            )
+            throw HttpForbiddenException(
+                "permission_mismatch",
+                "No permission '$permission' for project $projectId",
+            )
         }
-        logPermission(true, permission, location, projectId)
+        logPermission(true, permission, location, projectIds = listOf(projectId))
     }
 
     /**
@@ -73,15 +100,35 @@ interface Auth {
      * @throws HttpForbiddenException if the current authentication does not authorize for the permission.
      */
     fun checkPermissionOnSource(permission: Permission, projectId: String?, userId: String?, sourceId: String?, location: String? = null) {
-        if (!token.hasPermissionOnSource(permission,
-                        projectId ?: throw HttpBadRequestException("project_id_missing", "Missing project ID in request"),
-                        userId ?: throw HttpBadRequestException("user_id_missing", "Missing user ID in request"),
-                        sourceId ?: throw HttpBadRequestException("source_id_missing", "Missing source ID in request"))) {
-            logPermission(false, permission, location, projectId, userId, sourceId)
-            throw HttpForbiddenException("permission_mismatch", "No permission '$permission' for " +
-                    "project $projectId with user $userId and source $sourceId")
+        if (
+            !token.hasPermissionOnSource(
+                permission,
+                projectId ?: throw HttpBadRequestException("project_id_missing", "Missing project ID in request"),
+                userId ?: throw HttpBadRequestException("user_id_missing", "Missing user ID in request"),
+                sourceId ?: throw HttpBadRequestException("source_id_missing", "Missing source ID in request"),
+            )
+        ) {
+            logPermission(
+                isAuthorized = false,
+                permission = permission,
+                location = location,
+                projectIds = listOf(projectId),
+                userId = userId,
+                sourceId = sourceId,
+            )
+            throw HttpForbiddenException(
+                "permission_mismatch",
+                "No permission '$permission' for project $projectId with user $userId and source $sourceId",
+            )
         }
-        logPermission(true, permission, location, projectId, userId, sourceId)
+        logPermission(
+            isAuthorized = true,
+            permission = permission,
+            location = location,
+            projectIds = listOf(projectId),
+            userId = userId,
+            sourceId = sourceId,
+        )
     }
 
     /**
@@ -94,12 +141,12 @@ interface Auth {
      */
     fun hasRole(projectId: String, role: String): Boolean
 
-    fun logPermission(isAuthorized: Boolean, permission: Permission, location: String? = null, projectId: String? = null, userId: String? = null, sourceId: String? = null) {
+    fun logPermission(isAuthorized: Boolean, permission: Permission, location: String? = null, organizationId: String? = null, projectIds: List<String>? = null, userId: String? = null, sourceId: String? = null) {
         if (!logger.isInfoEnabled) {
             return
         }
 
-         logger.info(StringBuilder(140).apply {
+         logger.info(buildString(140) {
              (location ?: findCallerMethod())?.let {
                  append(it)
                  append(" - ")
@@ -114,15 +161,16 @@ interface Auth {
              append(" - ")
 
              append(if (isAuthorized) "GRANTED " else "DENIED ")
-             append(permission.scopeName())
+             append(permission.scope())
              append(' ')
 
-             ArrayList<String>(3).apply {
-                 projectId?.let { add("project: $it") }
+             buildList(4) {
+                 organizationId?.let { add("organization: $it") }
+                 projectIds?.let { add("projects: $it") }
                  userId?.let { add("subject: $it") }
                  sourceId?.let { add("source: $it") }
              }.joinTo(this, separator = ", ", prefix = "{", postfix = "}")
-         }.toString())
+         })
     }
 
     companion object {

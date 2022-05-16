@@ -37,20 +37,14 @@ class OAuthHelper {
         val ecdsa = Algorithm.ECDSA256(publicKey, privateKey)
         validEcToken = createValidToken(ecdsa)
 
-        val verifiers = listOf(JWT.require(ecdsa).withIssuer(ISS).build())
-        val validatorConfig = object : TokenValidatorConfig {
-            override fun getPublicKeyEndpoints(): List<URI> = emptyList()
+        tokenValidator = TokenValidator.Builder()
+            .verifiers(listOf(JWT.require(ecdsa).withIssuer(ISS).build()))
+            .config(object : TokenValidatorConfig {
+                override fun getPublicKeyEndpoints(): List<URI> = emptyList()
 
-            override fun getResourceName(): String = ISS
-
-            override fun getPublicKeys(): List<String> = emptyList()
-        }
-        @Suppress("DEPRECATION")
-        tokenValidator = object : TokenValidator(verifiers, validatorConfig) {
-            override fun refresh() {
-                // do nothing
-            }
-        }
+                override fun getResourceName(): String = ISS
+            })
+            .build()
     }
 
     private fun createValidToken(algorithm: Algorithm): String {
