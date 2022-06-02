@@ -28,7 +28,7 @@ class ResponseLoggerFilter : ContainerResponseFilter {
         when {
             path == null -> return
             status == null -> return
-            (path == "health" || path.endsWith("/health")) && status == 200 -> return
+            path.isHealthEndpoint && status == 200 -> return
             requestContext.mediaType == null -> logger.info(
                 "[{}] {} {} -- <{}> ",
                 status,
@@ -58,5 +58,8 @@ class ResponseLoggerFilter : ContainerResponseFilter {
 
     companion object {
         private val logger = LoggerFactory.getLogger(ResponseLoggerFilter::class.java)
+        /** Whether given path matches a health endpoint. */
+        private inline val String.isHealthEndpoint: Boolean
+            get() = this == "health" || endsWith("/health")
     }
 }
