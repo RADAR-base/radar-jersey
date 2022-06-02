@@ -28,7 +28,7 @@ class ResponseLoggerFilter : ContainerResponseFilter {
         when {
             path == null -> return
             status == null -> return
-            path.endsWith("/health") && status == 200 -> return
+            (path == "health" || path.endsWith("/health")) && status == 200 -> return
             requestContext.mediaType == null -> logger.info(
                 "[{}] {} {} -- <{}> ",
                 status,
