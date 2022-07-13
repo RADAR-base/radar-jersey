@@ -9,10 +9,6 @@
 
 package org.radarbase.jersey.auth.filter
 
-import org.radarbase.auth.exception.TokenValidationException
-import org.radarbase.jersey.auth.AuthValidator
-import org.radarbase.jersey.auth.Authenticated
-import org.radarbase.jersey.exception.HttpUnauthorizedException
 import jakarta.annotation.Priority
 import jakarta.inject.Singleton
 import jakarta.ws.rs.Priorities
@@ -20,6 +16,10 @@ import jakarta.ws.rs.container.ContainerRequestContext
 import jakarta.ws.rs.container.ContainerRequestFilter
 import jakarta.ws.rs.core.Context
 import jakarta.ws.rs.ext.Provider
+import org.radarbase.auth.exception.TokenValidationException
+import org.radarbase.jersey.auth.AuthValidator
+import org.radarbase.jersey.auth.Authenticated
+import org.radarbase.jersey.exception.HttpUnauthorizedException
 
 /**
  * Authenticates user by a JWT in the bearer signed by the Management Portal.

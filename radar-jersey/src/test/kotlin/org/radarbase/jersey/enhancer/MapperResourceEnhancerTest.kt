@@ -6,8 +6,9 @@ import org.glassfish.jersey.server.ResourceConfig
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.equalTo
 import org.junit.jupiter.api.Test
-import org.mockito.kotlin.*
-
+import org.mockito.kotlin.check
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.verify
 import java.time.Instant
 
 internal class MapperResourceEnhancerTest {

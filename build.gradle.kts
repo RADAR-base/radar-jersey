@@ -13,7 +13,7 @@ plugins {
 
 allprojects {
     group = "org.radarbase"
-    version = "0.8.3"
+    version = "0.9.0"
 }
 
 subprojects {
@@ -43,12 +43,16 @@ subprojects {
         configurations["dokkaHtmlPlugin"]("org.jetbrains.dokka:kotlin-as-java-plugin:$dokkaVersion")
 
         val jacksonVersion: String by project
-        configurations["dokkaPlugin"](platform("com.fasterxml.jackson:jackson-bom:$jacksonVersion"))
-        configurations["dokkaRuntime"](platform("com.fasterxml.jackson:jackson-bom:$jacksonVersion"))
-
         val jsoupVersion: String by project
-        configurations["dokkaPlugin"]("org.jsoup:jsoup:$jsoupVersion")
-        configurations["dokkaRuntime"]("org.jsoup:jsoup:$jsoupVersion")
+        val kotlinVersion: String by project
+
+        sequenceOf("dokkaPlugin", "dokkaRuntime")
+            .map { configurations[it] }
+            .forEach { conf ->
+                conf(platform("com.fasterxml.jackson:jackson-bom:$jacksonVersion"))
+                conf("org.jsoup:jsoup:$jsoupVersion")
+                conf(platform("org.jetbrains.kotlin:kotlin-bom:$kotlinVersion"))
+            }
 
         val log4j2Version: String by project
         val testRuntimeOnly by configurations
@@ -208,5 +212,5 @@ nexusPublishing {
 }
 
 tasks.wrapper {
-    gradleVersion = "7.4.1"
+    gradleVersion = "7.4.2"
 }

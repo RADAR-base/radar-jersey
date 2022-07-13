@@ -9,13 +9,13 @@
 
 package org.radarbase.jersey.auth.filter
 
-import org.radarbase.jersey.auth.NeedsPermission
 import jakarta.inject.Singleton
 import jakarta.ws.rs.Priorities
 import jakarta.ws.rs.container.DynamicFeature
 import jakarta.ws.rs.container.ResourceInfo
 import jakarta.ws.rs.core.FeatureContext
 import jakarta.ws.rs.ext.Provider
+import org.radarbase.jersey.auth.NeedsPermission
 
 /** Authorization for different auth tags. */
 @Provider

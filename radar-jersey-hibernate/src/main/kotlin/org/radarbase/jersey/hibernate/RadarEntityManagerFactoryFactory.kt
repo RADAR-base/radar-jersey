@@ -1,14 +1,14 @@
 package org.radarbase.jersey.hibernate
 
+import jakarta.persistence.EntityManager
+import jakarta.persistence.EntityManagerFactory
+import jakarta.ws.rs.core.Context
 import org.glassfish.jersey.internal.inject.DisposableSupplier
 import org.hibernate.jpa.HibernatePersistenceProvider
 import org.radarbase.jersey.hibernate.config.DatabaseConfig
 import org.radarbase.jersey.hibernate.config.RadarPersistenceInfo
 import org.slf4j.LoggerFactory
 import java.util.*
-import javax.persistence.EntityManager
-import javax.persistence.EntityManagerFactory
-import jakarta.ws.rs.core.Context
 
 /**
  * Creates EntityManagerFactory using Hibernate. When an [EntityManagerFactory] is created,

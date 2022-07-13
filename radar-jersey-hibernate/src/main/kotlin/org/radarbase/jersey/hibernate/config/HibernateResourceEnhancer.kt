@@ -1,5 +1,8 @@
 package org.radarbase.jersey.hibernate.config
 
+import jakarta.inject.Singleton
+import jakarta.persistence.EntityManager
+import jakarta.persistence.EntityManagerFactory
 import org.glassfish.jersey.internal.inject.AbstractBinder
 import org.glassfish.jersey.process.internal.RequestScoped
 import org.radarbase.jersey.enhancer.JerseyResourceEnhancer
@@ -8,9 +11,6 @@ import org.radarbase.jersey.hibernate.DatabaseInitialization
 import org.radarbase.jersey.hibernate.RadarEntityManagerFactory
 import org.radarbase.jersey.hibernate.RadarEntityManagerFactoryFactory
 import org.radarbase.jersey.service.HealthService
-import jakarta.inject.Singleton
-import javax.persistence.EntityManager
-import javax.persistence.EntityManagerFactory
 
 class HibernateResourceEnhancer(
         private val databaseConfig: DatabaseConfig

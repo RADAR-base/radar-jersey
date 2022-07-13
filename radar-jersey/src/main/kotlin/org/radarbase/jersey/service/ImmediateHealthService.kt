@@ -1,7 +1,7 @@
 package org.radarbase.jersey.service
 
-import org.glassfish.hk2.api.IterableProvider
 import jakarta.ws.rs.core.Context
+import org.glassfish.hk2.api.IterableProvider
 
 class ImmediateHealthService(
         @Context healthMetrics: IterableProvider<HealthService.Metric>

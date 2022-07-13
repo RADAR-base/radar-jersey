@@ -9,9 +9,9 @@
 
 package org.radarbase.jersey.auth.jwt
 
+import jakarta.inject.Singleton
 import org.glassfish.jersey.internal.inject.AbstractBinder
 import org.radarbase.jersey.auth.AuthValidator
-import jakarta.inject.Singleton
 import org.radarbase.jersey.enhancer.JerseyResourceEnhancer
 
 /**

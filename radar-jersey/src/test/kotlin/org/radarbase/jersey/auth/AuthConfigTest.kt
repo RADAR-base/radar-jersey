@@ -5,7 +5,6 @@ import org.hamcrest.Matchers.equalTo
 import org.hamcrest.Matchers.not
 import org.junit.jupiter.api.Test
 import java.util.*
-import kotlin.jvm.Throws
 
 internal class AuthConfigTest {
     @Test
