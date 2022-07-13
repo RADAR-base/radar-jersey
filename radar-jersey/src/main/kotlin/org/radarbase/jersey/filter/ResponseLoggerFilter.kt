@@ -14,7 +14,9 @@ import jakarta.ws.rs.container.ContainerRequestContext
 import jakarta.ws.rs.container.ContainerResponseContext
 import jakarta.ws.rs.container.ContainerResponseFilter
 import jakarta.ws.rs.ext.Provider
+import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import org.slf4j.event.Level
 
 @Provider
 @Singleton
@@ -23,20 +25,21 @@ class ResponseLoggerFilter : ContainerResponseFilter {
         requestContext: ContainerRequestContext?,
         responseContext: ContainerResponseContext?,
     ) {
-        val path = requestContext?.uriInfo?.path
-        val status = responseContext?.status
+        val path = requestContext?.uriInfo?.path ?: return
+        val status = responseContext?.status ?: return
+        val logLevel = if (path.isHealthEndpoint && status == 200) Level.DEBUG else Level.INFO
+
         when {
-            path == null -> return
-            status == null -> return
-            path.isHealthEndpoint && status == 200 -> return
-            requestContext.mediaType == null -> logger.info(
+            requestContext.mediaType == null -> logger.log(
+                logLevel,
                 "[{}] {} {} -- <{}> ",
                 status,
                 requestContext.method,
                 path,
                 responseContext.mediaType,
             )
-            requestContext.length < 0 -> logger.info(
+            requestContext.length < 0 -> logger.log(
+                logLevel,
                 "[{}] {} {} <{}> -- <{}> ",
                 status,
                 requestContext.method,
@@ -44,7 +47,8 @@ class ResponseLoggerFilter : ContainerResponseFilter {
                 requestContext.mediaType,
                 responseContext.mediaType,
             )
-            else -> logger.info(
+            else -> logger.log(
+                logLevel,
                 "[{}] {} {} <{}: {}> -- <{}> ",
                 status,
                 requestContext.method,
@@ -61,5 +65,13 @@ class ResponseLoggerFilter : ContainerResponseFilter {
         /** Whether given path matches a health endpoint. */
         private inline val String.isHealthEndpoint: Boolean
             get() = this == "health" || endsWith("/health")
+        private fun Logger.log(level: Level, message: String, vararg arguments: Any?) =
+            when (level) {
+                Level.ERROR -> error(message, *arguments)
+                Level.WARN -> warn(message, *arguments)
+                Level.INFO -> info(message, *arguments)
+                Level.DEBUG -> debug(message, *arguments)
+                Level.TRACE -> trace(message, *arguments)
+            }
     }
 }

@@ -43,6 +43,7 @@ class OAuthHelper {
 
             override fun getResourceName(): String = ISS
 
+            @Deprecated("Use public key endpoints instead.", replaceWith = ReplaceWith("getPublicKeyEndpoints()"))
             override fun getPublicKeys(): List<String> = emptyList()
         }
         @Suppress("DEPRECATION")
