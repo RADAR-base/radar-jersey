@@ -1,10 +1,10 @@
 package org.radarbase.jersey.auth.disabled
 
+import jakarta.ws.rs.container.ContainerRequestContext
+import jakarta.ws.rs.core.Context
 import org.radarbase.jersey.auth.Auth
 import org.radarbase.jersey.auth.AuthConfig
 import org.radarbase.jersey.auth.AuthValidator
-import jakarta.ws.rs.container.ContainerRequestContext
-import jakarta.ws.rs.core.Context
 
 /** Authorization validator that grants permission to all resources. */
 class DisabledAuthValidator(

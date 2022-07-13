@@ -9,10 +9,9 @@
 
 package org.radarbase.jersey.auth
 
+import jakarta.ws.rs.container.ContainerRequestContext
 import org.radarbase.auth.exception.TokenValidationException
 import org.radarbase.jersey.auth.filter.AuthenticationFilter
-import jakarta.ws.rs.container.ContainerRequestContext
-import kotlin.jvm.Throws
 
 interface AuthValidator {
     @Throws(TokenValidationException::class)

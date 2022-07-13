@@ -9,18 +9,18 @@
 
 package org.radarbase.jersey.auth.managementportal
 
+import jakarta.inject.Singleton
 import org.glassfish.jersey.internal.inject.AbstractBinder
 import org.radarbase.auth.authentication.TokenValidator
 import org.radarbase.jersey.auth.AuthConfig
 import org.radarbase.jersey.auth.AuthValidator
+import org.radarbase.jersey.enhancer.JerseyResourceEnhancer
 import org.radarbase.jersey.service.ProjectService
 import org.radarbase.jersey.service.managementportal.MPClientFactory
 import org.radarbase.jersey.service.managementportal.MPProjectService
 import org.radarbase.jersey.service.managementportal.ProjectServiceWrapper
 import org.radarbase.jersey.service.managementportal.RadarProjectService
 import org.radarbase.management.client.MPClient
-import jakarta.inject.Singleton
-import org.radarbase.jersey.enhancer.JerseyResourceEnhancer
 
 /**
  * Registration for authorization against a ManagementPortal. It requires managementPortalUrl and

@@ -9,9 +9,9 @@
 
 package org.radarbase.jersey.auth.filter
 
+import jakarta.ws.rs.core.SecurityContext
 import org.radarbase.jersey.auth.Auth
 import java.security.Principal
-import jakarta.ws.rs.core.SecurityContext
 
 /**
  * Security context from currently parsed authentication.
