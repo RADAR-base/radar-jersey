@@ -56,8 +56,8 @@ subprojects {
 
         val log4j2Version: String by project
         val testRuntimeOnly by configurations
-        testRuntimeOnly("org.apache.logging.log4j:log4j-slf4j-impl:$log4j2Version")
-        testRuntimeOnly("org.apache.logging.log4j:log4j-api:$log4j2Version")
+        testRuntimeOnly("org.apache.logging.log4j:log4j-slf4j2-impl:$log4j2Version")
+        testRuntimeOnly("org.apache.logging.log4j:log4j-core:$log4j2Version")
         testRuntimeOnly("org.apache.logging.log4j:log4j-jul:$log4j2Version")
     }
 
@@ -82,8 +82,8 @@ subprojects {
     tasks.withType<KotlinCompile> {
         kotlinOptions {
             jvmTarget = "11"
-            apiVersion = "1.6"
-            languageVersion = "1.6"
+            apiVersion = "1.7"
+            languageVersion = "1.7"
         }
     }
 
@@ -183,7 +183,7 @@ subprojects {
 val stableVersionRegex = "[0-9,.v-]+(-r)?".toRegex()
 
 fun isNonStable(version: String): Boolean {
-    val stableKeyword = listOf("RELEASE", "FINAL", "GA")
+    val stableKeyword = listOf("RELEASE", "FINAL", "GA", "-CE")
         .any { version.toUpperCase().contains(it) }
     return !stableKeyword && !stableVersionRegex.matches(version)
 }
