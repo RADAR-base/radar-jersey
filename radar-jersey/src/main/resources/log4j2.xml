@@ -18,7 +18,7 @@
         <Logger name="org.radarbase.jersey.auth.Auth" level="INFO" additivity="false">
             <AppenderRef ref="AUTH"/>
         </Logger>
-        <Root level="INFO">
+        <Root level="${env:LOG4J_LOG_LEVEL:-INFO}">
             <AppenderRef ref="STDOUT"/>
         </Root>
     </Loggers>
