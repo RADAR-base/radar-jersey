@@ -7,7 +7,7 @@ plugins {
     `maven-publish`
     signing
     id("org.jetbrains.dokka") apply false
-    id("com.github.ben-manes.versions") version "0.42.0"
+    id("com.github.ben-manes.versions") version "0.43.0"
     id("io.github.gradle-nexus.publish-plugin") version "1.1.0"
 }
 
