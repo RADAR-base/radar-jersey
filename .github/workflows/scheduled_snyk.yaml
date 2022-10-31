@@ -42,4 +42,3 @@ jobs:
           report-file: ${{ env.REPORT_FILE }}
         env:
           TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        if: ${{ failure() }}
