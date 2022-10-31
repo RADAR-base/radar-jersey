@@ -2,6 +2,10 @@ name: Snyk scheduled test
 on:
   schedule:
     - cron: '0 2 * * 1'
+  push:
+    branches:
+      - master
+
 jobs:
   security:
     runs-on: ubuntu-latest
