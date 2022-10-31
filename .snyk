@@ -1,14 +1,10 @@
 # Snyk (https://snyk.io) policy file, patches or ignores known vulnerabilities.
-version: v1.14.1
+version: v1.25.0
 # ignores vulnerabilities until expiry date; change duration by modifying expiry date
 ignore:
-  SNYK-JAVA-COMH2DATABASE-31685:
-    - '*':
-        reason: No path to create alias
-        expires: 2022-02-22T00:00:00.000Z
   SNYK-JAVA-ORGJETBRAINSKOTLIN-2393744:
     - '*':
         reason: Not using Kotlin Files interface
-        expires: 2022-12-13T08:35:54.696Z
-        created: 2022-03-14T08:35:54.706Z
+        expires: 2023-14-30T10:58:31.820Z
+        created: 2022-10-31T10:58:31.828Z
 patch: {}
