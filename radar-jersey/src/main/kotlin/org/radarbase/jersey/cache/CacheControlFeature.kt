@@ -1,11 +1,11 @@
 package org.radarbase.jersey.cache
 
-import java.lang.reflect.AnnotatedElement
 import jakarta.ws.rs.GET
 import jakarta.ws.rs.container.DynamicFeature
 import jakarta.ws.rs.container.ResourceInfo
 import jakarta.ws.rs.core.CacheControl
 import jakarta.ws.rs.core.FeatureContext
+import java.lang.reflect.AnnotatedElement
 
 /**
  * @author [Bill Burke](mailto:bill@burkecentral.com)

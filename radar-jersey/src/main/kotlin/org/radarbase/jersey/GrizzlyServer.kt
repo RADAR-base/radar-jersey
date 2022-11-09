@@ -19,22 +19,26 @@ import java.util.concurrent.TimeUnit
  * Grizzly server wrapper.
  */
 class GrizzlyServer(
-        /** Base URI for the server to listen at. */
-        private val baseUri: URI,
-        /** ResourceConfig including all needed Jersey resources. */
-        resources: ResourceConfig,
-        /**
-         * Whether to enable JMX. If true, ensure that additional JMX dependencies from Grizzly
-         * are imported.
-         */
-        enableJmx: Boolean = false) {
+    /** Base URI for the server to listen at. */
+    private val baseUri: URI,
+    /** ResourceConfig including all needed Jersey resources. */
+    resources: ResourceConfig,
+    /**
+     * Whether to enable JMX. If true, ensure that additional JMX dependencies from Grizzly
+     * are imported.
+     */
+    enableJmx: Boolean = false,
+) {
     private val server = GrizzlyHttpServerFactory.createHttpServer(baseUri, resources)
-            .also { it.serverConfiguration.isJmxEnabled = enableJmx }
+        .also { it.serverConfiguration.isJmxEnabled = enableJmx }
 
-    private val shutdownHook = Thread({
-        logger.info("Stopping HTTP server...")
-        server.shutdown()
-    }, "shutdownHook")
+    private val shutdownHook = Thread(
+        {
+            logger.info("Stopping HTTP server...")
+            server.shutdown()
+        },
+        "shutdownHook",
+    )
 
     /** Start the server. This is a non-blocking call. */
     fun start() {

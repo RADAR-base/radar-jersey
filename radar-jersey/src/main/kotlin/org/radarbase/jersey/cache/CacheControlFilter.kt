@@ -1,6 +1,5 @@
 package org.radarbase.jersey.cache
 
-import java.io.IOException
 import jakarta.annotation.Priority
 import jakarta.ws.rs.Priorities
 import jakarta.ws.rs.container.ContainerRequestContext
@@ -8,6 +7,7 @@ import jakarta.ws.rs.container.ContainerResponseContext
 import jakarta.ws.rs.container.ContainerResponseFilter
 import jakarta.ws.rs.core.CacheControl
 import jakarta.ws.rs.core.HttpHeaders
+import java.io.IOException
 
 /**
  * @author [Bill Burke](mailto:bill@burkecentral.com)

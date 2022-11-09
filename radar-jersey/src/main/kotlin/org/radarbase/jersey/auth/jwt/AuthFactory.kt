@@ -9,11 +9,11 @@
 
 package org.radarbase.jersey.auth.jwt
 
+import jakarta.ws.rs.container.ContainerRequestContext
+import jakarta.ws.rs.core.Context
 import org.radarbase.jersey.auth.Auth
 import org.radarbase.jersey.auth.filter.RadarSecurityContext
 import java.util.function.Supplier
-import jakarta.ws.rs.container.ContainerRequestContext
-import jakarta.ws.rs.core.Context
 
 /** Generates radar tokens from the security context. */
 class AuthFactory(

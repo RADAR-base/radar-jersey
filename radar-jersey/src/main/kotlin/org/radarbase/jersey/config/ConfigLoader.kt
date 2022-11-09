@@ -5,13 +5,12 @@ import com.fasterxml.jackson.dataformat.yaml.YAMLFactory
 import com.fasterxml.jackson.module.kotlin.kotlinModule
 import org.glassfish.jersey.internal.inject.AbstractBinder
 import org.glassfish.jersey.server.ResourceConfig
-import org.radarbase.jersey.enhancer.*
+import org.radarbase.jersey.enhancer.EnhancerFactory
+import org.radarbase.jersey.enhancer.JerseyResourceEnhancer
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import java.io.BufferedInputStream
 import java.io.IOException
-import java.nio.file.Files
-import java.nio.file.Paths
+import kotlin.io.path.Path
 import kotlin.io.path.exists
 import kotlin.io.path.inputStream
 import kotlin.system.exitProcess
@@ -27,33 +26,45 @@ object ConfigLoader {
      * @throws NoSuchMethodException if the constructor cannot be found
      * @throws ReflectiveOperationException if the class cannot be instantiated
      */
-    fun loadResources(factoryClass: Class<out EnhancerFactory>, vararg parameters: Any): ResourceConfig {
-        val parameterClasses = parameters.map { it.javaClass }.toTypedArray()
-        val enhancerFactory = factoryClass.getConstructor(*parameterClasses)
-                .newInstance(*parameters)
+    fun loadResources(
+        factoryClass: Class<out EnhancerFactory>,
+        vararg parameters: Any,
+    ): ResourceConfig {
+        val enhancerFactory = factoryClass
+            .getConstructor(*parameters.map { it.javaClass }.toTypedArray())
+            .newInstance(*parameters)
         return createResourceConfig(enhancerFactory.createEnhancers())
     }
 
     @JvmOverloads
-    fun <T> loadConfig(fileName: String, args: Array<String>, clazz: Class<T>, mapper: ObjectMapper? = null): T =
-            loadConfig(listOf(fileName), args, clazz, mapper)
+    fun <T> loadConfig(
+        fileName: String,
+        args: Array<String>,
+        clazz: Class<T>,
+        mapper: ObjectMapper? = null,
+    ): T = loadConfig(listOf(fileName), args, clazz, mapper)
 
     @JvmOverloads
-    fun <T> loadConfig(fileNames: List<String>, args: Array<String>, clazz: Class<T>, mapper: ObjectMapper? = null): T {
-        val configFile = if (args.size == 1) {
-            Paths.get(args[0])
-        } else {
-            fileNames
-                .map { Paths.get(it) }
-                .find { it.exists() }
+    fun <T> loadConfig(
+        fileNames: List<String>,
+        args: Array<String>,
+        clazz: Class<T>,
+        mapper: ObjectMapper? = null,
+    ): T {
+        if ("-h" in args || "--help" in args) {
+            logger.info("Usage: <command> [<config file>]")
+            exitProcess(0)
         }
+
+        val configFile = args.firstOrNull()?.let { Path(it) }
+            ?: fileNames.map { Path(it) }.firstOrNull { it.exists() }
         requireNotNull(configFile) { "Configuration not provided." }
 
         logger.info("Reading configuration from {}", configFile.toAbsolutePath())
-        try {
+        return try {
             val localMapper = mapper ?: ObjectMapper(YAMLFactory())
-                    .registerModule(kotlinModule())
-            return configFile.inputStream().use { input ->
+                .registerModule(kotlinModule())
+            configFile.inputStream().use { input ->
                 input.buffered().use { bufInput ->
                     localMapper.readValue(bufInput, clazz)
                 }
@@ -71,8 +82,11 @@ object ConfigLoader {
      *
      * @throws IllegalArgumentException if a file matching configFileName cannot be found
      */
-    inline fun <reified T> loadConfig(fileName: String, args: Array<String>, mapper: ObjectMapper? = null): T =
-        loadConfig(listOf(fileName), args, T::class.java, mapper)
+    inline fun <reified T> loadConfig(
+        fileName: String,
+        args: Array<String>,
+        mapper: ObjectMapper? = null,
+    ): T = loadConfig(listOf(fileName), args, T::class.java, mapper)
 
     /**
      * Load a configuration from YAML file. The filename is searched in the current working
@@ -80,29 +94,31 @@ object ConfigLoader {
      *
      * @throws IllegalArgumentException if a file matching configFileName cannot be found
      */
-    inline fun <reified T> loadConfig(fileNames: List<String>, args: Array<String>, mapper: ObjectMapper? = null): T =
-            loadConfig(fileNames, args, T::class.java, mapper)
+    inline fun <reified T> loadConfig(
+        fileNames: List<String>,
+        args: Array<String>,
+        mapper: ObjectMapper? = null,
+    ): T = loadConfig(fileNames, args, T::class.java, mapper)
 
     /**
      * Create a resourceConfig based on the provided resource enhancers. This method also disables
      * the WADL since it may be identified as a security risk.
      */
-    fun createResourceConfig(enhancers: List<JerseyResourceEnhancer>): ResourceConfig {
-        val resources = ResourceConfig()
-        resources.property("jersey.config.server.wadl.disableWadl", true)
-        enhancers.forEach { enhancer ->
-            resources.packages(*enhancer.packages)
-            resources.registerClasses(*enhancer.classes)
-            enhancer.enhanceResources(resources)
-        }
-
-        resources.register(object : AbstractBinder() {
-            override fun configure() {
-                enhancers.forEach { it.enhanceBinder(this) }
+    fun createResourceConfig(enhancers: List<JerseyResourceEnhancer>): ResourceConfig =
+        ResourceConfig().apply {
+            property("jersey.config.server.wadl.disableWadl", true)
+            enhancers.forEach { enhancer ->
+                packages(*enhancer.packages)
+                registerClasses(*enhancer.classes)
+                enhancer.enhanceResources(this@apply)
             }
-        })
-        return resources
-    }
+
+            register(object : AbstractBinder() {
+                override fun configure() {
+                    enhancers.forEach { it.enhanceBinder(this) }
+                }
+            })
+        }
 
     val logger: Logger = LoggerFactory.getLogger(ConfigLoader::class.java)
 

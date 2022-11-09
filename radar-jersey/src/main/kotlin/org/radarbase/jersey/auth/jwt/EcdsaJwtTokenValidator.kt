@@ -15,13 +15,14 @@ import com.auth0.jwt.algorithms.Algorithm
 import com.auth0.jwt.exceptions.AlgorithmMismatchException
 import com.auth0.jwt.exceptions.JWTVerificationException
 import com.auth0.jwt.exceptions.SignatureVerificationException
+import jakarta.ws.rs.container.ContainerRequestContext
+import jakarta.ws.rs.core.Context
 import org.radarbase.auth.exception.ConfigurationException
 import org.radarbase.jersey.auth.Auth
 import org.radarbase.jersey.auth.AuthConfig
 import org.radarbase.jersey.auth.AuthValidator
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import java.nio.file.Files
 import java.nio.file.Paths
 import java.security.KeyFactory
 import java.security.KeyStore
@@ -30,8 +31,6 @@ import java.security.interfaces.ECPublicKey
 import java.security.interfaces.RSAPublicKey
 import java.security.spec.X509EncodedKeySpec
 import java.util.*
-import jakarta.ws.rs.container.ContainerRequestContext
-import jakarta.ws.rs.core.Context
 import kotlin.io.path.inputStream
 
 class EcdsaJwtTokenValidator constructor(@Context private val config: AuthConfig) : AuthValidator {

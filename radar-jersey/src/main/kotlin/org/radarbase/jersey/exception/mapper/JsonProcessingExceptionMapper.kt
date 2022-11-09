@@ -10,7 +10,6 @@
 package org.radarbase.jersey.exception.mapper
 
 import com.fasterxml.jackson.core.JsonProcessingException
-import org.slf4j.LoggerFactory
 import jakarta.inject.Singleton
 import jakarta.ws.rs.container.ContainerRequestContext
 import jakarta.ws.rs.core.Context
@@ -19,6 +18,7 @@ import jakarta.ws.rs.core.UriInfo
 import jakarta.ws.rs.ext.ExceptionMapper
 import jakarta.ws.rs.ext.Provider
 import org.radarbase.jersey.exception.HttpBadRequestException
+import org.slf4j.LoggerFactory
 
 /** Handle exceptions without a specific mapper. */
 @Provider

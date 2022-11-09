@@ -24,6 +24,7 @@ import org.radarbase.jersey.exception.HttpNotFoundException
 import org.radarbase.jersey.util.CacheConfig
 import org.radarbase.jersey.util.CachedMap
 import org.radarbase.management.client.MPClient
+import org.radarbase.management.client.MPOrganization
 import org.radarbase.management.client.MPProject
 import org.radarbase.management.client.MPSubject
 import java.time.Duration
@@ -34,14 +35,24 @@ class MPProjectService(
     @Context private val config: AuthConfig,
     @Context private val mpClient: MPClient,
 ) : RadarProjectService {
-    private val projects = CachedMap(CacheConfig(
-            refreshDuration = config.managementPortal.syncProjectsInterval,
-            retryDuration = RETRY_INTERVAL)) {
-        mpClient.requestProjects()
-            .associateBy { it.id }
-    }
-
+    private val projects: CachedMap<String, MPProject>
+    private val organizations: CachedMap<String, MPOrganization>
     private val participants: ConcurrentMap<String, CachedMap<String, MPSubject>> = ConcurrentHashMap()
+
+    init {
+        val cacheConfig = CacheConfig(
+            refreshDuration = config.managementPortal.syncProjectsInterval,
+            retryDuration = RETRY_INTERVAL,
+        )
+
+        organizations = CachedMap(cacheConfig) {
+            mpClient.requestOrganizations().associateBy { it.id }
+        }
+
+        projects = CachedMap(cacheConfig) {
+            mpClient.requestProjects().associateBy { it.id }
+        }
+    }
 
     override fun userProjects(auth: Auth, permission: Permission): List<MPProject> {
         return projects.get()
@@ -68,6 +79,22 @@ class MPProjectService(
         if (!projectUserCache(projectId).contains(userId)) {
             throw HttpNotFoundException("user_not_found", "User $userId not found in project $projectId of ManagementPortal.")
         }
+    }
+
+    override fun ensureOrganization(organizationId: String) {
+        if (organizationId !in organizations) {
+            throw HttpNotFoundException("organization_not_found", "Organization $organizationId not found in Management Portal.")
+        }
+    }
+
+    override fun listProjects(organizationId: String): List<String> = projects.get().asSequence()
+        .filter { it.value.organization?.id == organizationId }
+        .map { it.key }
+        .toList()
+
+    override fun projectOrganization(projectId: String): String {
+        return projects[projectId]?.organization?.id
+            ?: throw HttpNotFoundException("project_not_found", "Project $projectId not found in Management Portal.")
     }
 
     override fun getUser(projectId: String, userId: String): MPSubject? {

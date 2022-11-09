@@ -2,9 +2,7 @@ package org.radarbase.jersey.hibernate
 
 import okhttp3.OkHttpClient
 import okhttp3.Request
-import org.hamcrest.MatcherAssert
 import org.hamcrest.MatcherAssert.assertThat
-import org.hamcrest.Matchers
 import org.hamcrest.Matchers.`is`
 import org.hamcrest.Matchers.equalTo
 import org.junit.jupiter.api.Test
@@ -42,7 +40,10 @@ internal class DatabaseHealthMetricsTest {
                     .url("http://localhost:9091/health")
                     .build()).execute().use { response ->
                 assertThat(response.isSuccessful, `is`(true))
-                assertThat(response.body?.string(), equalTo("{\"status\":\"UP\",\"db\":{\"status\":\"UP\"}}"))
+                assertThat(
+                    response.body?.string(),
+                    equalTo("{\"status\":\"UP\",\"db\":{\"status\":\"UP\"}}"),
+                )
             }
         } finally {
             server.shutdown()

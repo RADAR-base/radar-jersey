@@ -7,13 +7,13 @@ plugins {
     `maven-publish`
     signing
     id("org.jetbrains.dokka") apply false
-    id("com.github.ben-manes.versions") version "0.42.0"
+    id("com.github.ben-manes.versions") version "0.43.0"
     id("io.github.gradle-nexus.publish-plugin") version "1.1.0"
 }
 
 allprojects {
     group = "org.radarbase"
-    version = "0.8.4-SNAPSHOT"
+    version = "0.9.2-SNAPSHOT"
 }
 
 subprojects {
@@ -36,6 +36,7 @@ subprojects {
 
     repositories {
         mavenCentral()
+        mavenLocal()
         maven(url = "https://oss.sonatype.org/content/repositories/snapshots")
     }
 
@@ -44,17 +45,21 @@ subprojects {
         configurations["dokkaHtmlPlugin"]("org.jetbrains.dokka:kotlin-as-java-plugin:$dokkaVersion")
 
         val jacksonVersion: String by project
-        configurations["dokkaPlugin"](platform("com.fasterxml.jackson:jackson-bom:$jacksonVersion"))
-        configurations["dokkaRuntime"](platform("com.fasterxml.jackson:jackson-bom:$jacksonVersion"))
-
         val jsoupVersion: String by project
-        configurations["dokkaPlugin"]("org.jsoup:jsoup:$jsoupVersion")
-        configurations["dokkaRuntime"]("org.jsoup:jsoup:$jsoupVersion")
+        val kotlinVersion: String by project
+
+        sequenceOf("dokkaPlugin", "dokkaRuntime")
+            .map { configurations[it] }
+            .forEach { conf ->
+                conf(platform("com.fasterxml.jackson:jackson-bom:$jacksonVersion"))
+                conf("org.jsoup:jsoup:$jsoupVersion")
+                conf(platform("org.jetbrains.kotlin:kotlin-bom:$kotlinVersion"))
+            }
 
         val log4j2Version: String by project
         val testRuntimeOnly by configurations
-        testRuntimeOnly("org.apache.logging.log4j:log4j-slf4j-impl:$log4j2Version")
-        testRuntimeOnly("org.apache.logging.log4j:log4j-api:$log4j2Version")
+        testRuntimeOnly("org.apache.logging.log4j:log4j-slf4j2-impl:$log4j2Version")
+        testRuntimeOnly("org.apache.logging.log4j:log4j-core:$log4j2Version")
         testRuntimeOnly("org.apache.logging.log4j:log4j-jul:$log4j2Version")
     }
 
@@ -79,8 +84,8 @@ subprojects {
     tasks.withType<KotlinCompile> {
         kotlinOptions {
             jvmTarget = "11"
-            apiVersion = "1.6"
-            languageVersion = "1.6"
+            apiVersion = "1.7"
+            languageVersion = "1.7"
         }
     }
 
@@ -180,7 +185,7 @@ subprojects {
 val stableVersionRegex = "[0-9,.v-]+(-r)?".toRegex()
 
 fun isNonStable(version: String): Boolean {
-    val stableKeyword = listOf("RELEASE", "FINAL", "GA")
+    val stableKeyword = listOf("RELEASE", "FINAL", "GA", "-CE")
         .any { version.toUpperCase().contains(it) }
     return !stableKeyword && !stableVersionRegex.matches(version)
 }
@@ -209,5 +214,5 @@ nexusPublishing {
 }
 
 tasks.wrapper {
-    gradleVersion = "7.4.1"
+    gradleVersion = "7.5.1"
 }

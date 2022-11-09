@@ -1,6 +1,6 @@
 package org.radarbase.jersey.hibernate.db
 
-import javax.persistence.*
+import jakarta.persistence.*
 
 @Entity(name = "Project")
 @Table(name = "project")
@@ -15,4 +15,7 @@ class ProjectDao {
 
     @Column
     var description: String? = null
+
+    @Column
+    var organization: String? = null
 }

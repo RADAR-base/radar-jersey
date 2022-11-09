@@ -1,11 +1,11 @@
 package org.radarbase.jersey.hibernate
 
+import jakarta.inject.Provider
+import jakarta.persistence.EntityManager
+import jakarta.persistence.EntityTransaction
 import org.radarbase.jersey.exception.HttpInternalServerException
 import org.radarbase.jersey.hibernate.config.CloseableTransaction
 import org.slf4j.LoggerFactory
-import jakarta.inject.Provider
-import javax.persistence.EntityManager
-import javax.persistence.EntityTransaction
 
 open class HibernateRepository(
         private val entityManagerProvider: Provider<EntityManager>

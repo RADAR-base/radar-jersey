@@ -20,10 +20,9 @@ import java.time.Duration
 
 /** Set of data that is cached for a duration of time. */
 class CachedMap<K,V>(
-        cacheConfig: CacheConfig = CacheConfig(),
-        supplier: () -> Map<K,V>,
+    cacheConfig: CacheConfig = CacheConfig(),
+    supplier: () -> Map<K,V>,
 ): CachedValue<Map<K, V>>(cacheConfig, supplier, ::emptyMap) {
-
     constructor(
         refreshDuration: Duration,
         retryDuration: Duration,

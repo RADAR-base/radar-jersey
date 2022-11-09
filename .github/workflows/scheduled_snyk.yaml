@@ -2,19 +2,28 @@ name: Snyk scheduled test
 on:
   schedule:
     - cron: '0 2 * * 1'
+  push:
+    branches:
+      - master
+
 jobs:
   security:
     runs-on: ubuntu-latest
     env:
       REPORT_FILE: test.json
     steps:
-      - uses: actions/checkout@master
+      - uses: actions/checkout@v3
       - uses: snyk/actions/setup@master
-
-      - uses: actions/setup-java@v2
         with:
-          distribution: zulu
+          snyk-version: v1.1032.0
+
+      - uses: actions/setup-java@v3
+        with:
+          distribution: temurin
           java-version: 11
+
+      - name: Setup Gradle
+        uses: gradle/gradle-build-action@v2
 
       - name: Run Snyk
         env:
@@ -22,11 +31,10 @@ jobs:
         run: >
           snyk test
           --configuration-matching='^runtimeClasspath$'
-          --configuration-matching='^compileClasspath$'
           --json-file-output=${{ env.REPORT_FILE }}
           --org=radar-base
-          --sub-project=radar-jersey
-          --sub-project=radar-jersey-hibernate
+          --all-sub-projects
+          --policy-path=$PWD/.snyk
 
       - name: Report new vulnerabilities
         uses: thehyve/report-vulnerability@master
@@ -34,4 +42,3 @@ jobs:
           report-file: ${{ env.REPORT_FILE }}
         env:
           TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        if: ${{ failure() }}

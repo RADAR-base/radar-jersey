@@ -10,13 +10,13 @@
 package org.radarbase.jersey.auth.managementportal
 
 import com.auth0.jwt.JWT
+import jakarta.ws.rs.container.ContainerRequestContext
+import jakarta.ws.rs.core.Context
 import org.radarbase.auth.authentication.TokenValidator
 import org.radarbase.auth.exception.TokenValidationException
 import org.radarbase.jersey.auth.Auth
 import org.radarbase.jersey.auth.AuthValidator
 import org.slf4j.LoggerFactory
-import jakarta.ws.rs.container.ContainerRequestContext
-import jakarta.ws.rs.core.Context
 
 /** Creates a TokenValidator based on the current management portal configuration. */
 class ManagementPortalTokenValidator(

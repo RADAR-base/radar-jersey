@@ -1,13 +1,13 @@
 package org.radarbase.jersey.hibernate.config
 
+import jakarta.persistence.SharedCacheMode
+import jakarta.persistence.ValidationMode
+import jakarta.persistence.spi.ClassTransformer
+import jakarta.persistence.spi.PersistenceUnitInfo
+import jakarta.persistence.spi.PersistenceUnitTransactionType
 import org.hibernate.jpa.HibernatePersistenceProvider
 import java.net.URL
 import java.util.*
-import javax.persistence.SharedCacheMode
-import javax.persistence.ValidationMode
-import javax.persistence.spi.ClassTransformer
-import javax.persistence.spi.PersistenceUnitInfo
-import javax.persistence.spi.PersistenceUnitTransactionType
 import javax.sql.DataSource
 
 class RadarPersistenceInfo(
@@ -15,7 +15,7 @@ class RadarPersistenceInfo(
 ): PersistenceUnitInfo {
     @Suppress("UNCHECKED_CAST")
     private val properties: Properties = Properties().apply {
-        put("javax.persistence.schema-generation.database.action", "none")
+        put("jakarta.persistence.schema-generation.database.action", "none")
         put("org.hibernate.flushMode", "COMMIT")
         put("hibernate.connection.provider_class", "org.hibernate.connection.C3P0ConnectionProvider")
         put("hibernate.c3p0.max_size", "50")
@@ -29,10 +29,10 @@ class RadarPersistenceInfo(
         put("hibernate.c3p0.breakAfterAcquireFailure", "false")
 
         putAll((mapOf(
-                "javax.persistence.jdbc.driver" to config.driver,
-                "javax.persistence.jdbc.url" to config.url,
-                "javax.persistence.jdbc.user" to config.user,
-                "javax.persistence.jdbc.password" to config.password,
+                "jakarta.persistence.jdbc.driver" to config.driver,
+                "jakarta.persistence.jdbc.url" to config.url,
+                "jakarta.persistence.jdbc.user" to config.user,
+                "jakarta.persistence.jdbc.password" to config.password,
                 "hibernate.dialect" to config.dialect)
                 + config.properties)
                 .filterValues { it != null } as Map<String, String>)

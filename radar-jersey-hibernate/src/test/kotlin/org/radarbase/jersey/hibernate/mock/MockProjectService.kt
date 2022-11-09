@@ -9,14 +9,29 @@
 
 package org.radarbase.jersey.hibernate.mock
 
+import jakarta.ws.rs.core.Context
 import org.radarbase.jersey.exception.HttpNotFoundException
 import org.radarbase.jersey.hibernate.db.ProjectRepository
 import org.radarbase.jersey.service.ProjectService
-import jakarta.ws.rs.core.Context
 
 class MockProjectService(
-        @Context private val projects: ProjectRepository
+    @Context private val projects: ProjectRepository
 ) : ProjectService {
+    override fun ensureOrganization(organizationId: String) {
+        if (projects.list().none { it.organization == organizationId }) {
+            throw HttpNotFoundException("organization_not_found", "Organization $organizationId not found.")
+        }
+    }
+
+    override fun listProjects(organizationId: String): List<String> = projects.list()
+        .filter { it.organization == organizationId }
+        .map { it.name }
+
+    override fun projectOrganization(projectId: String): String = projects.list()
+        .firstOrNull { it.name == projectId }
+        ?.organization
+        ?: throw HttpNotFoundException("project_not_found", "Project $projectId not found.")
+
     override fun ensureProject(projectId: String) {
         if (projects.list().none { it.name == projectId }) {
             throw HttpNotFoundException("project_not_found", "Project $projectId not found.")
