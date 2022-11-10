@@ -69,12 +69,12 @@ class MPProjectService(
     override fun project(projectId: String): MPProject = projects[projectId]
         ?: throw HttpNotFoundException("project_not_found", "Project $projectId not found in Management Portal.")
 
-    override fun projectUsers(projectId: String): List<MPSubject> = projectUserCache(projectId).get().values.toList()
+    override fun projectSubjects(projectId: String): List<MPSubject> = projectUserCache(projectId).get().values.toList()
 
-    override fun userByExternalId(projectId: String, externalUserId: String): MPSubject? = projectUserCache(projectId)
+    override fun subjectByExternalId(projectId: String, externalUserId: String): MPSubject? = projectUserCache(projectId)
             .findValue { it.externalId == externalUserId }
 
-    override fun ensureUser(projectId: String, userId: String) {
+    override fun ensureSubject(projectId: String, userId: String) {
         ensureProject(projectId)
         if (!projectUserCache(projectId).contains(userId)) {
             throw HttpNotFoundException("user_not_found", "User $userId not found in project $projectId of ManagementPortal.")
@@ -97,7 +97,7 @@ class MPProjectService(
             ?: throw HttpNotFoundException("project_not_found", "Project $projectId not found in Management Portal.")
     }
 
-    override fun getUser(projectId: String, userId: String): MPSubject? {
+    override fun subject(projectId: String, userId: String): MPSubject? {
         ensureProject(projectId)
         return projectUserCache(projectId)[userId]
     }

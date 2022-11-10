@@ -37,4 +37,8 @@ class MockProjectService(
             throw HttpNotFoundException("project_not_found", "Project $projectId not found.")
         }
     }
+
+    override fun ensureSubject(projectId: String, userId: String) {
+        ensureProject(projectId)
+    }
 }

@@ -38,4 +38,7 @@ interface ProjectService {
      * @throws HttpApplicationException if the project ID is not a valid project ID.
      */
     fun ensureProject(projectId: String)
+
+    /** Ensure that given subject user exists. */
+    fun ensureSubject(projectId: String, userId: String)
 }

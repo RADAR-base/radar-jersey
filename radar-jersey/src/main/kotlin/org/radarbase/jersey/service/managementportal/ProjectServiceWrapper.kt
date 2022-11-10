@@ -38,4 +38,8 @@ class ProjectServiceWrapper(
      * @throws HttpNotFoundException if the project does not exist.
      */
     override fun ensureProject(projectId: String) = radarProjectService.get().ensureProject(projectId)
+
+    override fun ensureSubject(projectId: String, userId: String) {
+        radarProjectService.get().ensureSubject(projectId, userId)
+    }
 }

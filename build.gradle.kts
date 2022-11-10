@@ -90,6 +90,11 @@ subprojects {
     }
 
     afterEvaluate {
+        configurations.all {
+            resolutionStrategy.cacheChangingModulesFor(0, TimeUnit.SECONDS)
+            resolutionStrategy.cacheDynamicVersionsFor(0, TimeUnit.SECONDS)
+        }
+
         tasks.withType<Test> {
             testLogging {
                 events("passed", "skipped", "failed")

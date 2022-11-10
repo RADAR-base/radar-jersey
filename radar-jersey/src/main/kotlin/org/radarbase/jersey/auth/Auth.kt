@@ -12,8 +12,10 @@ package org.radarbase.jersey.auth
 import com.fasterxml.jackson.databind.JsonNode
 import org.radarbase.auth.authorization.Permission
 import org.radarbase.auth.token.RadarToken
+import org.radarbase.jersey.auth.filter.AuthenticationFilter
 import org.radarbase.jersey.exception.HttpBadRequestException
 import org.radarbase.jersey.exception.HttpForbiddenException
+import org.radarbase.jersey.exception.HttpUnauthorizedException.Companion.wwwAuthenticateHeader
 import org.slf4j.LoggerFactory
 
 interface Auth {
@@ -44,21 +46,15 @@ interface Auth {
                 userId ?: throw HttpBadRequestException("user_id_missing", "Missing user ID in request"),
             )
         ) {
-            logPermission(
-                isAuthorized = false,
+            throw forbiddenException(
                 permission = permission,
                 location = location,
                 projectIds = listOf(projectId),
                 userId = userId,
             )
-            throw HttpForbiddenException(
-                "permission_mismatch",
-                "No permission '$permission' project $projectId with user $userId",
-            )
         }
 
-        logPermission(
-            isAuthorized = true,
+        logAuthorized(
             permission = permission,
             location = location,
             projectIds = listOf(projectId),
@@ -79,18 +75,13 @@ interface Auth {
                 projectId ?: throw HttpBadRequestException("project_id_missing", "Missing project ID in request"),
             )
         ) {
-            logPermission(
-                isAuthorized = false,
+            throw forbiddenException(
                 permission = permission,
                 location = location,
                 projectIds = listOf(projectId),
             )
-            throw HttpForbiddenException(
-                "permission_mismatch",
-                "No permission '$permission' for project $projectId",
-            )
         }
-        logPermission(true, permission, location, projectIds = listOf(projectId))
+        logAuthorized(permission, location, projectIds = listOf(projectId))
     }
 
     /**
@@ -108,21 +99,15 @@ interface Auth {
                 sourceId ?: throw HttpBadRequestException("source_id_missing", "Missing source ID in request"),
             )
         ) {
-            logPermission(
-                isAuthorized = false,
+            throw forbiddenException(
                 permission = permission,
                 location = location,
                 projectIds = listOf(projectId),
                 userId = userId,
                 sourceId = sourceId,
             )
-            throw HttpForbiddenException(
-                "permission_mismatch",
-                "No permission '$permission' for project $projectId with user $userId and source $sourceId",
-            )
         }
-        logPermission(
-            isAuthorized = true,
+        logAuthorized(
             permission = permission,
             location = location,
             projectIds = listOf(projectId),
@@ -141,36 +126,83 @@ interface Auth {
      */
     fun hasRole(projectId: String, role: String): Boolean
 
-    fun logPermission(isAuthorized: Boolean, permission: Permission, location: String? = null, organizationId: String? = null, projectIds: List<String>? = null, userId: String? = null, sourceId: String? = null) {
-        if (!logger.isInfoEnabled) {
-            return
+    fun forbiddenException(
+        permission: Permission,
+        location: String? = null,
+        organizationId: String? = null,
+        projectIds: List<String>? = null,
+        userId: String? = null,
+        sourceId: String? = null,
+    ): HttpForbiddenException {
+        val message = logPermission(
+            false,
+            permission,
+            location,
+            organizationId,
+            projectIds,
+            userId,
+            sourceId,
+        )
+        return HttpForbiddenException(
+            "permission_mismatch",
+            message,
+            wwwAuthenticateHeader = wwwAuthenticateHeader(
+                error = "insufficient_scope",
+                errorDescription = message,
+                scope = permission.toString()
+            ),
+        )
+    }
+
+    fun logAuthorized(
+        permission: Permission,
+        location: String? = null,
+        organizationId: String? = null,
+        projectIds: List<String>? = null,
+        userId: String? = null,
+        sourceId: String? = null,
+    ) = logPermission(true, permission, location, organizationId, projectIds, userId, sourceId)
+
+    private fun logPermission(
+        isAuthorized: Boolean,
+        permission: Permission,
+        location: String? = null,
+        organizationId: String? = null,
+        projectIds: List<String>? = null,
+        userId: String? = null,
+        sourceId: String? = null,
+    ): String {
+        val message = if (!logger.isInfoEnabled && isAuthorized) {
+            ""
+        } else {
+            buildString(140) {
+                (location ?: findCallerMethod())?.let {
+                    append(it)
+                    append(" - ")
+                }
+                if (token.isClientCredentials) {
+                    append(clientId)
+                } else {
+                    append('@')
+                    append(this@Auth.userId)
+                }
+
+                append(" - ")
+
+                append(if (isAuthorized) "GRANTED " else "DENIED ")
+                append(permission.scope())
+                append(' ')
+
+                buildList(4) {
+                    organizationId?.let { add("organization: $it") }
+                    projectIds?.let { add("projects: $it") }
+                    userId?.let { add("subject: $it") }
+                    sourceId?.let { add("source: $it") }
+                }.joinTo(this, separator = ", ", prefix = "{", postfix = "}")
+            }
         }
-
-         logger.info(buildString(140) {
-             (location ?: findCallerMethod())?.let {
-                 append(it)
-                 append(" - ")
-             }
-             if (token.isClientCredentials) {
-                 append(clientId)
-             } else {
-                 append('@')
-                 append(this@Auth.userId)
-             }
-
-             append(" - ")
-
-             append(if (isAuthorized) "GRANTED " else "DENIED ")
-             append(permission.scope())
-             append(' ')
-
-             buildList(4) {
-                 organizationId?.let { add("organization: $it") }
-                 projectIds?.let { add("projects: $it") }
-                 userId?.let { add("subject: $it") }
-                 sourceId?.let { add("source: $it") }
-             }.joinTo(this, separator = ", ", prefix = "{", postfix = "}")
-         })
+        logger.info(message)
+        return message
     }
 
     companion object {
