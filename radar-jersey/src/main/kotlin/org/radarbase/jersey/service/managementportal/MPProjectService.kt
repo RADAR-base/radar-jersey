@@ -27,6 +27,7 @@ import org.radarbase.management.client.MPClient
 import org.radarbase.management.client.MPOrganization
 import org.radarbase.management.client.MPProject
 import org.radarbase.management.client.MPSubject
+import org.slf4j.LoggerFactory
 import java.time.Duration
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.ConcurrentMap
@@ -46,18 +47,27 @@ class MPProjectService(
         )
 
         organizations = CachedMap(cacheConfig) {
-            mpClient.requestOrganizations().associateBy { it.id }
+            mpClient.requestOrganizations()
+                .associateBy { it.id }
+                .also { logger.debug("Fetched organizations {}", it) }
         }
 
         projects = CachedMap(cacheConfig) {
-            mpClient.requestProjects().associateBy { it.id }
+            mpClient.requestProjects()
+                .associateBy { it.id }
+                .also { logger.debug("Fetched projects {}", it) }
         }
     }
 
     override fun userProjects(auth: Auth, permission: Permission): List<MPProject> {
-        return projects.get()
-                .values
-                .filter { auth.token.hasPermissionOnProject(permission, it.id) }
+        return projects.get().values
+                .filter {
+                    auth.token.hasPermissionOnOrganizationAndProject(
+                        permission,
+                        it.organization?.id,
+                        it.id
+                    )
+                }
     }
 
     override fun ensureProject(projectId: String) {
@@ -89,13 +99,11 @@ class MPProjectService(
 
     override fun listProjects(organizationId: String): List<String> = projects.get().asSequence()
         .filter { it.value.organization?.id == organizationId }
-        .map { it.key }
-        .toList()
+        .mapTo(ArrayList()) { it.key }
 
-    override fun projectOrganization(projectId: String): String {
-        return projects[projectId]?.organization?.id
+    override fun projectOrganization(projectId: String): String =
+        projects[projectId]?.organization?.id
             ?: throw HttpNotFoundException("project_not_found", "Project $projectId not found in Management Portal.")
-    }
 
     override fun subject(projectId: String, userId: String): MPSubject? {
         ensureProject(projectId)
@@ -113,5 +121,6 @@ class MPProjectService(
 
     companion object {
         private val RETRY_INTERVAL = Duration.ofMinutes(1)
+        private val logger = LoggerFactory.getLogger(MPProjectService::class.java)
     }
 }
