@@ -1,12 +1,12 @@
 # Continuous integration, including test and integration test
 name: CI
 
-# Run in master and dev branches and in all pull requests to those branches
+# Run in main and dev branches and in all pull requests to those branches
 on:
   push:
-    branches: [ master, dev ]
+    branches: [ main, dev ]
   pull_request:
-    branches: [ master, dev ]
+    branches: [ main, dev ]
 
 jobs:
   # Build and test the code
