@@ -2,7 +2,7 @@ name: Snyk test
 on:
   pull_request:
     branches:
-      - master
+      - main
 
 jobs:
   security:

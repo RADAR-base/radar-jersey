@@ -1,7 +1,7 @@
 # Continuous integration, including test and integration test
 name: Publish snapshots
 
-# Run in master and dev branches and in all pull requests to those branches
+# Run in main and dev branches and in all pull requests to those branches
 on:
   push:
     branches: [ dev ]
