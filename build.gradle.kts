@@ -1,6 +1,8 @@
 import com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
 
 plugins {
     kotlin("jvm") apply false
@@ -67,15 +69,17 @@ subprojects {
         dependsOn(dokkaJavadoc)
     }
 
+    val jvmTargetVersion = 17
+
     tasks.withType<JavaCompile> {
-        options.release.set(17)
+        options.release.set(jvmTargetVersion)
     }
 
     tasks.withType<KotlinCompile> {
-        kotlinOptions {
-            jvmTarget = "17"
-            apiVersion = "1.8"
-            languageVersion = "1.8"
+        compilerOptions {
+            jvmTarget.set(JvmTarget.fromTarget(jvmTargetVersion.toString()))
+            apiVersion.set(KotlinVersion.KOTLIN_1_8)
+            languageVersion.set(KotlinVersion.KOTLIN_1_8)
         }
     }
 
