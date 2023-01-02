@@ -68,14 +68,14 @@ subprojects {
     }
 
     tasks.withType<JavaCompile> {
-        options.release.set(11)
+        options.release.set(17)
     }
 
     tasks.withType<KotlinCompile> {
         kotlinOptions {
-            jvmTarget = "11"
-            apiVersion = "1.7"
-            languageVersion = "1.7"
+            jvmTarget = "17"
+            apiVersion = "1.8"
+            languageVersion = "1.8"
         }
     }
 
