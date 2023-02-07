@@ -31,4 +31,9 @@ annotation class Cache(
     val proxyRevalidate: Boolean = false,
     /** Corresponds to the `private` cache control directive. */
     val isPrivate: Boolean = false,
+    /**
+     * Invalidate cache if any of the given headers are provided in the request.
+     * Corresponds to the HTTP Vary header.
+     */
+    val vary: Array<String> = [],
 )

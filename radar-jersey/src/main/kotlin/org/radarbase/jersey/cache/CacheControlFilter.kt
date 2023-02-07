@@ -15,17 +15,23 @@ import java.io.IOException
  */
 @Priority(Priorities.HEADER_DECORATOR)
 class CacheControlFilter(
-    private var cacheControl: CacheControl
+    private val cacheControl: CacheControl,
+    private val vary: Array<String>
 ) : ContainerResponseFilter {
     @Throws(IOException::class)
     override fun filter(
         requestContext: ContainerRequestContext,
         responseContext: ContainerResponseContext
     ) {
-        if (responseContext.status == 200
-            && !responseContext.headers.containsKey(HttpHeaders.CACHE_CONTROL)
-        ) {
-            responseContext.headers[HttpHeaders.CACHE_CONTROL] = mutableListOf<Any>(cacheControl)
+        if (responseContext.status != 200) return
+
+        responseContext.headers.computeIfAbsent(HttpHeaders.CACHE_CONTROL) {
+            mutableListOf<Any>(cacheControl)
+        }
+        if (vary.isNotEmpty()) {
+            responseContext.headers.computeIfAbsent(HttpHeaders.VARY) {
+                vary.toMutableList<Any>()
+            }
         }
     }
 }
