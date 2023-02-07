@@ -51,13 +51,6 @@ data class MPConfig(
         /** Interval after which the list of subjects in a project should be refreshed (minutes). */
         val syncParticipantsIntervalMin: Long = 5,
 ) {
-    @JsonIgnore
-    val httpUrl: HttpUrl? = url
-        ?.toHttpUrlOrNull()
-        ?.newBuilder()
-        ?.addPathSegment("")
-        ?.build()
-
     /** Interval after which the list of projects should be refreshed. */
     @JsonIgnore
     val syncProjectsInterval: Duration = Duration.ofMinutes(syncProjectsIntervalMin)

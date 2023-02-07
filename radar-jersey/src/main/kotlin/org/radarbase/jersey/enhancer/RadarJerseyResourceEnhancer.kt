@@ -30,13 +30,11 @@ import org.radarbase.jersey.auth.jwt.AuthFactory
 class RadarJerseyResourceEnhancer(
     private val config: AuthConfig,
     includeMapper: Boolean = true,
-    includeHttpClient: Boolean = true,
 ): JerseyResourceEnhancer {
     /**
      * Utilities. Set to `null` to avoid injection. Modify utility mapper or client to inject
      * a different mapper or client.
      */
-    private val okHttpResourceEnhancer: OkHttpResourceEnhancer? = if (includeHttpClient) OkHttpResourceEnhancer() else null
     private val mapperResourceEnhancer: MapperResourceEnhancer? = if (includeMapper) MapperResourceEnhancer() else null
 
     override val classes = arrayOf(
@@ -46,7 +44,6 @@ class RadarJerseyResourceEnhancer(
 
     override fun ResourceConfig.enhance() {
         register(JacksonFeature.withoutExceptionMappers())
-        okHttpResourceEnhancer?.enhanceResources(this)
         mapperResourceEnhancer?.enhanceResources(this)
     }
 
@@ -62,7 +59,6 @@ class RadarJerseyResourceEnhancer(
             .to(Auth::class.java)
             .`in`(RequestScoped::class.java)
 
-        okHttpResourceEnhancer?.enhanceBinder(this)
         mapperResourceEnhancer?.enhanceBinder(this)
     }
 }

@@ -36,9 +36,6 @@ dependencies {
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jdk8")
     implementation("com.fasterxml.jackson.jakarta.rs:jackson-jakarta-rs-json-provider")
 
-    val okhttpVersion: String by project
-    implementation("com.squareup.okhttp3:okhttp:$okhttpVersion")
-
     implementation("org.glassfish.jersey.containers:jersey-container-grizzly2-http:$jerseyVersion")
     implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml")
 
@@ -62,6 +59,9 @@ dependencies {
     runtimeOnly("org.glassfish.jaxb:jaxb-core:$jakartaJaxbCoreVersion")
     runtimeOnly("org.glassfish.jaxb:jaxb-runtime:$jakartaJaxbRuntimeVersion")
     runtimeOnly("jakarta.activation:jakarta.activation-api:$jakartaActivation")
+
+    val okhttpVersion: String by project
+    testImplementation("com.squareup.okhttp3:okhttp:$okhttpVersion")
 
     val grizzlyVersion: String by project
     testRuntimeOnly("org.glassfish.grizzly:grizzly-http-server:$grizzlyVersion")

@@ -12,9 +12,8 @@ object Enhancers {
     /** Adds authorization framework, configuration and utilities. */
     fun radar(
         config: AuthConfig,
-        includeMapper: Boolean = true,
-        includeHttpClient: Boolean = true,
-    ) = RadarJerseyResourceEnhancer(config, includeMapper = includeMapper, includeHttpClient = includeHttpClient)
+        includeMapper: Boolean = true
+    ) = RadarJerseyResourceEnhancer(config, includeMapper = includeMapper)
     /** Authorization via ManagementPortal. */
     fun managementPortal(config: AuthConfig) = ManagementPortalResourceEnhancer(config)
     /** Disable all authorization. Useful for a public service. */
@@ -28,8 +27,6 @@ object Enhancers {
      * @see org.radarbase.jersey.exception.HttpApplicationException
      */
     val exception = ExceptionResourceEnhancer()
-    /** Adds OkHttpClient utility. Not needed if radar(includeHttpClient = true). */
-    val okhttp = OkHttpResourceEnhancer()
     /** Add ObjectMapper utility. Not needed if radar(includeMapper = true). */
     val mapper = MapperResourceEnhancer()
     /**

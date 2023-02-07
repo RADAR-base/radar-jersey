@@ -17,6 +17,7 @@
 package org.radarbase.jersey.service.managementportal
 
 import jakarta.ws.rs.core.Context
+import kotlinx.coroutines.*
 import org.radarbase.auth.authorization.Permission
 import org.radarbase.jersey.auth.Auth
 import org.radarbase.jersey.auth.AuthConfig
@@ -47,15 +48,19 @@ class MPProjectService(
         )
 
         organizations = CachedMap(cacheConfig) {
-            mpClient.requestOrganizations()
-                .associateBy { it.id }
-                .also { logger.debug("Fetched organizations {}", it) }
+            runBlocking {
+                mpClient.requestOrganizations()
+                    .associateBy { it.id }
+                    .also { logger.debug("Fetched organizations {}", it) }
+            }
         }
 
         projects = CachedMap(cacheConfig) {
-            mpClient.requestProjects()
-                .associateBy { it.id }
-                .also { logger.debug("Fetched projects {}", it) }
+            runBlocking {
+                mpClient.requestProjects()
+                    .associateBy { it.id }
+                    .also { logger.debug("Fetched projects {}", it) }
+            }
         }
     }
 
@@ -114,8 +119,10 @@ class MPProjectService(
         CachedMap(CacheConfig(
                 refreshDuration = config.managementPortal.syncParticipantsInterval,
                 retryDuration = RETRY_INTERVAL)) {
-            mpClient.requestSubjects(projectId)
-                .associateBy { checkNotNull(it.id) }
+            runBlocking {
+                mpClient.requestSubjects(projectId)
+                    .associateBy { checkNotNull(it.id) }
+            }
         }
     }
 
