@@ -40,7 +40,7 @@ class CacheControlFeature : DynamicFeature {
             isNoTransform = cache.noTransform
             isProxyRevalidate = cache.proxyRevalidate
         }
-        configurable.register(CacheControlFilter(cacheControl))
+        configurable.register(CacheControlFilter(cacheControl, cache.vary))
         return true
     }
 
@@ -51,7 +51,7 @@ class CacheControlFeature : DynamicFeature {
             isNoTransform = false
             noCacheFields += noCache.fields
         }
-        configurable.register(CacheControlFilter(cacheControl))
+        configurable.register(CacheControlFilter(cacheControl, emptyArray()))
         return true
     }
 }
