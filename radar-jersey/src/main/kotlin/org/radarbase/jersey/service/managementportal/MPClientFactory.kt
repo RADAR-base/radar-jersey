@@ -6,23 +6,33 @@ import org.radarbase.management.auth.ClientCredentialsConfig
 import org.radarbase.management.auth.clientCredentials
 import org.radarbase.management.client.MPClient
 import org.radarbase.management.client.mpClient
+import org.slf4j.LoggerFactory
+import java.net.URL
 import java.util.function.Supplier
 
 class MPClientFactory(
     @Context private val authConfig: AuthConfig,
 ) : Supplier<MPClient> {
     override fun get(): MPClient = mpClient {
-        val mpUrl = requireNotNull(authConfig.managementPortal.url) { "ManagementPortal client needs a URL" }
-            .trimEnd('/') + '/'
+        url = requireNotNull(authConfig.managementPortal.url) { "ManagementPortal client needs a URL" }
+            .trimEnd('/')
         auth {
+            val authConfig = ClientCredentialsConfig(
+                tokenUrl = "$url/oauth/token",
+                clientId = authConfig.managementPortal.clientId,
+                clientSecret = authConfig.managementPortal.clientSecret,
+            ).copyWithEnv()
+
+            logger.info("Configuring MPClient with {}", authConfig)
+
             clientCredentials(
-                ClientCredentialsConfig(
-                    tokenUrl = "$mpUrl/oauth/token",
-                    clientId = authConfig.managementPortal.clientId,
-                    clientSecret = authConfig.managementPortal.clientSecret,
-                ).copyWithEnv()
+                authConfig = authConfig,
+                targetHost = URL(url).host
             )
         }
-        url = mpUrl
+    }
+
+    companion object {
+        private val logger = LoggerFactory.getLogger(MPClientFactory::class.java)
     }
 }
