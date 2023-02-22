@@ -34,8 +34,9 @@ internal class RadarJerseyResourceEnhancerTest {
     @BeforeEach
     fun setUp() {
         val authConfig = AuthConfig(
-                managementPortal = MPConfig(url = "http://localhost:8080"),
-                jwtResourceName = "res_ManagementPortal")
+            managementPortal = MPConfig(url = "http://localhost:8080"),
+            jwtResourceName = "res_ManagementPortal",
+        )
 
         val resources = ConfigLoader.loadResources(MockResourceEnhancerFactory::class.java, authConfig)
 
@@ -54,7 +55,7 @@ internal class RadarJerseyResourceEnhancerTest {
     @Test
     fun helperTest() {
         assertThat(oauthHelper, not(nullValue()))
-        val token = oauthHelper.tokenValidator.validateAccessToken(oauthHelper.validEcToken)
+        val token = oauthHelper.tokenValidator.validateBlocking(oauthHelper.validEcToken)
         assertThat(token, not(nullValue()))
     }
 

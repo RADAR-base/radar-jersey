@@ -11,14 +11,14 @@ package org.radarbase.jersey.auth.jwt
 
 import jakarta.ws.rs.container.ContainerRequestContext
 import jakarta.ws.rs.core.Context
-import org.radarbase.jersey.auth.Auth
+import org.radarbase.auth.token.RadarToken
 import org.radarbase.jersey.auth.filter.RadarSecurityContext
 import java.util.function.Supplier
 
 /** Generates radar tokens from the security context. */
-class AuthFactory(
+class RadarTokenFactory(
         @Context private val context: ContainerRequestContext
-) : Supplier<Auth> {
-    override fun get() = (context.securityContext as? RadarSecurityContext)?.auth
+) : Supplier<RadarToken> {
+    override fun get() = (context.securityContext as? RadarSecurityContext)?.token
                 ?: throw IllegalStateException("Created null wrapper")
 }

@@ -3,9 +3,10 @@ package org.radarbase.jersey.auth
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
 import okhttp3.Request
+import org.radarbase.auth.authentication.StaticTokenVerifierLoader
 import org.radarbase.auth.authentication.TokenValidator
 import org.radarbase.auth.authorization.Permission
-import org.radarbase.auth.config.TokenValidatorConfig
+import org.radarbase.auth.jwks.JwksTokenVerifierLoader.Companion.toTokenVerifier
 import java.net.URI
 import java.security.KeyStore
 import java.security.interfaces.ECPrivateKey
@@ -37,14 +38,9 @@ class OAuthHelper {
         val ecdsa = Algorithm.ECDSA256(publicKey, privateKey)
         validEcToken = createValidToken(ecdsa)
 
-        tokenValidator = TokenValidator.Builder()
-            .verifiers(listOf(JWT.require(ecdsa).withIssuer(ISS).build()))
-            .config(object : TokenValidatorConfig {
-                override fun getPublicKeyEndpoints(): List<URI> = emptyList()
-
-                override fun getResourceName(): String = ISS
-            })
-            .build()
+        tokenValidator = TokenValidator(
+            listOf(StaticTokenVerifierLoader(listOf(ecdsa.toTokenVerifier("res_ManagementPortal"))))
+        )
     }
 
     private fun createValidToken(algorithm: Algorithm): String {

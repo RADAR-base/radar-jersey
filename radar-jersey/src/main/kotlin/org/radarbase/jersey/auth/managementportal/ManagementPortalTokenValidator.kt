@@ -9,11 +9,12 @@
 
 package org.radarbase.jersey.auth.managementportal
 
-import com.auth0.jwt.JWT
 import jakarta.ws.rs.container.ContainerRequestContext
 import jakarta.ws.rs.core.Context
+import kotlinx.coroutines.runBlocking
 import org.radarbase.auth.authentication.TokenValidator
-import org.radarbase.auth.exception.TokenValidationException
+import org.radarbase.auth.authorization.AuthorizationOracle
+import org.radarbase.auth.token.RadarToken
 import org.radarbase.jersey.auth.Auth
 import org.radarbase.jersey.auth.AuthValidator
 import org.slf4j.LoggerFactory
@@ -22,27 +23,6 @@ import org.slf4j.LoggerFactory
 class ManagementPortalTokenValidator(
     @Context private val tokenValidator: TokenValidator
 ) : AuthValidator {
-    init {
-        try {
-            this.tokenValidator.refresh()
-            logger.debug("Refreshed Token Validator keys")
-        } catch (ex: Exception) {
-            logger.error("Failed to immediately initialize token validator, will try again later: {}",
-                ex.toString())
-        }
-    }
-
-    override fun verify(token: String, request: ContainerRequestContext): Auth {
-        val jwt = try {
-            JWT.decode(token)
-        } catch (ex: Exception) {
-            throw TokenValidationException("JWT cannot be decoded")
-        }
-        tokenValidator.validateAccessToken(token)
-        return ManagementPortalAuth(jwt)
-    }
-
-    companion object {
-        private val logger = LoggerFactory.getLogger(ManagementPortalTokenValidator::class.java)
-    }
+    override fun verify(token: String, request: ContainerRequestContext): RadarToken? =
+        tokenValidator.validateBlocking(token)
 }

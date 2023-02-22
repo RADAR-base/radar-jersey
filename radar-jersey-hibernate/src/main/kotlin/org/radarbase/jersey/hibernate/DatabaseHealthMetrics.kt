@@ -9,6 +9,7 @@ import org.radarbase.jersey.service.HealthService
 import org.radarbase.jersey.service.HealthService.Metric
 import org.radarbase.jersey.util.CacheConfig
 import org.radarbase.jersey.util.CachedValue
+import org.slf4j.LoggerFactory
 import java.time.Duration
 
 class DatabaseHealthMetrics(
@@ -23,16 +24,22 @@ class DatabaseHealthMetrics(
         ::testConnection,
     )
 
-    override val status: HealthService.Status
-        get() = cachedStatus.get { it == HealthService.Status.UP }
+    override fun computeStatus(): HealthService.Status =
+        cachedStatus.get { it == HealthService.Status.UP }
+            .also { logger.info("Returning status {}", it) }
 
-    override val metrics: Any
-        get() = mapOf("status" to status)
+    override fun computeMetrics(): Map<String, Any> = mapOf("status" to computeStatus())
 
     private fun testConnection(): HealthService.Status = try {
-        entityManager.get().useConnection { connection -> connection.close() }
+        entityManager.get().useConnection { }
+        logger.info("Database UP")
         HealthService.Status.UP
     } catch (ex: Throwable) {
+        logger.info("Database DOWN")
         HealthService.Status.DOWN
+    }
+
+    companion object {
+        private val logger = LoggerFactory.getLogger(DatabaseHealthMetrics::class.java)
     }
 }

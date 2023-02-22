@@ -59,7 +59,6 @@ class AuthenticationFilter(
     }
 
     companion object {
-        const val BEARER_REALM: String = "Bearer realm=\"RADAR-base\""
         const val BEARER = "Bearer "
     }
 }

@@ -39,7 +39,7 @@ interface RadarProjectService : ProjectService {
     /**
      * Returns all ManagementPortal projects that the current user has access to.
      */
-    fun userProjects(auth: Auth, permission: Permission = PROJECT_READ): List<MPProject>
+    fun userProjects(permission: Permission = PROJECT_READ): List<MPProject>
 
     /**
      * Get project with [projectId] in ManagementPortal.

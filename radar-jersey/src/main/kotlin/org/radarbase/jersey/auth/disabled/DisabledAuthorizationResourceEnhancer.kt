@@ -11,6 +11,7 @@ package org.radarbase.jersey.auth.disabled
 
 import jakarta.inject.Singleton
 import org.glassfish.jersey.internal.inject.AbstractBinder
+import org.radarbase.auth.authorization.AuthorizationOracle
 import org.radarbase.jersey.auth.AuthValidator
 import org.radarbase.jersey.enhancer.JerseyResourceEnhancer
 
@@ -22,6 +23,10 @@ class DisabledAuthorizationResourceEnhancer : JerseyResourceEnhancer {
     override fun AbstractBinder.enhance() {
         bind(DisabledAuthValidator::class.java)
             .to(AuthValidator::class.java)
+            .`in`(Singleton::class.java)
+
+        bind(DisabledAuthorizationOracle::class.java)
+            .to(AuthorizationOracle::class.java)
             .`in`(Singleton::class.java)
     }
 }

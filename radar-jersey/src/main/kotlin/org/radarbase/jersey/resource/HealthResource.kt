@@ -5,17 +5,20 @@ import jakarta.inject.Singleton
 import jakarta.ws.rs.GET
 import jakarta.ws.rs.Path
 import jakarta.ws.rs.Produces
+import jakarta.ws.rs.container.AsyncResponse
+import jakarta.ws.rs.container.Suspended
 import jakarta.ws.rs.core.Context
 import jakarta.ws.rs.core.MediaType.APPLICATION_JSON
+import org.radarbase.jersey.coroutines.runAsCoroutine
 import org.radarbase.jersey.service.HealthService
 
 @Path("/health")
 @Resource
 @Singleton
 class HealthResource(
-        @Context private val healthService: HealthService
+    @Context private val healthService: HealthService,
 ) {
     @GET
     @Produces(APPLICATION_JSON)
-    fun healthStatus(): Map<String, Any> = healthService.metrics
+    fun healthStatus() = healthService.computeMetrics()
 }

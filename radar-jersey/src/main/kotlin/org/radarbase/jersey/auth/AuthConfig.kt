@@ -10,8 +10,6 @@
 package org.radarbase.jersey.auth
 
 import com.fasterxml.jackson.annotation.JsonIgnore
-import okhttp3.HttpUrl
-import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import org.radarbase.jersey.config.ConfigLoader.copyEnv
 import org.radarbase.jersey.config.ConfigLoader.copyOnChange
 import java.time.Duration
@@ -33,6 +31,7 @@ data class AuthConfig(
         val jwtKeystoreAlias: String? = null,
         /** Key password for the key alias in the p12 keystore. */
         val jwtKeystorePassword: String? = null,
+        val jwksUrls: List<String> = emptyList(),
 ) {
     fun withEnv(): AuthConfig = this
             .copyOnChange(managementPortal, { it.withEnv() }) { copy(managementPortal = it) }

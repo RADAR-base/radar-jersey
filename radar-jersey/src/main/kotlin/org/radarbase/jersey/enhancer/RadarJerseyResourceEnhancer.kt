@@ -14,11 +14,13 @@ import org.glassfish.jersey.internal.inject.AbstractBinder
 import org.glassfish.jersey.jackson.JacksonFeature
 import org.glassfish.jersey.process.internal.RequestScoped
 import org.glassfish.jersey.server.ResourceConfig
+import org.radarbase.auth.token.RadarToken
 import org.radarbase.jersey.auth.Auth
 import org.radarbase.jersey.auth.AuthConfig
+import org.radarbase.jersey.auth.AuthService
 import org.radarbase.jersey.auth.filter.AuthenticationFilter
 import org.radarbase.jersey.auth.filter.AuthorizationFeature
-import org.radarbase.jersey.auth.jwt.AuthFactory
+import org.radarbase.jersey.auth.jwt.RadarTokenFactory
 
 /**
  * Add RADAR auth to a Jersey project. This requires a {@link ProjectService} implementation to be
@@ -53,11 +55,15 @@ class RadarJerseyResourceEnhancer(
             .`in`(Singleton::class.java)
 
         // Bind factories.
-        bindFactory(AuthFactory::class.java)
+        bindFactory(RadarTokenFactory::class.java)
             .proxy(true)
             .proxyForSameScope(true)
-            .to(Auth::class.java)
+            .to(RadarToken::class.java)
             .`in`(RequestScoped::class.java)
+
+        bind(AuthService::class.java)
+            .to(AuthService::class.java)
+            .`in`(Singleton::class.java)
 
         mapperResourceEnhancer?.enhanceBinder(this)
     }

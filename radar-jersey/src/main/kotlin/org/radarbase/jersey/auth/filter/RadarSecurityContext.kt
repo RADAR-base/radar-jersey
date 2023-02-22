@@ -10,6 +10,10 @@
 package org.radarbase.jersey.auth.filter
 
 import jakarta.ws.rs.core.SecurityContext
+import org.radarbase.auth.authorization.AuthorityReference
+import org.radarbase.auth.authorization.AuthorizationOracle
+import org.radarbase.auth.authorization.RoleAuthority
+import org.radarbase.auth.token.RadarToken
 import org.radarbase.jersey.auth.Auth
 import java.security.Principal
 
@@ -17,11 +21,12 @@ import java.security.Principal
  * Security context from currently parsed authentication.
  */
 class RadarSecurityContext(
-        /** Get the parsed authentication.  */
-        val auth: Auth) : SecurityContext {
+    /** Get the parsed authentication.  */
+    val token: RadarToken,
+) : SecurityContext {
 
     override fun getUserPrincipal(): Principal {
-        return Principal { auth.userId }
+        return Principal { token.username }
     }
 
     /**
@@ -33,8 +38,22 @@ class RadarSecurityContext(
      * `false` otherwise
      */
     override fun isUserInRole(role: String): Boolean {
-        val projectRole = role.split(":")
-        return projectRole.size == 2 && auth.hasRole(projectRole[0], projectRole[1])
+        val roleParts = role
+            .split(":")
+            .filter { it.isNotEmpty() }
+        val authRef = if (roleParts.isEmpty()) {
+            return true
+        } else if (roleParts.size == 1) {
+            AuthorityReference(
+                authority = roleParts[0],
+            )
+        } else {
+            AuthorityReference(
+                authority = roleParts[1],
+                referent = roleParts[0],
+            )
+        }
+        return authRef in token.roles
     }
 
     override fun isSecure(): Boolean {

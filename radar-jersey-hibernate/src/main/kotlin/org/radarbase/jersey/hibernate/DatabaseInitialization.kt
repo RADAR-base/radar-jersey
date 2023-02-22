@@ -61,7 +61,10 @@ class DatabaseInitialization(
         @Throws(HibernateException::class)
         fun EntityManager.useConnection(work: (Connection) -> Unit) {
             check(this is Session) { "Cannot use connection of EntityManager that is not a Hibernate Session" }
-            doWork(work)
+            doWork { connection ->
+                work(connection)
+                connection.close()
+            }
         }
     }
 }

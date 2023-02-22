@@ -73,13 +73,14 @@ internal class DatabaseHealthMetricsTest {
         tcp.start()
 
         val authConfig = AuthConfig(
-                jwtResourceName = "res_jerseyTest")
+            jwtResourceName = "res_jerseyTest",
+        )
         val databaseConfig = DatabaseConfig(
-                managedClasses = listOf(ProjectDao::class.qualifiedName!!),
-                driver = "org.h2.Driver",
-                url = "jdbc:h2:tcp://localhost:9999/./test.db",
-                dialect = "org.hibernate.dialect.H2Dialect",
-                healthCheckValiditySeconds = 1L,
+            managedClasses = listOf(ProjectDao::class.qualifiedName!!),
+            driver = "org.h2.Driver",
+            url = "jdbc:h2:tcp://localhost:9999/./test.db",
+            dialect = "org.hibernate.dialect.H2Dialect",
+            healthCheckValiditySeconds = 1L,
         )
 
         val resources = ConfigLoader.loadResources(MockResourceEnhancerFactory::class.java, authConfig, databaseConfig)

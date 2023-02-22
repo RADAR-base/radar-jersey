@@ -16,11 +16,14 @@
 
 package org.radarbase.jersey.service.managementportal
 
+import jakarta.inject.Provider
 import jakarta.ws.rs.core.Context
 import kotlinx.coroutines.*
+import org.radarbase.auth.authorization.EntityDetails
 import org.radarbase.auth.authorization.Permission
 import org.radarbase.jersey.auth.Auth
 import org.radarbase.jersey.auth.AuthConfig
+import org.radarbase.jersey.auth.AuthService
 import org.radarbase.jersey.exception.HttpNotFoundException
 import org.radarbase.jersey.util.CacheConfig
 import org.radarbase.jersey.util.CachedMap
@@ -36,6 +39,7 @@ import java.util.concurrent.ConcurrentMap
 class MPProjectService(
     @Context private val config: AuthConfig,
     @Context private val mpClient: MPClient,
+    @Context private val authService: Provider<AuthService>,
 ) : RadarProjectService {
     private val projects: CachedMap<String, MPProject>
     private val organizations: CachedMap<String, MPOrganization>
@@ -64,13 +68,15 @@ class MPProjectService(
         }
     }
 
-    override fun userProjects(auth: Auth, permission: Permission): List<MPProject> {
+    override fun userProjects(permission: Permission): List<MPProject> {
         return projects.get().values
                 .filter {
-                    auth.token.hasPermissionOnOrganizationAndProject(
+                    authService.get().hasPermission(
                         permission,
-                        it.organization?.id,
-                        it.id
+                        EntityDetails(
+                            organization = it.organization?.id,
+                            project = it.id
+                        )
                     )
                 }
     }

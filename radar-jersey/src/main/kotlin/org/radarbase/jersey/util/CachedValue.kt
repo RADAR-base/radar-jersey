@@ -1,6 +1,5 @@
 package org.radarbase.jersey.util
 
-import java.time.Duration
 import java.util.concurrent.Semaphore
 import java.util.concurrent.locks.Lock
 import java.util.concurrent.locks.ReentrantReadWriteLock

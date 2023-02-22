@@ -17,6 +17,7 @@ import jakarta.ws.rs.*
 import jakarta.ws.rs.core.Context
 import jakarta.ws.rs.core.MediaType
 import org.radarbase.auth.authorization.Permission
+import org.radarbase.auth.token.RadarToken
 import org.radarbase.jersey.auth.Auth
 import org.radarbase.jersey.auth.Authenticated
 import org.radarbase.jersey.auth.NeedsPermission
@@ -37,15 +38,15 @@ class MockResource {
     @Authenticated
     @GET
     @Path("user")
-    fun someUser(@Context auth: Auth): Map<String, String> {
-        return mapOf("accessToken" to auth.token.token)
+    fun someUser(@Context radarToken: RadarToken): Map<String, String> {
+        return mapOf("accessToken" to (radarToken.token ?: ""))
     }
 
     @Authenticated
     @GET
     @Path("user/detailed")
-    fun someUserDetailed(@Context auth: Auth): DetailedUser {
-        return DetailedUser(auth.token.token, "name")
+    fun someUserDetailed(@Context radarToken: RadarToken): DetailedUser {
+        return DetailedUser((radarToken.token ?: ""), "name")
     }
 
     @Authenticated
@@ -57,8 +58,9 @@ class MockResource {
         ApiResponse(description = "User")
     ])
     fun mySubject(
-            @PathParam("projectId") projectId: String,
-            @PathParam("subjectId") userId: String): Map<String, String> {
+        @PathParam("projectId") projectId: String,
+        @PathParam("subjectId") userId: String,
+    ): Map<String, String> {
         return mapOf("projectId" to projectId, "userId" to userId)
     }
 
