@@ -2,6 +2,7 @@ package org.radarbase.jersey.auth
 
 import jakarta.inject.Provider
 import jakarta.ws.rs.core.Context
+import kotlinx.coroutines.runBlocking
 import org.radarbase.auth.authorization.*
 import org.radarbase.auth.token.RadarToken
 import org.radarbase.jersey.exception.HttpForbiddenException
@@ -63,7 +64,7 @@ class AuthService(
         return entity
     }
 
-    fun hasPermission(
+    suspend fun hasPermission(
         permission: Permission,
         entity: EntityDetails
     ) = oracle.hasPermission(token, permission, entity)
@@ -75,6 +76,21 @@ class AuthService(
      * @throws HttpForbiddenException if identity does not have permission
      */
     fun checkPermission(
+        permission: Permission,
+        entity: EntityDetails,
+        location: String? = null,
+        scope: Permission.Entity = permission.entity,
+    ) = runBlocking {
+        checkPermissionSuspending(permission, entity, location, scope)
+    }
+
+    /**
+     * Check whether [token] has permission [permission], regarding given [entity].
+     * The permission is checked both for its
+     * own entity scope and for the [EntityDetails.minimumEntityOrNull] entity scope.
+     * @throws HttpForbiddenException if identity does not have permission
+     */
+    suspend fun checkPermissionSuspending(
         permission: Permission,
         entity: EntityDetails,
         location: String? = null,
@@ -103,7 +119,7 @@ class AuthService(
         )
     }
 
-    private fun EntityDetails.resolve() {
+    private suspend fun EntityDetails.resolve() {
         val project = project
         val organization = organization
         if (project != null) {
@@ -120,6 +136,8 @@ class AuthService(
             if (subject != null) {
                 projectService.ensureSubject(project, subject)
             }
+        } else if (organization != null) {
+            projectService.ensureOrganization(organization)
         }
     }
 
@@ -195,7 +213,11 @@ class AuthService(
     }
 
     fun referentsByScope(permission: Permission): AuthorityReferenceSet {
-        val token = token ?: return AuthorityReferenceSet()
+        val token = try {
+            tokenProvider.get()
+        } catch (ex: Throwable) {
+            return AuthorityReferenceSet()
+        }
         return oracle.referentsByScope(token, permission)
     }
 

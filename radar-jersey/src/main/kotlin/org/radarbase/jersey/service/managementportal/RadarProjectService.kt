@@ -26,7 +26,7 @@ import org.radarbase.management.client.MPSubject
 
 
 interface RadarProjectService : ProjectService {
-    override fun ensureProject(projectId: String) {
+    override suspend fun ensureProject(projectId: String) {
         project(projectId)
     }
 
@@ -34,25 +34,25 @@ interface RadarProjectService : ProjectService {
      * Ensures that [projectId] exists in ManagementPortal.
      * @throws HttpNotFoundException if the project does not exist.
      */
-    fun project(projectId: String): MPProject
+    suspend fun project(projectId: String): MPProject
 
     /**
      * Returns all ManagementPortal projects that the current user has access to.
      */
-    fun userProjects(permission: Permission = PROJECT_READ): List<MPProject>
+    suspend fun userProjects(permission: Permission = PROJECT_READ): List<MPProject>
 
     /**
      * Get project with [projectId] in ManagementPortal.
      * @throws HttpNotFoundException if the project does not exist.
      */
-    fun projectSubjects(projectId: String): List<MPSubject>
+    suspend fun projectSubjects(projectId: String): List<MPSubject>
 
     /**
      * Get subject with [externalUserId] from [projectId] in ManagementPortal.
      * @throws HttpNotFoundException if the project does not exist.
      */
-    fun subjectByExternalId(projectId: String, externalUserId: String): MPSubject?
+    suspend fun subjectByExternalId(projectId: String, externalUserId: String): MPSubject?
 
     /** Get a single subject from a project. */
-    fun subject(projectId: String, userId: String): MPSubject?
+    suspend fun subject(projectId: String, userId: String): MPSubject?
 }

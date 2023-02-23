@@ -28,14 +28,17 @@ class RadarPersistenceInfo(
         put("hibernate.c3p0.acquireRetryAttempts", "3")
         put("hibernate.c3p0.breakAfterAcquireFailure", "false")
 
-        putAll((mapOf(
-                "jakarta.persistence.jdbc.driver" to config.driver,
-                "jakarta.persistence.jdbc.url" to config.url,
-                "jakarta.persistence.jdbc.user" to config.user,
-                "jakarta.persistence.jdbc.password" to config.password,
-                "hibernate.dialect" to config.dialect)
-                + config.properties)
-                .filterValues { it != null } as Map<String, String>)
+        sequenceOf(
+            "jakarta.persistence.jdbc.driver" to config.driver,
+            "jakarta.persistence.jdbc.url" to config.url,
+            "jakarta.persistence.jdbc.user" to config.user,
+            "jakarta.persistence.jdbc.password" to config.password,
+            "hibernate.dialect" to config.dialect
+        )
+            .filter { (_, v) -> v != null }
+            .forEach { (k, v) -> put (k, v) }
+
+        putAll(config.properties)
     }
 
     private val managedClasses = config.managedClasses

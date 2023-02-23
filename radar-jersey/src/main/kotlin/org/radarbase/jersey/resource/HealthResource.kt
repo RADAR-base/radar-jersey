@@ -11,6 +11,8 @@ import jakarta.ws.rs.core.Context
 import jakarta.ws.rs.core.MediaType.APPLICATION_JSON
 import org.radarbase.jersey.coroutines.runAsCoroutine
 import org.radarbase.jersey.service.HealthService
+import kotlin.time.Duration.Companion.milliseconds
+import kotlin.time.Duration.Companion.seconds
 
 @Path("/health")
 @Resource
@@ -20,5 +22,7 @@ class HealthResource(
 ) {
     @GET
     @Produces(APPLICATION_JSON)
-    fun healthStatus() = healthService.computeMetrics()
+    fun healthStatus(@Suspended asyncResponse: AsyncResponse) = asyncResponse.runAsCoroutine(5.seconds) {
+        healthService.computeMetrics()
+    }
 }

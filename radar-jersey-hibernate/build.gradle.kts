@@ -14,6 +14,9 @@ dependencies {
     api("org.hibernate:hibernate-core:$hibernateVersion")
     runtimeOnly("org.hibernate:hibernate-c3p0:$hibernateVersion")
 
+    val managementPortalVersion: String by project
+    implementation("org.radarbase:kotlin-util:$managementPortalVersion")
+
     val jakartaValidationVersion: String by project
     runtimeOnly("jakarta.validation:jakarta.validation-api:$jakartaValidationVersion")
     val hibernateValidatorVersion: String by project

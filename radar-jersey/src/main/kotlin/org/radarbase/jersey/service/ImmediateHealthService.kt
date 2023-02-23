@@ -4,8 +4,8 @@ import jakarta.ws.rs.core.Context
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import org.glassfish.hk2.api.IterableProvider
-import org.radarbase.jersey.util.concurrentAny
-import org.radarbase.jersey.util.forkJoin
+import org.radarbase.kotlin.coroutines.forkAny
+import org.radarbase.kotlin.coroutines.forkJoin
 import org.slf4j.LoggerFactory
 
 class ImmediateHealthService(
@@ -14,8 +14,8 @@ class ImmediateHealthService(
     @Volatile
     private var allMetrics: List<HealthService.Metric> = healthMetrics.toList()
 
-    override fun computeStatus(): HealthService.Status =
-        if (allMetrics.any {
+    override suspend fun computeStatus(): HealthService.Status =
+        if (allMetrics.forkAny {
             val status = it.computeStatus()
             logger.info("Returning status {} from metric {}", status, it.name)
             status == HealthService.Status.DOWN
@@ -25,10 +25,20 @@ class ImmediateHealthService(
             HealthService.Status.UP
         }
 
-    override fun computeMetrics(): Map<String, Any> = buildMap {
-        put("status", computeStatus())
-        allMetrics.forEach { metric ->
-            put(metric.name, metric.computeMetrics())
+    override suspend fun computeMetrics(): Map<String, Any> = coroutineScope {
+        val metrics = async {
+            allMetrics.forkJoin {
+                Pair(it.name, it.computeMetrics())
+            }
+        }
+        val status = async {
+            computeStatus()
+        }
+        buildMap {
+            put("status", status.await())
+            metrics.await().forEach { (name, metric) ->
+                put(name, metric)
+            }
         }
     }
 

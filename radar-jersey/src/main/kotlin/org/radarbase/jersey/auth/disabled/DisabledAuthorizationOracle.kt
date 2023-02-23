@@ -4,7 +4,7 @@ import org.radarbase.auth.authorization.*
 import org.radarbase.auth.token.RadarToken
 
 class DisabledAuthorizationOracle : AuthorizationOracle {
-    override fun hasPermission(
+    override suspend fun hasPermission(
         identity: RadarToken,
         permission: Permission,
         entity: EntityDetails,

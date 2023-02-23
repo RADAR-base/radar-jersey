@@ -11,7 +11,7 @@ class AuthorizationOracleFactory(
     @Context projectService: ProjectService,
 ) : Supplier<AuthorizationOracle> {
     private val relationService = object : EntityRelationService {
-        override fun findOrganizationOfProject(project: String): String {
+        override suspend fun findOrganizationOfProject(project: String): String {
             return projectService.projectOrganization(project)
         }
     }

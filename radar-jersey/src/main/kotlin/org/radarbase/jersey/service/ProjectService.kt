@@ -19,26 +19,26 @@ interface ProjectService {
      * Ensure that given organization ID is valid.
      * @throws HttpApplicationException if the organization ID is not a valid organization ID.
      */
-    fun ensureOrganization(organizationId: String)
+    suspend fun ensureOrganization(organizationId: String)
 
     /**
      * List all project IDs in an organization
      * @throws HttpApplicationException if the organization ID is not a valid organization ID.
      */
-    fun listProjects(organizationId: String): List<String>
+    suspend fun listProjects(organizationId: String): List<String>
 
     /**
      * Find the organization of a project
      * @throws HttpApplicationException if the organization ID is not a valid organization ID.
      */
-    fun projectOrganization(projectId: String): String
+    suspend fun projectOrganization(projectId: String): String
 
     /**
      * Ensure that given project ID is valid.
      * @throws HttpApplicationException if the project ID is not a valid project ID.
      */
-    fun ensureProject(projectId: String)
+    suspend fun ensureProject(projectId: String)
 
     /** Ensure that given subject user exists. */
-    fun ensureSubject(projectId: String, userId: String)
+    suspend fun ensureSubject(projectId: String, userId: String)
 }

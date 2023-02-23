@@ -13,7 +13,7 @@ import org.radarbase.jersey.hibernate.RadarEntityManagerFactoryFactory
 import org.radarbase.jersey.service.HealthService
 
 class HibernateResourceEnhancer(
-        private val databaseConfig: DatabaseConfig
+    private val databaseConfig: DatabaseConfig
 ) : JerseyResourceEnhancer {
     override val classes: Array<Class<*>> = arrayOf(DatabaseInitialization::class.java)
 
