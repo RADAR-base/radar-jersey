@@ -6,7 +6,6 @@ import kotlinx.coroutines.coroutineScope
 import org.glassfish.hk2.api.IterableProvider
 import org.radarbase.kotlin.coroutines.forkAny
 import org.radarbase.kotlin.coroutines.forkJoin
-import org.slf4j.LoggerFactory
 
 class ImmediateHealthService(
         @Context healthMetrics: IterableProvider<HealthService.Metric>
@@ -17,7 +16,6 @@ class ImmediateHealthService(
     override suspend fun computeStatus(): HealthService.Status =
         if (allMetrics.forkAny {
             val status = it.computeStatus()
-            logger.info("Returning status {} from metric {}", status, it.name)
             status == HealthService.Status.DOWN
         }) {
             HealthService.Status.DOWN
@@ -48,9 +46,5 @@ class ImmediateHealthService(
 
     override fun remove(metric: HealthService.Metric) {
         allMetrics = allMetrics - metric
-    }
-
-    companion object {
-        private val logger = LoggerFactory.getLogger(ImmediateHealthService::class.java)
     }
 }

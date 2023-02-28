@@ -14,16 +14,8 @@ import jakarta.ws.rs.container.ContainerRequestFilter
 import jakarta.ws.rs.container.ResourceInfo
 import jakarta.ws.rs.core.Context
 import jakarta.ws.rs.core.UriInfo
-import org.radarbase.auth.authorization.AuthorizationOracle
-import org.radarbase.auth.authorization.EntityDetails
-import org.radarbase.auth.authorization.Permission
-import org.radarbase.auth.token.RadarToken
-import org.radarbase.jersey.auth.Auth
 import org.radarbase.jersey.auth.AuthService
 import org.radarbase.jersey.auth.NeedsPermission
-import org.radarbase.jersey.auth.disabled.DisabledAuthorizationOracle
-import org.radarbase.jersey.exception.HttpNotFoundException
-import org.radarbase.jersey.service.ProjectService
 
 /**
  * Check that the token has given permissions.

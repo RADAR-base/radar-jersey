@@ -30,7 +30,6 @@ class DatabaseHealthMetrics(
 
     override suspend fun computeStatus(): HealthService.Status =
         cachedStatus.get { it == HealthService.Status.UP }.value
-            .also { logger.info("Returning status {}", it) }
 
     override suspend fun computeMetrics(): Map<String, Any> = mapOf("status" to computeStatus())
 
@@ -39,10 +38,8 @@ class DatabaseHealthMetrics(
             requestScope.runInScope {
                 entityManager.get().useConnection { it.close() }
             }
-            logger.info("Database UP")
             HealthService.Status.UP
         } catch (ex: Throwable) {
-            logger.info("Database DOWN: {}", ex.message)
             HealthService.Status.DOWN
         }
     }

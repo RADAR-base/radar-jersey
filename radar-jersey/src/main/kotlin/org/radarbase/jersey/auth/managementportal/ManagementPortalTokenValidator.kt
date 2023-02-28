@@ -11,13 +11,9 @@ package org.radarbase.jersey.auth.managementportal
 
 import jakarta.ws.rs.container.ContainerRequestContext
 import jakarta.ws.rs.core.Context
-import kotlinx.coroutines.runBlocking
 import org.radarbase.auth.authentication.TokenValidator
-import org.radarbase.auth.authorization.AuthorizationOracle
 import org.radarbase.auth.token.RadarToken
-import org.radarbase.jersey.auth.Auth
 import org.radarbase.jersey.auth.AuthValidator
-import org.slf4j.LoggerFactory
 
 /** Creates a TokenValidator based on the current management portal configuration. */
 class ManagementPortalTokenValidator(

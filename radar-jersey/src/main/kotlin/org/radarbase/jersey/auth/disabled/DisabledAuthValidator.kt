@@ -4,7 +4,6 @@ import jakarta.ws.rs.container.ContainerRequestContext
 import jakarta.ws.rs.core.Context
 import org.radarbase.auth.token.DataRadarToken
 import org.radarbase.auth.token.RadarToken
-import org.radarbase.jersey.auth.Auth
 import org.radarbase.jersey.auth.AuthConfig
 import org.radarbase.jersey.auth.AuthValidator
 import java.time.Instant

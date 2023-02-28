@@ -15,7 +15,6 @@ import org.glassfish.jersey.jackson.JacksonFeature
 import org.glassfish.jersey.process.internal.RequestScoped
 import org.glassfish.jersey.server.ResourceConfig
 import org.radarbase.auth.token.RadarToken
-import org.radarbase.jersey.auth.Auth
 import org.radarbase.jersey.auth.AuthConfig
 import org.radarbase.jersey.auth.AuthService
 import org.radarbase.jersey.auth.filter.AuthenticationFilter

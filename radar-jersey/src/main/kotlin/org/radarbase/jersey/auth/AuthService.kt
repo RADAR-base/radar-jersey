@@ -16,7 +16,7 @@ class AuthService(
     @Context private val tokenProvider: Provider<RadarToken>,
     @Context private val projectService: ProjectService,
 ) {
-    private val token: RadarToken
+    val token: RadarToken
         get() = try {
             tokenProvider.get()
         } catch (ex: Throwable) {
@@ -59,7 +59,7 @@ class AuthService(
         if (entity.minimumEntityOrNull() == null) {
             logAuthorized(permission, location)
         } else {
-            checkPermission(permission, entity, location, permission.entity)
+            checkPermissionBlocking(permission, entity, location, permission.entity)
         }
         return entity
     }
@@ -75,14 +75,18 @@ class AuthService(
      * own entity scope and for the [EntityDetails.minimumEntityOrNull] entity scope.
      * @throws HttpForbiddenException if identity does not have permission
      */
-    fun checkPermission(
+    fun checkPermissionBlocking(
         permission: Permission,
         entity: EntityDetails,
         location: String? = null,
         scope: Permission.Entity = permission.entity,
     ) = runBlocking {
-        checkPermissionSuspending(permission, entity, location, scope)
+        checkPermission(permission, entity, location, scope)
     }
+
+    fun activeParticipantProject(): String? = token.roles
+        .firstOrNull { it.role == RoleAuthority.PARTICIPANT }
+        ?.referent
 
     /**
      * Check whether [token] has permission [permission], regarding given [entity].
@@ -90,7 +94,7 @@ class AuthService(
      * own entity scope and for the [EntityDetails.minimumEntityOrNull] entity scope.
      * @throws HttpForbiddenException if identity does not have permission
      */
-    suspend fun checkPermissionSuspending(
+    suspend fun checkPermission(
         permission: Permission,
         entity: EntityDetails,
         location: String? = null,

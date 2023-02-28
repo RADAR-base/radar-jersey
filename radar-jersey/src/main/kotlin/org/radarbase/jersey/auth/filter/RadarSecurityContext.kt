@@ -11,10 +11,7 @@ package org.radarbase.jersey.auth.filter
 
 import jakarta.ws.rs.core.SecurityContext
 import org.radarbase.auth.authorization.AuthorityReference
-import org.radarbase.auth.authorization.AuthorizationOracle
-import org.radarbase.auth.authorization.RoleAuthority
 import org.radarbase.auth.token.RadarToken
-import org.radarbase.jersey.auth.Auth
 import java.security.Principal
 
 /**

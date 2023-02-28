@@ -31,7 +31,7 @@
         <appender-ref ref="WEB" />
     </logger>
 
-    <logger name="org.radarbase.jersey.auth.Auth" level="INFO" additivity="false">
+    <logger name="org.radarbase.jersey.auth.AuthService" level="INFO" additivity="false">
         <appender-ref ref="AUTH" />
     </logger>
 
