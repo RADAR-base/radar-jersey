@@ -17,16 +17,8 @@ class RadarPersistenceInfo(
     private val properties: Properties = Properties().apply {
         put("jakarta.persistence.schema-generation.database.action", "none")
         put("org.hibernate.flushMode", "COMMIT")
-        put("hibernate.connection.provider_class", "org.hibernate.connection.C3P0ConnectionProvider")
-        put("hibernate.c3p0.max_size", "50")
-        put("hibernate.c3p0.min_size", "0")
-        put("hibernate.c3p0.acquire_increment", "1")
-        put("hibernate.c3p0.idle_test_period", "300")
-        put("hibernate.c3p0.max_statements", "0")
-        put("hibernate.c3p0.timeout", "100")
-        put("hibernate.c3p0.checkoutTimeout", "5000")
-        put("hibernate.c3p0.acquireRetryAttempts", "3")
-        put("hibernate.c3p0.breakAfterAcquireFailure", "false")
+        put("hibernate.connection.provider_class", "org.hibernate.hikaricp.internal.HikariCPConnectionProvider")
+        put("hibernate.hikari.connectionTimeout", "1000")
 
         sequenceOf(
             "jakarta.persistence.jdbc.driver" to config.driver,

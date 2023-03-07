@@ -3,7 +3,9 @@ package org.radarbase.jersey.hibernate.config
 import jakarta.persistence.EntityTransaction
 import java.io.Closeable
 
-interface CloseableTransaction : Closeable {
+interface CloseableTransaction {
     val transaction: EntityTransaction
-    override fun close()
+    fun commit()
+    fun abort()
+    fun cancel()
 }

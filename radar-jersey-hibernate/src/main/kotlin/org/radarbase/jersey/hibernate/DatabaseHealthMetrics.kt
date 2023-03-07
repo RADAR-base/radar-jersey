@@ -12,7 +12,6 @@ import org.radarbase.jersey.service.HealthService
 import org.radarbase.jersey.service.HealthService.Metric
 import org.radarbase.kotlin.coroutines.CacheConfig
 import org.radarbase.kotlin.coroutines.CachedValue
-import org.slf4j.LoggerFactory
 import kotlin.time.Duration.Companion.seconds
 
 class DatabaseHealthMetrics(
@@ -42,9 +41,5 @@ class DatabaseHealthMetrics(
         } catch (ex: Throwable) {
             HealthService.Status.DOWN
         }
-    }
-
-    companion object {
-        private val logger = LoggerFactory.getLogger(DatabaseHealthMetrics::class.java)
     }
 }

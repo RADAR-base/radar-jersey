@@ -1,10 +1,10 @@
 package org.radarbase.jersey.hibernate
 
+import okhttp3.ConnectionPool
 import okhttp3.OkHttpClient
-import okhttp3.Request
 import org.hamcrest.MatcherAssert.assertThat
-import org.hamcrest.Matchers.`is`
 import org.hamcrest.Matchers.equalTo
+import org.hamcrest.Matchers.`is`
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.radarbase.jersey.GrizzlyServer
@@ -36,9 +36,9 @@ internal class DatabaseHealthMetricsTest {
         try {
             val client = OkHttpClient()
 
-            client.newCall(Request.Builder()
-                    .url("http://localhost:9091/health")
-                    .build()).execute().use { response ->
+            client.call {
+                url("http://localhost:9091/health")
+            }.use { response ->
                 assertThat(response.isSuccessful, `is`(true))
                 assertThat(
                     response.body?.string(),
@@ -90,13 +90,13 @@ internal class DatabaseHealthMetricsTest {
 
         try {
             val client = OkHttpClient.Builder()
-                    .readTimeout(30, TimeUnit.SECONDS)
-                    .build()
+                .readTimeout(30, TimeUnit.SECONDS)
+                .build()
 
 
-            client.newCall(Request.Builder()
-                    .url("http://localhost:9091/health")
-                    .build()).execute().use { response ->
+            client.call {
+                url("http://localhost:9091/health")
+            }.use { response ->
                 assertThat(response.isSuccessful, `is`(true))
                 assertThat(response.body?.string(), equalTo("{\"status\":\"UP\",\"db\":{\"status\":\"UP\"}}"))
             }
@@ -105,9 +105,9 @@ internal class DatabaseHealthMetricsTest {
             tcp.stop()
             Thread.sleep(1_000L)
 
-            client.newCall(Request.Builder()
-                    .url("http://localhost:9091/health")
-                    .build()).execute().use { response ->
+            client.call {
+                url("http://localhost:9091/health")
+            }.use { response ->
                 assertThat(response.isSuccessful, `is`(true))
                 assertThat(response.body?.string(), equalTo("{\"status\":\"DOWN\",\"db\":{\"status\":\"DOWN\"}}"))
             }

@@ -12,7 +12,7 @@ dependencies {
     api(project(":radar-jersey"))
     val hibernateVersion: String by project
     api("org.hibernate:hibernate-core:$hibernateVersion")
-    runtimeOnly("org.hibernate:hibernate-c3p0:$hibernateVersion")
+    runtimeOnly("org.hibernate:hibernate-hikaricp:$hibernateVersion")
 
     val managementPortalVersion: String by project
     implementation("org.radarbase:kotlin-util:$managementPortalVersion")
