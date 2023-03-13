@@ -11,7 +11,7 @@ dependencies {
 
     val managementPortalVersion: String by project
     api("org.radarbase:radar-auth:$managementPortalVersion")
-    implementation("org.radarbase:kotlin-util:$managementPortalVersion")
+    implementation("org.radarbase:radar-kotlin:$managementPortalVersion")
     api("org.radarbase:managementportal-client:$managementPortalVersion")
 
     val javaJwtVersion: String by project
