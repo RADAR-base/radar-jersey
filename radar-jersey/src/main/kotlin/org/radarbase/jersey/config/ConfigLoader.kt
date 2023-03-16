@@ -2,6 +2,7 @@ package org.radarbase.jersey.config
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory
+import com.fasterxml.jackson.module.kotlin.KotlinFeature
 import com.fasterxml.jackson.module.kotlin.kotlinModule
 import org.glassfish.jersey.internal.inject.AbstractBinder
 import org.glassfish.jersey.server.ResourceConfig
@@ -10,6 +11,7 @@ import org.radarbase.jersey.enhancer.JerseyResourceEnhancer
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.io.IOException
+import java.nio.file.OpenOption
 import kotlin.io.path.Path
 import kotlin.io.path.exists
 import kotlin.io.path.inputStream
@@ -62,12 +64,20 @@ object ConfigLoader {
 
         logger.info("Reading configuration from {}", configFile.toAbsolutePath())
         return try {
-            val localMapper = mapper ?: ObjectMapper(YAMLFactory())
-                .registerModule(kotlinModule())
-            configFile.inputStream().use { input ->
-                input.buffered().use { bufInput ->
-                    localMapper.readValue(bufInput, clazz)
-                }
+            val localMapper = mapper ?: ObjectMapper(YAMLFactory()).apply {
+                registerModule(
+                    kotlinModule {
+                        enable(KotlinFeature.NullToEmptyMap)
+                        enable(KotlinFeature.NullToEmptyCollection)
+                        enable(KotlinFeature.NullIsSameAsDefault)
+                        enable(KotlinFeature.SingletonSupport)
+                        enable(KotlinFeature.StrictNullChecks)
+                    }
+                )
+            }
+
+            configFile.inputStream().buffered().use { bufInput ->
+                localMapper.readValue(bufInput, clazz)
             }
         } catch (ex: IOException) {
             logger.error("Usage: <command> [$configFile]")

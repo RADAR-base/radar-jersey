@@ -1,6 +1,8 @@
 import com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
 
 plugins {
     kotlin("jvm") apply false
@@ -22,17 +24,9 @@ subprojects {
     apply(plugin = "signing")
     apply(plugin = "org.jetbrains.dokka")
 
-    val myProject = this
-
     val githubRepoName = "RADAR-base/radar-jersey"
     val githubUrl = "https://github.com/$githubRepoName.git"
     val githubIssueUrl = "https://github.com/$githubRepoName/issues"
-
-    extra.apply {
-        set("githubRepoName", githubRepoName)
-        set("githubUrl", githubUrl)
-        set("githubIssueUrl", githubIssueUrl)
-    }
 
     repositories {
         mavenCentral() {
@@ -72,7 +66,7 @@ subprojects {
     }
 
     val sourcesJar by tasks.registering(Jar::class) {
-        from(myProject.the<SourceSetContainer>()["main"].allSource)
+        from(this@subprojects.the<SourceSetContainer>()["main"].allSource)
         archiveClassifier.set("sources")
         val classes by tasks
         dependsOn(classes)
@@ -85,15 +79,17 @@ subprojects {
         dependsOn(dokkaJavadoc)
     }
 
+    val jvmTargetVersion = 17
+
     tasks.withType<JavaCompile> {
-        options.release.set(11)
+        options.release.set(jvmTargetVersion)
     }
 
     tasks.withType<KotlinCompile> {
-        kotlinOptions {
-            jvmTarget = "11"
-            apiVersion = "1.7"
-            languageVersion = "1.7"
+        compilerOptions {
+            jvmTarget.set(JvmTarget.fromTarget(jvmTargetVersion.toString()))
+            apiVersion.set(KotlinVersion.KOTLIN_1_8)
+            languageVersion.set(KotlinVersion.KOTLIN_1_8)
         }
     }
 
@@ -121,8 +117,8 @@ subprojects {
         tasks.withType<Jar> {
             manifest {
                 attributes(
-                    "Implementation-Title" to myProject.name,
-                    "Implementation-Version" to myProject.version
+                    "Implementation-Title" to this@subprojects.name,
+                    "Implementation-Version" to this@subprojects.version
                 )
             }
         }
@@ -141,8 +137,8 @@ subprojects {
                     artifact(dokkaJar)
 
                     pom {
-                        name.set(myProject.name)
-                        description.set(myProject.description)
+                        name.set(this@subprojects.name)
+                        description.set(this@subprojects.description)
                         url.set(githubUrl)
                         licenses {
                             license {
