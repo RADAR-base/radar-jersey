@@ -2,8 +2,8 @@ package org.radarbase.jersey.service.managementportal
 
 import jakarta.ws.rs.core.Context
 import org.radarbase.jersey.auth.AuthConfig
-import org.radarbase.management.auth.ClientCredentialsConfig
-import org.radarbase.management.auth.clientCredentials
+import org.radarbase.ktor.auth.ClientCredentialsConfig
+import org.radarbase.ktor.auth.clientCredentials
 import org.radarbase.management.client.MPClient
 import org.radarbase.management.client.mpClient
 import org.slf4j.LoggerFactory

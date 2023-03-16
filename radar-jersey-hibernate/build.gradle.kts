@@ -14,8 +14,8 @@ dependencies {
     api("org.hibernate:hibernate-core:$hibernateVersion")
     runtimeOnly("org.hibernate:hibernate-hikaricp:$hibernateVersion")
 
-    val managementPortalVersion: String by project
-    implementation("org.radarbase:radar-kotlin:$managementPortalVersion")
+    val radarCommonsVersion: String by project
+    implementation("org.radarbase:radar-commons-kotlin:$radarCommonsVersion")
 
     val jakartaValidationVersion: String by project
     runtimeOnly("jakarta.validation:jakarta.validation-api:$jakartaValidationVersion")
