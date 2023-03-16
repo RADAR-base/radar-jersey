@@ -23,7 +23,6 @@ import org.radarbase.jersey.auth.AuthConfig
 import org.radarbase.jersey.auth.AuthValidator
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import java.nio.file.Files
 import java.nio.file.Paths
 import java.security.KeyFactory
 import java.security.KeyStore
@@ -32,6 +31,7 @@ import java.security.interfaces.ECPublicKey
 import java.security.interfaces.RSAPublicKey
 import java.security.spec.X509EncodedKeySpec
 import java.util.*
+import kotlin.io.path.inputStream
 
 class EcdsaJwtTokenValidator constructor(@Context private val config: AuthConfig) : AuthValidator {
     private val verifiers: List<JWTVerifier>
@@ -49,7 +49,7 @@ class EcdsaJwtTokenValidator constructor(@Context private val config: AuthConfig
             algorithms.add(try {
                 val pkcs12Store = KeyStore.getInstance("pkcs12")
                 val keyStorePath = Paths.get(keyStorePathString)
-                pkcs12Store.load(Files.newInputStream(keyStorePath), config.jwtKeystorePassword?.toCharArray())
+                pkcs12Store.load(keyStorePath.inputStream(), config.jwtKeystorePassword?.toCharArray())
                 val publicKey: ECPublicKey = pkcs12Store.getCertificate(config.jwtKeystoreAlias).publicKey as ECPublicKey
                 Algorithm.ECDSA256(publicKey, null)
             } catch (ex: Exception) {

@@ -1,19 +1,21 @@
 import com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
 
 plugins {
     kotlin("jvm") apply false
     `maven-publish`
     signing
     id("org.jetbrains.dokka") apply false
-    id("com.github.ben-manes.versions") version "0.44.0"
-    id("io.github.gradle-nexus.publish-plugin") version "1.1.0"
+    id("com.github.ben-manes.versions") version "0.46.0"
+    id("io.github.gradle-nexus.publish-plugin") version "1.3.0"
 }
 
 allprojects {
     group = "org.radarbase"
-    version = "0.9.2"
+    version = "0.10.0"
 }
 
 subprojects {
@@ -22,20 +24,22 @@ subprojects {
     apply(plugin = "signing")
     apply(plugin = "org.jetbrains.dokka")
 
-    val myProject = this
-
     val githubRepoName = "RADAR-base/radar-jersey"
     val githubUrl = "https://github.com/$githubRepoName.git"
     val githubIssueUrl = "https://github.com/$githubRepoName/issues"
 
-    extra.apply {
-        set("githubRepoName", githubRepoName)
-        set("githubUrl", githubUrl)
-        set("githubIssueUrl", githubIssueUrl)
-    }
-
     repositories {
-        mavenCentral()
+        mavenCentral() {
+            mavenContent {
+                releasesOnly()
+            }
+        }
+        mavenLocal()
+        maven(url = "https://oss.sonatype.org/content/repositories/snapshots") {
+            mavenContent {
+                snapshotsOnly()
+            }
+        }
     }
 
     dependencies {
@@ -62,7 +66,7 @@ subprojects {
     }
 
     val sourcesJar by tasks.registering(Jar::class) {
-        from(myProject.the<SourceSetContainer>()["main"].allSource)
+        from(this@subprojects.the<SourceSetContainer>()["main"].allSource)
         archiveClassifier.set("sources")
         val classes by tasks
         dependsOn(classes)
@@ -75,19 +79,26 @@ subprojects {
         dependsOn(dokkaJavadoc)
     }
 
+    val jvmTargetVersion = 17
+
     tasks.withType<JavaCompile> {
-        options.release.set(11)
+        options.release.set(jvmTargetVersion)
     }
 
     tasks.withType<KotlinCompile> {
-        kotlinOptions {
-            jvmTarget = "11"
-            apiVersion = "1.7"
-            languageVersion = "1.7"
+        compilerOptions {
+            jvmTarget.set(JvmTarget.fromTarget(jvmTargetVersion.toString()))
+            apiVersion.set(KotlinVersion.KOTLIN_1_8)
+            languageVersion.set(KotlinVersion.KOTLIN_1_8)
         }
     }
 
     afterEvaluate {
+        configurations.all {
+            resolutionStrategy.cacheChangingModulesFor(0, TimeUnit.SECONDS)
+            resolutionStrategy.cacheDynamicVersionsFor(0, TimeUnit.SECONDS)
+        }
+
         tasks.withType<Test> {
             testLogging {
                 events("passed", "skipped", "failed")
@@ -106,8 +117,8 @@ subprojects {
         tasks.withType<Jar> {
             manifest {
                 attributes(
-                    "Implementation-Title" to myProject.name,
-                    "Implementation-Version" to myProject.version
+                    "Implementation-Title" to this@subprojects.name,
+                    "Implementation-Version" to this@subprojects.version
                 )
             }
         }
@@ -126,8 +137,8 @@ subprojects {
                     artifact(dokkaJar)
 
                     pom {
-                        name.set(myProject.name)
-                        description.set(myProject.description)
+                        name.set(this@subprojects.name)
+                        description.set(this@subprojects.description)
                         url.set(githubUrl)
                         licenses {
                             license {
@@ -180,17 +191,17 @@ subprojects {
     }
 }
 
-val stableVersionRegex = "[0-9,.v-]+(-r)?".toRegex()
-
-fun isNonStable(version: String): Boolean {
-    val stableKeyword = listOf("RELEASE", "FINAL", "GA", "-CE")
-        .any { version.toUpperCase().contains(it) }
-    return !stableKeyword && !stableVersionRegex.matches(version)
-}
-
 tasks.withType<DependencyUpdatesTask> {
+    doFirst {
+        allprojects {
+            repositories.removeAll {
+                it is MavenArtifactRepository && it.url.toString().endsWith("/snapshots")
+            }
+        }
+    }
+    val isStable = "(^[0-9,.v-]+(-r)?|RELEASE|FINAL|GA|-CE)$".toRegex(RegexOption.IGNORE_CASE)
     rejectVersionIf {
-        isNonStable(candidate.version)
+        !isStable.containsMatchIn(candidate.version)
     }
 }
 
@@ -212,5 +223,5 @@ nexusPublishing {
 }
 
 tasks.wrapper {
-    gradleVersion = "7.6"
+    gradleVersion = "8.0.2"
 }

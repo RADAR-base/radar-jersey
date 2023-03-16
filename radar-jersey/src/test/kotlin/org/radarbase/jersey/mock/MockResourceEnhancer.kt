@@ -16,7 +16,7 @@ class MockResourceEnhancer : JerseyResourceEnhancer {
             "org.radarbase.jersey.mock.resource")
 
     override fun AbstractBinder.enhance() {
-        bind(MockProjectService(listOf("a", "b")))
+        bind(MockProjectService(mapOf("main" to listOf("a", "b"))))
             .to(ProjectService::class.java)
             .`in`(Singleton::class.java)
 

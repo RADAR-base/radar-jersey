@@ -13,21 +13,23 @@ class ProjectRepositoryImpl(
                 .resultList
     }
 
-    override fun create(name: String, description: String?): ProjectDao = transact {
+    override fun create(name: String, description: String?, organization: String): ProjectDao = transact {
         ProjectDao().apply {
             this.name = name
             this.description = description
+            this.organization = organization
             persist(this)
         }
     }
 
-    override fun update(id: Long, description: String?): ProjectDao? = transact {
+    override fun update(id: Long, description: String?, organization: String): ProjectDao? = transact {
         createQuery("SELECT p FROM Project p WHERE p.id = :id", ProjectDao::class.java)
                 .apply { setParameter("id", id) }
                 .resultList
                 .firstOrNull()
                 ?.apply {
                     this.description = description
+                    this.organization = organization
                     merge(this)
                 }
     }

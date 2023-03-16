@@ -23,20 +23,6 @@ open class CachedValue<T: Any>(
     private val supplier: () -> T,
     initialValue: (() -> T)? = null,
 ) {
-    constructor(
-        refreshDuration: Duration,
-        retryDuration: Duration,
-        supplier: () -> T,
-        initialValue: (() -> T)? = null,
-    ) : this(
-        CacheConfig(
-            refreshDuration = refreshDuration,
-            retryDuration = retryDuration,
-        ),
-        supplier = supplier,
-        initialValue = initialValue,
-    )
-
     private val refreshLock = ReentrantReadWriteLock()
     private val readLock: Lock = refreshLock.readLock()
     private val writeLock = refreshLock.writeLock()
