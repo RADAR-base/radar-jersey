@@ -35,9 +35,17 @@ subprojects {
     }
 
     repositories {
-        mavenCentral()
+        mavenCentral() {
+            mavenContent {
+                releasesOnly()
+            }
+        }
         mavenLocal()
-//        maven(url = "https://oss.sonatype.org/content/repositories/snapshots")
+        maven(url = "https://oss.sonatype.org/content/repositories/snapshots") {
+            mavenContent {
+                snapshotsOnly()
+            }
+        }
     }
 
     dependencies {
@@ -187,17 +195,17 @@ subprojects {
     }
 }
 
-val stableVersionRegex = "[0-9,.v-]+(-r)?".toRegex()
-
-fun isNonStable(version: String): Boolean {
-    val stableKeyword = listOf("RELEASE", "FINAL", "GA", "-CE")
-        .any { version.toUpperCase().contains(it) }
-    return !stableKeyword && !stableVersionRegex.matches(version)
-}
-
 tasks.withType<DependencyUpdatesTask> {
+    doFirst {
+        allprojects {
+            repositories.removeAll {
+                it is MavenArtifactRepository && it.url.toString().endsWith("/snapshots")
+            }
+        }
+    }
+    val isStable = "(^[0-9,.v-]+(-r)?|RELEASE|FINAL|GA|-CE)$".toRegex(RegexOption.IGNORE_CASE)
     rejectVersionIf {
-        isNonStable(candidate.version)
+        !isStable.containsMatchIn(candidate.version)
     }
 }
 
