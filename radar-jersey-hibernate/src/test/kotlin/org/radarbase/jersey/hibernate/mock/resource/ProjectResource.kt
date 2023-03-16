@@ -22,11 +22,11 @@ class ProjectResource(
 
     @POST
     @Path("{id}")
-    fun updateProject(@PathParam("id") id: Long, values: Map<String, String>) = projects.update(id, values["description"])
+    fun updateProject(@PathParam("id") id: Long, values: Map<String, String>) = projects.update(id, values["description"], values.getValue("organization"))
             ?: throw HttpNotFoundException("project_not_found", "Project with ID $id does not exist")
 
     @POST
-    fun createProject(values: Map<String, String>) = projects.create(values.getValue("name"), values["description"])
+    fun createProject(values: Map<String, String>) = projects.create(values.getValue("name"), values["description"], values.getValue("organization"))
 
     @DELETE
     @Path("{id}")

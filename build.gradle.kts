@@ -9,13 +9,13 @@ plugins {
     `maven-publish`
     signing
     id("org.jetbrains.dokka") apply false
-    id("com.github.ben-manes.versions") version "0.44.0"
-    id("io.github.gradle-nexus.publish-plugin") version "1.1.0"
+    id("com.github.ben-manes.versions") version "0.46.0"
+    id("io.github.gradle-nexus.publish-plugin") version "1.3.0"
 }
 
 allprojects {
     group = "org.radarbase"
-    version = "0.9.3-SNAPSHOT"
+    version = "0.10.0-SNAPSHOT"
 }
 
 subprojects {
@@ -29,7 +29,17 @@ subprojects {
     val githubIssueUrl = "https://github.com/$githubRepoName/issues"
 
     repositories {
-        mavenCentral()
+        mavenCentral() {
+            mavenContent {
+                releasesOnly()
+            }
+        }
+        mavenLocal()
+        maven(url = "https://oss.sonatype.org/content/repositories/snapshots") {
+            mavenContent {
+                snapshotsOnly()
+            }
+        }
     }
 
     dependencies {
@@ -84,6 +94,11 @@ subprojects {
     }
 
     afterEvaluate {
+        configurations.all {
+            resolutionStrategy.cacheChangingModulesFor(0, TimeUnit.SECONDS)
+            resolutionStrategy.cacheDynamicVersionsFor(0, TimeUnit.SECONDS)
+        }
+
         tasks.withType<Test> {
             testLogging {
                 events("passed", "skipped", "failed")
@@ -176,17 +191,17 @@ subprojects {
     }
 }
 
-val stableVersionRegex = "[0-9,.v-]+(-r)?".toRegex()
-
-fun isNonStable(version: String): Boolean {
-    val stableKeyword = listOf("RELEASE", "FINAL", "GA", "-CE")
-        .any { version.toUpperCase().contains(it) }
-    return !stableKeyword && !stableVersionRegex.matches(version)
-}
-
 tasks.withType<DependencyUpdatesTask> {
+    doFirst {
+        allprojects {
+            repositories.removeAll {
+                it is MavenArtifactRepository && it.url.toString().endsWith("/snapshots")
+            }
+        }
+    }
+    val isStable = "(^[0-9,.v-]+(-r)?|RELEASE|FINAL|GA|-CE)$".toRegex(RegexOption.IGNORE_CASE)
     rejectVersionIf {
-        isNonStable(candidate.version)
+        !isStable.containsMatchIn(candidate.version)
     }
 }
 
@@ -208,5 +223,5 @@ nexusPublishing {
 }
 
 tasks.wrapper {
-    gradleVersion = "7.6"
+    gradleVersion = "8.0.2"
 }

@@ -1,7 +1,6 @@
 package org.radarbase.jersey.doc.config
 
 import okhttp3.OkHttpClient
-import okhttp3.Request
 import org.glassfish.grizzly.http.server.HttpServer
 import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory
 import org.hamcrest.MatcherAssert.assertThat
@@ -12,6 +11,7 @@ import org.junit.jupiter.api.Test
 import org.radarbase.jersey.auth.AuthConfig
 import org.radarbase.jersey.config.ConfigLoader
 import org.radarbase.jersey.mock.MockSwaggerResourceEnhancerFactory
+import org.radarbase.jersey.util.request
 import java.net.URI
 
 class SwaggerResourceEnhancerTest {
@@ -39,37 +39,34 @@ class SwaggerResourceEnhancerTest {
 
     @Test
     fun retrieveOpenApiJson() {
-        client.newCall(Request.Builder().apply {
+        client.request({
             url("http://localhost:9091/openapi.json")
-        }.build()).execute()
-            .use { response ->
-                assertThat(response.code, equalTo(200))
-                val responseString = response.body?.string()
-                assertThat(responseString, not(emptyOrNullString()))
-                println(responseString)
-            }
+        }) { response ->
+            assertThat(response.code, equalTo(200))
+            val responseString = response.body?.string()
+            assertThat(responseString, not(emptyOrNullString()))
+            println(responseString)
+        }
     }
 
     @Test
     fun retrieveOpenApiYaml() {
-        client.newCall(Request.Builder().apply {
+        client.request({
             url("http://localhost:9091/openapi.yaml")
-        }.build()).execute()
-            .use { response ->
-                assertThat(response.code, equalTo(200))
-                val responseString = response.body?.string()
-                assertThat(responseString, not(emptyOrNullString()))
-                println(responseString)
-            }
+        }) { response ->
+            assertThat(response.code, equalTo(200))
+            val responseString = response.body?.string()
+            assertThat(responseString, not(emptyOrNullString()))
+            println(responseString)
+        }
     }
 
     @Test
     fun retrieveWadl() {
-        client.newCall(Request.Builder().apply {
+        client.request({
             url("http://localhost:9091/application.wadl")
-        }.build()).execute()
-            .use { response ->
-                assertThat(response.code, equalTo(404))
-            }
+        }) { response ->
+            assertThat(response.code, equalTo(404))
+        }
     }
 }

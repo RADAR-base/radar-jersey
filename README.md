@@ -24,7 +24,7 @@ class Users(
     @Context projectService: MyProjectService
 ) {
     @GET
-    @NeedsPermission(PROJECT, READ)
+    @NeedsPermission(Permission.PROJECT_READ)
     fun getProjects(@Context auth: Auth): List<Project> {
         return projectService.read()
             .filter { auth.token.hasPermissionOnProject(PROJECT_READ, it.name) }
@@ -32,14 +32,14 @@ class Users(
 
     @POST
     @Path("/{projectId}")
-    @NeedsPermission(PROJECT, UPDATE, "projectId")
+    @NeedsPermission(Permission.PROJECT_UPDATE, "projectId")
     fun updateProject(@PathParam("projectId") projectId: String, project: Project) {
         return projectService.update(projectId, project)
     }
 
     @GET
     @Path("/{projectId}/users/{userId}")
-    @NeedsPermission(SUBJECT, READ, "projectId", "userId")
+    @NeedsPermission(Permission.SUBJECT_READ, "projectId", "userId")
     fun getUsers(@PathParam("projectId") projectId: String, @PathParam("userId") userId: String) {
         return projectService.readUser(projectId, userId)
     }

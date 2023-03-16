@@ -12,8 +12,10 @@ package org.radarbase.jersey.auth
 import com.fasterxml.jackson.databind.JsonNode
 import org.radarbase.auth.authorization.Permission
 import org.radarbase.auth.token.RadarToken
+import org.radarbase.jersey.auth.filter.AuthenticationFilter
 import org.radarbase.jersey.exception.HttpBadRequestException
 import org.radarbase.jersey.exception.HttpForbiddenException
+import org.radarbase.jersey.exception.HttpUnauthorizedException.Companion.wwwAuthenticateHeader
 import org.slf4j.LoggerFactory
 
 interface Auth {
@@ -37,16 +39,27 @@ interface Auth {
      * @throws HttpForbiddenException if the current authentication does not authorize for the permission.
      */
     fun checkPermissionOnSubject(permission: Permission, projectId: String?, userId: String?, location: String? = null) {
-        if (!token.hasPermissionOnSubject(permission,
-                        projectId ?: throw HttpBadRequestException("project_id_missing", "Missing project ID in request"),
-                        userId ?: throw HttpBadRequestException("user_id_missing", "Missing user ID in request")
-                        )) {
-            logPermission(false, permission, location, projectId, userId)
-            throw HttpForbiddenException("permission_mismatch", "No permission '$permission' " +
-                    "project $projectId with user $userId")
+        if (
+            !token.hasPermissionOnSubject(
+                permission,
+                projectId ?: throw HttpBadRequestException("project_id_missing", "Missing project ID in request"),
+                userId ?: throw HttpBadRequestException("user_id_missing", "Missing user ID in request"),
+            )
+        ) {
+            throw forbiddenException(
+                permission = permission,
+                location = location,
+                projectIds = listOf(projectId),
+                userId = userId,
+            )
         }
 
-        logPermission(true, permission, location, projectId, userId)
+        logAuthorized(
+            permission = permission,
+            location = location,
+            projectIds = listOf(projectId),
+            userId = userId
+        )
     }
 
     /**
@@ -56,14 +69,19 @@ interface Auth {
      * @throws HttpForbiddenException if the current authentication does not authorize for the permission.
      */
     fun checkPermissionOnProject(permission: Permission, projectId: String?, location: String? = null) {
-        if (!token.hasPermissionOnProject(permission,
-                        projectId ?: throw HttpBadRequestException("project_id_missing", "Missing project ID in request")
-                        )) {
-            logPermission(false, permission, location, projectId)
-            throw HttpForbiddenException("permission_mismatch", "No permission '$permission' for " +
-                    "project $projectId")
+        if (
+            !token.hasPermissionOnProject(
+                permission,
+                projectId ?: throw HttpBadRequestException("project_id_missing", "Missing project ID in request"),
+            )
+        ) {
+            throw forbiddenException(
+                permission = permission,
+                location = location,
+                projectIds = listOf(projectId),
+            )
         }
-        logPermission(true, permission, location, projectId)
+        logAuthorized(permission, location, projectIds = listOf(projectId))
     }
 
     /**
@@ -73,15 +91,29 @@ interface Auth {
      * @throws HttpForbiddenException if the current authentication does not authorize for the permission.
      */
     fun checkPermissionOnSource(permission: Permission, projectId: String?, userId: String?, sourceId: String?, location: String? = null) {
-        if (!token.hasPermissionOnSource(permission,
-                        projectId ?: throw HttpBadRequestException("project_id_missing", "Missing project ID in request"),
-                        userId ?: throw HttpBadRequestException("user_id_missing", "Missing user ID in request"),
-                        sourceId ?: throw HttpBadRequestException("source_id_missing", "Missing source ID in request"))) {
-            logPermission(false, permission, location, projectId, userId, sourceId)
-            throw HttpForbiddenException("permission_mismatch", "No permission '$permission' for " +
-                    "project $projectId with user $userId and source $sourceId")
+        if (
+            !token.hasPermissionOnSource(
+                permission,
+                projectId ?: throw HttpBadRequestException("project_id_missing", "Missing project ID in request"),
+                userId ?: throw HttpBadRequestException("user_id_missing", "Missing user ID in request"),
+                sourceId ?: throw HttpBadRequestException("source_id_missing", "Missing source ID in request"),
+            )
+        ) {
+            throw forbiddenException(
+                permission = permission,
+                location = location,
+                projectIds = listOf(projectId),
+                userId = userId,
+                sourceId = sourceId,
+            )
         }
-        logPermission(true, permission, location, projectId, userId, sourceId)
+        logAuthorized(
+            permission = permission,
+            location = location,
+            projectIds = listOf(projectId),
+            userId = userId,
+            sourceId = sourceId,
+        )
     }
 
     /**
@@ -94,35 +126,83 @@ interface Auth {
      */
     fun hasRole(projectId: String, role: String): Boolean
 
-    fun logPermission(isAuthorized: Boolean, permission: Permission, location: String? = null, projectId: String? = null, userId: String? = null, sourceId: String? = null) {
-        if (!logger.isInfoEnabled) {
-            return
+    fun forbiddenException(
+        permission: Permission,
+        location: String? = null,
+        organizationId: String? = null,
+        projectIds: List<String>? = null,
+        userId: String? = null,
+        sourceId: String? = null,
+    ): HttpForbiddenException {
+        val message = logPermission(
+            false,
+            permission,
+            location,
+            organizationId,
+            projectIds,
+            userId,
+            sourceId,
+        )
+        return HttpForbiddenException(
+            "permission_mismatch",
+            message,
+            wwwAuthenticateHeader = wwwAuthenticateHeader(
+                error = "insufficient_scope",
+                errorDescription = message,
+                scope = permission.toString()
+            ),
+        )
+    }
+
+    fun logAuthorized(
+        permission: Permission,
+        location: String? = null,
+        organizationId: String? = null,
+        projectIds: List<String>? = null,
+        userId: String? = null,
+        sourceId: String? = null,
+    ) = logPermission(true, permission, location, organizationId, projectIds, userId, sourceId)
+
+    private fun logPermission(
+        isAuthorized: Boolean,
+        permission: Permission,
+        location: String? = null,
+        organizationId: String? = null,
+        projectIds: List<String>? = null,
+        userId: String? = null,
+        sourceId: String? = null,
+    ): String {
+        val message = if (!logger.isInfoEnabled && isAuthorized) {
+            ""
+        } else {
+            buildString(140) {
+                (location ?: findCallerMethod())?.let {
+                    append(it)
+                    append(" - ")
+                }
+                if (token.isClientCredentials) {
+                    append(clientId)
+                } else {
+                    append('@')
+                    append(this@Auth.userId)
+                }
+
+                append(" - ")
+
+                append(if (isAuthorized) "GRANTED " else "DENIED ")
+                append(permission.scope())
+                append(' ')
+
+                buildList(4) {
+                    organizationId?.let { add("organization: $it") }
+                    projectIds?.let { add("projects: $it") }
+                    userId?.let { add("subject: $it") }
+                    sourceId?.let { add("source: $it") }
+                }.joinTo(this, separator = ", ", prefix = "{", postfix = "}")
+            }
         }
-
-         logger.info(StringBuilder(140).apply {
-             (location ?: findCallerMethod())?.let {
-                 append(it)
-                 append(" - ")
-             }
-             if (token.isClientCredentials) {
-                 append(clientId)
-             } else {
-                 append('@')
-                 append(this@Auth.userId)
-             }
-
-             append(" - ")
-
-             append(if (isAuthorized) "GRANTED " else "DENIED ")
-             append(permission.scopeName())
-             append(' ')
-
-             ArrayList<String>(3).apply {
-                 projectId?.let { add("project: $it") }
-                 userId?.let { add("subject: $it") }
-                 sourceId?.let { add("source: $it") }
-             }.joinTo(this, separator = ", ", prefix = "{", postfix = "}")
-         }.toString())
+        logger.info(message)
+        return message
     }
 
     companion object {

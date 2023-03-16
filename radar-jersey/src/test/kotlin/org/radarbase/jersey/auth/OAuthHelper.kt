@@ -37,21 +37,14 @@ class OAuthHelper {
         val ecdsa = Algorithm.ECDSA256(publicKey, privateKey)
         validEcToken = createValidToken(ecdsa)
 
-        val verifiers = listOf(JWT.require(ecdsa).withIssuer(ISS).build())
-        val validatorConfig = object : TokenValidatorConfig {
-            override fun getPublicKeyEndpoints(): List<URI> = emptyList()
+        tokenValidator = TokenValidator.Builder()
+            .verifiers(listOf(JWT.require(ecdsa).withIssuer(ISS).build()))
+            .config(object : TokenValidatorConfig {
+                override fun getPublicKeyEndpoints(): List<URI> = emptyList()
 
-            override fun getResourceName(): String = ISS
-
-            @Deprecated("Use public key endpoints instead.", replaceWith = ReplaceWith("getPublicKeyEndpoints()"))
-            override fun getPublicKeys(): List<String> = emptyList()
-        }
-        @Suppress("DEPRECATION")
-        tokenValidator = object : TokenValidator(verifiers, validatorConfig) {
-            override fun refresh() {
-                // do nothing
-            }
-        }
+                override fun getResourceName(): String = ISS
+            })
+            .build()
     }
 
     private fun createValidToken(algorithm: Algorithm): String {
@@ -78,10 +71,7 @@ class OAuthHelper {
     companion object {
         private const val TEST_SIGNKEY_ALIAS = "radarbase-managementportal-ec"
         private const val TEST_KEYSTORE_PASSWORD = "radarbase"
-        private val SCOPES = Permission.allPermissions()
-                .map { it.scopeName() }
-                .toTypedArray()
-
+        private val SCOPES = Permission.scopes()
         private val AUTHORITIES = arrayOf("ROLE_SYS_ADMIN")
         private val ROLES = arrayOf<String>()
         private val SOURCES = arrayOf<String>()

@@ -15,4 +15,7 @@ class ProjectDao {
 
     @Column
     var description: String? = null
+
+    @Column
+    var organization: String? = null
 }

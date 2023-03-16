@@ -15,19 +15,16 @@ import org.radarbase.auth.authorization.Permission
  * Indicates that a method needs an authenticated user that has a certain permission.
  */
 @Target(AnnotationTarget.FUNCTION,
-        AnnotationTarget.PROPERTY_GETTER, AnnotationTarget.PROPERTY_SETTER)
+    AnnotationTarget.PROPERTY_GETTER, AnnotationTarget.PROPERTY_SETTER)
 @Retention(AnnotationRetention.RUNTIME)
+@MustBeDocumented
 annotation class NeedsPermission(
-        /**
-         * Entity that the permission is needed on.
-         */
-        val entity: Permission.Entity,
-        /**
-         * Operation on given entity that the permission is needed for.
-         */
-        val operation: Permission.Operation,
-        /** Project path parameter */
-        val projectPathParam: String = "",
-        /** User path parameter. */
-        val userPathParam: String = ""
-        )
+    /** Permission that is needed. */
+    val permission: Permission,
+    /** Project path parameter */
+    val projectPathParam: String = "",
+    /** User path parameter. */
+    val userPathParam: String = "",
+    /** Organization path parameter */
+    val organizationPathParam: String = "",
+)
