@@ -1,5 +1,3 @@
-import java.util.*
-
 rootProject.name = "radar-jersey"
 
 include("radar-jersey")
@@ -17,7 +15,7 @@ pluginManagement {
                 password = System.getenv("GITHUB_TOKEN")
                     ?: extra.properties["gpr.token"] as? String
                     ?: (extra.properties["public.gpr.token"] as? String)?.let {
-                        Base64.getDecoder().decode(it).decodeToString()
+                        java.util.Base64.getDecoder().decode(it).decodeToString()
                     }
             }
         }

@@ -1,6 +1,7 @@
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
 import org.radarbase.gradle.plugin.radarPublishing
 import org.radarbase.gradle.plugin.radarRootProject
+import org.radarbase.gradle.plugin.radarKotlin
 
 plugins {
     id("org.radarbase.radar-root-project") version Versions.radarCommons
@@ -16,6 +17,11 @@ radarRootProject {
 subprojects {
     apply(plugin = "org.radarbase.radar-kotlin")
     apply(plugin = "org.radarbase.radar-publishing")
+
+    radarKotlin {
+        log4j2Version.set(Versions.log4j2)
+        slf4jVersion.set(Versions.slf4j)
+    }
 
     radarPublishing {
         val githubRepoName = "RADAR-base/radar-jersey"
@@ -34,23 +40,5 @@ subprojects {
                 organization.set("The Hyve")
             }
         }
-    }
-
-    dependencies {
-        val log4j2Version = Versions.log4j2
-        val testRuntimeOnly by configurations
-        testRuntimeOnly("org.apache.logging.log4j:log4j-slf4j2-impl:$log4j2Version")
-        testRuntimeOnly("org.apache.logging.log4j:log4j-core:$log4j2Version")
-        testRuntimeOnly("org.apache.logging.log4j:log4j-jul:$log4j2Version")
-    }
-
-    tasks.withType<Test> {
-        testLogging {
-            events("passed", "skipped", "failed")
-            showStandardStreams = true
-            exceptionFormat = FULL
-        }
-        useJUnitPlatform()
-        systemProperty("java.util.logging.manager", "org.apache.logging.log4j.jul.LogManager")
     }
 }
