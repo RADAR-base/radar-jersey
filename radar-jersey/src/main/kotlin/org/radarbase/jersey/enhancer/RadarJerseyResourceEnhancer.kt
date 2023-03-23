@@ -31,7 +31,7 @@ import org.radarbase.jersey.auth.jwt.RadarTokenFactory
 class RadarJerseyResourceEnhancer(
     private val config: AuthConfig,
     includeMapper: Boolean = true,
-): JerseyResourceEnhancer {
+) : JerseyResourceEnhancer {
     /**
      * Utilities. Set to `null` to avoid injection. Modify utility mapper or client to inject
      * a different mapper or client.

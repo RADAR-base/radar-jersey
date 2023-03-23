@@ -1,7 +1,6 @@
 package org.radarbase.jersey.hibernate.config
 
 import jakarta.persistence.EntityTransaction
-import java.io.Closeable
 
 interface CloseableTransaction {
     val transaction: EntityTransaction

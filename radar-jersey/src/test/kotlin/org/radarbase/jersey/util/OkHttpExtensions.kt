@@ -6,7 +6,7 @@ import okhttp3.Response
 
 inline fun <T> OkHttpClient.request(builder: Request.Builder.() -> Unit, callback: (Response) -> T): T =
     newCall(
-        Request.Builder().apply(builder).build()
+        Request.Builder().apply(builder).build(),
     ).execute().use(callback)
 
 /**

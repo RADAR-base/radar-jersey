@@ -66,7 +66,7 @@ class AuthService(
 
     suspend fun hasPermission(
         permission: Permission,
-        entity: EntityDetails
+        entity: EntityDetails,
     ) = oracle.hasPermission(token, permission, entity)
 
     /**
@@ -133,7 +133,7 @@ class AuthService(
             } else if (org != organization) {
                 throw HttpNotFoundException(
                     "organization_not_found",
-                    "Organization $organization not found for project $project."
+                    "Organization $organization not found for project $project.",
                 )
             }
             val subject = subject
@@ -162,7 +162,7 @@ class AuthService(
             wwwAuthenticateHeader = HttpUnauthorizedException.wwwAuthenticateHeader(
                 error = "insufficient_scope",
                 errorDescription = message,
-                scope = permission.toString()
+                scope = permission.toString(),
             ),
         )
     }
@@ -235,27 +235,28 @@ class AuthService(
         private val stackWalker = StackWalker
             .getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE)
 
-        private fun findCallerMethod(): String? = stackWalker.walk { stream -> stream
-            .skip(2) // this method and logPermission
-            .filter { !it.isAuthMethod }
-            .findFirst()
-            .map { "${it.declaringClass.simpleName}.${it.methodName}" }
-            .orElse(null)
+        private fun findCallerMethod(): String? = stackWalker.walk { stream ->
+            stream
+                .skip(2) // this method and logPermission
+                .filter { !it.isAuthMethod }
+                .findFirst()
+                .map { "${it.declaringClass.simpleName}.${it.methodName}" }
+                .orElse(null)
         }
 
         private val StackWalker.StackFrame.isAuthMethod: Boolean
             get() = methodName.isAuthMethodName || declaringClass.isAuthClass
 
         private val String.isAuthMethodName: Boolean
-            get() = startsWith("logPermission")
-                || startsWith("checkPermission")
-                || startsWith("invoke")
-                || startsWith("internal")
+            get() = startsWith("logPermission") ||
+                startsWith("checkPermission") ||
+                startsWith("invoke") ||
+                startsWith("internal")
 
         private val Class<*>.isAuthClass: Boolean
-            get() = isInstance(AuthService::class.java)
-                || isAnonymousClass
-                || isLocalClass
-                || simpleName == "ReflectionHelper"
+            get() = isInstance(AuthService::class.java) ||
+                isAnonymousClass ||
+                isLocalClass ||
+                simpleName == "ReflectionHelper"
     }
 }

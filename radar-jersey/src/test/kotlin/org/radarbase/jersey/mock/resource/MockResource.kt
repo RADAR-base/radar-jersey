@@ -53,9 +53,11 @@ class MockResource {
     @Path("projects/{projectId}/users/{subjectId}")
     @NeedsPermission(Permission.SUBJECT_READ, projectPathParam = "projectId", userPathParam = "subjectId")
     @Operation(description = "Get user that is subject in given project")
-    @ApiResponses(value = [
-        ApiResponse(description = "User")
-    ])
+    @ApiResponses(
+        value = [
+            ApiResponse(description = "User"),
+        ],
+    )
     fun mySubject(
         @PathParam("projectId") projectId: String,
         @PathParam("subjectId") userId: String,

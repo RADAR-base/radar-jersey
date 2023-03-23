@@ -22,7 +22,7 @@ import org.radarbase.jersey.exception.HttpNotFoundException
 import org.radarbase.jersey.service.ProjectService
 
 class ProjectServiceWrapper(
-    @Context private val radarProjectService: Provider<RadarProjectService>
+    @Context private val radarProjectService: Provider<RadarProjectService>,
 ) : ProjectService {
     override suspend fun ensureOrganization(organizationId: String) =
         radarProjectService.get().ensureOrganization(organizationId)

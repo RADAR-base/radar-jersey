@@ -18,17 +18,20 @@ class MockSwaggerResourceEnhancerFactory(private val config: AuthConfig) : Enhan
             MockResourceEnhancer(),
             Enhancers.radar(config),
             Enhancers.disabledAuthorization,
-            Enhancers.swagger(OpenAPI().apply {
-                info = Info().apply {
-                    version = properties.getProperty("version")
-                    description = "MockProject"
-                    license = License().apply {
-                        name = "Apache-2.0"
+            Enhancers.swagger(
+                OpenAPI().apply {
+                    info = Info().apply {
+                        version = properties.getProperty("version")
+                        description = "MockProject"
+                        license = License().apply {
+                            name = "Apache-2.0"
+                        }
                     }
-                }
-            }, setOf(
-                "/health",
-            )),
+                },
+                setOf(
+                    "/health",
+                ),
+            ),
         )
     }
 }

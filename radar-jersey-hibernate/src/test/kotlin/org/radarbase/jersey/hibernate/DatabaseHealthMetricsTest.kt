@@ -1,6 +1,5 @@
 package org.radarbase.jersey.hibernate
 
-import okhttp3.ConnectionPool
 import okhttp3.OkHttpClient
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.equalTo
@@ -20,12 +19,13 @@ internal class DatabaseHealthMetricsTest {
     @Test
     fun existsTest() {
         val authConfig = AuthConfig(
-                jwtResourceName = "res_jerseyTest")
+            jwtResourceName = "res_jerseyTest",
+        )
         val databaseConfig = DatabaseConfig(
-                managedClasses = listOf(ProjectDao::class.qualifiedName!!),
-                driver = "org.h2.Driver",
-                url = "jdbc:h2:mem:test",
-                dialect = "org.hibernate.dialect.H2Dialect",
+            managedClasses = listOf(ProjectDao::class.qualifiedName!!),
+            driver = "org.h2.Driver",
+            url = "jdbc:h2:mem:test",
+            dialect = "org.hibernate.dialect.H2Dialect",
         )
 
         val resources = ConfigLoader.loadResources(MockResourceEnhancerFactory::class.java, authConfig, databaseConfig)
@@ -53,19 +53,19 @@ internal class DatabaseHealthMetricsTest {
     @Test
     fun databaseDoesNotExistTest() {
         val authConfig = AuthConfig(
-                jwtResourceName = "res_jerseyTest")
+            jwtResourceName = "res_jerseyTest",
+        )
         val databaseConfig = DatabaseConfig(
-                managedClasses = listOf(ProjectDao::class.qualifiedName!!),
-                driver = "org.h2.Driver",
-                url = "jdbc:h2:tcp://localhost:9999/./test.db",
-                dialect = "org.hibernate.dialect.H2Dialect",
+            managedClasses = listOf(ProjectDao::class.qualifiedName!!),
+            driver = "org.h2.Driver",
+            url = "jdbc:h2:tcp://localhost:9999/./test.db",
+            dialect = "org.hibernate.dialect.H2Dialect",
         )
 
         val resources = ConfigLoader.loadResources(MockResourceEnhancerFactory::class.java, authConfig, databaseConfig)
 
         assertThrows<IllegalStateException> { GrizzlyServer(URI.create("http://localhost:9091"), resources) }
     }
-
 
     @Test
     fun databaseIsDisabledTest() {
@@ -92,7 +92,6 @@ internal class DatabaseHealthMetricsTest {
             val client = OkHttpClient.Builder()
                 .readTimeout(30, TimeUnit.SECONDS)
                 .build()
-
 
             client.call {
                 url("http://localhost:9091/health")

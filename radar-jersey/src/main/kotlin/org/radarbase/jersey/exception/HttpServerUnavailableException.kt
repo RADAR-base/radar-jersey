@@ -9,5 +9,5 @@ class HttpServerUnavailableException(
     status = Response.Status.SERVICE_UNAVAILABLE,
     code = "timeout",
     detailedMessage = message,
-    additionalHeaders = additionalHeaders
+    additionalHeaders = additionalHeaders,
 )

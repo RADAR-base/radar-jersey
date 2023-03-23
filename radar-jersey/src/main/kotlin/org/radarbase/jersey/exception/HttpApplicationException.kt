@@ -17,8 +17,8 @@ open class HttpApplicationException(
     val detailedMessage: String? = null,
     val additionalHeaders: List<Pair<String, String>> = listOf(),
 ) : RuntimeException("[$status] ${codeMessage(code, detailedMessage)}") {
-    constructor(status: Response.Status, code: String, detailedMessage: String? = null, additionalHeaders: List<Pair<String, String>> = listOf())
-            : this(status.statusCode, code, detailedMessage, additionalHeaders)
+    constructor(status: Response.Status, code: String, detailedMessage: String? = null, additionalHeaders: List<Pair<String, String>> = listOf()) :
+        this(status.statusCode, code, detailedMessage, additionalHeaders)
 
     val codeMessage: String
         get() = codeMessage(code, detailedMessage)

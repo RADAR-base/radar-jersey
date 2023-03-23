@@ -70,15 +70,15 @@ class MPProjectService(
 
     override suspend fun userProjects(permission: Permission): List<MPProject> {
         return projects.get().values
-                .filter {
-                    authService.get().hasPermission(
-                        permission,
-                        EntityDetails(
-                            organization = it.organization?.id,
-                            project = it.id
-                        )
-                    )
-                }
+            .filter {
+                authService.get().hasPermission(
+                    permission,
+                    EntityDetails(
+                        organization = it.organization?.id,
+                        project = it.id,
+                    ),
+                )
+            }
     }
 
     override suspend fun ensureProject(projectId: String) {
@@ -93,7 +93,7 @@ class MPProjectService(
     override suspend fun projectSubjects(projectId: String): List<MPSubject> = projectUserCache(projectId).get().values.toList()
 
     override suspend fun subjectByExternalId(projectId: String, externalUserId: String): MPSubject? = projectUserCache(projectId)
-            .findValue { it.externalId == externalUserId }
+        .findValue { it.externalId == externalUserId }
 
     override suspend fun ensureSubject(projectId: String, userId: String) {
         ensureProject(projectId)

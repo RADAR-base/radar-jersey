@@ -17,7 +17,7 @@ import org.radarbase.jersey.auth.AuthValidator
 
 /** Creates a TokenValidator based on the current management portal configuration. */
 class ManagementPortalTokenValidator(
-    @Context private val tokenValidator: TokenValidator
+    @Context private val tokenValidator: TokenValidator,
 ) : AuthValidator {
     override fun verify(token: String, request: ContainerRequestContext): RadarToken? =
         tokenValidator.validateBlocking(token)

@@ -41,5 +41,7 @@ class PermissionFilter(
 
     private fun String.fetchPathParam(): String? = if (isNotEmpty()) {
         uriInfo.pathParameters[this]?.firstOrNull()
-    } else null
+    } else {
+        null
+    }
 }

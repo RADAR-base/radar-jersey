@@ -18,7 +18,7 @@ class DatabaseHealthMetrics(
     @Context private val entityManager: Provider<EntityManager>,
     @Context dbConfig: DatabaseConfig,
     @Context private val requestScope: RequestScope,
-): Metric(name = "db") {
+) : Metric(name = "db") {
     private val cachedStatus = CachedValue(
         CacheConfig(
             refreshDuration = dbConfig.healthCheckValiditySeconds.seconds,

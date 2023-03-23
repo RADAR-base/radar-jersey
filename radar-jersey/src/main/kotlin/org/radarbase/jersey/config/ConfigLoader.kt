@@ -148,6 +148,8 @@ object ConfigLoader {
         val newValue = modification(original)
         return if (newValue != original) {
             doCopy(newValue)
-        } else this
+        } else {
+            this
+        }
     }
 }

@@ -10,7 +10,7 @@ import java.time.Instant
 
 /** Authorization validator that grants permission to all resources. */
 class DisabledAuthValidator(
-        @Context private val config: AuthConfig
+    @Context private val config: AuthConfig,
 ) : AuthValidator {
     override fun getToken(request: ContainerRequestContext): String = ""
     override fun verify(token: String, request: ContainerRequestContext): RadarToken = DataRadarToken(

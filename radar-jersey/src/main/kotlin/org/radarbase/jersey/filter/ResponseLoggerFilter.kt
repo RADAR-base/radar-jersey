@@ -62,6 +62,7 @@ class ResponseLoggerFilter : ContainerResponseFilter {
 
     companion object {
         private val logger = LoggerFactory.getLogger(ResponseLoggerFilter::class.java)
+
         /** Whether given path matches a health endpoint. */
         private inline val String.isHealthEndpoint: Boolean
             get() = this == "health" || endsWith("/health")

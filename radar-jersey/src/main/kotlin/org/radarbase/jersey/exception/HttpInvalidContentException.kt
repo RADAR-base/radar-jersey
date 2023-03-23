@@ -9,5 +9,5 @@
 
 package org.radarbase.jersey.exception
 
-class HttpInvalidContentException(s: String)
-    : HttpApplicationException(422, "invalid_content", s)
+class HttpInvalidContentException(s: String) :
+    HttpApplicationException(422, "invalid_content", s)

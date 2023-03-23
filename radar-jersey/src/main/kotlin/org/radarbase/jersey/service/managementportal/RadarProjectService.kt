@@ -23,7 +23,6 @@ import org.radarbase.jersey.service.ProjectService
 import org.radarbase.management.client.MPProject
 import org.radarbase.management.client.MPSubject
 
-
 interface RadarProjectService : ProjectService {
     override suspend fun ensureProject(projectId: String) {
         project(projectId)

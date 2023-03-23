@@ -7,7 +7,7 @@ import org.radarbase.jersey.enhancer.JerseyResourceEnhancer
 import org.radarbase.jersey.exception.mapper.*
 
 /** Add WebApplicationException and any exception handling. */
-class ExceptionResourceEnhancer: JerseyResourceEnhancer {
+class ExceptionResourceEnhancer : JerseyResourceEnhancer {
     /**
      * Renderers to use, per mediatype. To use different renderers, override the renderer that
      * should be overridden.

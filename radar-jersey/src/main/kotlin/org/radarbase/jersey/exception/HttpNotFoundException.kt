@@ -12,4 +12,4 @@ package org.radarbase.jersey.exception
 import jakarta.ws.rs.core.Response
 
 class HttpNotFoundException(code: String, message: String) :
-        HttpApplicationException(Response.Status.NOT_FOUND, code, message)
+    HttpApplicationException(Response.Status.NOT_FOUND, code, message)

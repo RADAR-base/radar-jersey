@@ -27,7 +27,7 @@ class MPClientFactory(
 
             clientCredentials(
                 authConfig = authConfig,
-                targetHost = URL(url).host
+                targetHost = URL(url).host,
             )
         }
     }

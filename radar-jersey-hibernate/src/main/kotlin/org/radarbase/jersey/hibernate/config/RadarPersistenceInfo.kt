@@ -11,8 +11,8 @@ import java.util.*
 import javax.sql.DataSource
 
 class RadarPersistenceInfo(
-        config: DatabaseConfig
-): PersistenceUnitInfo {
+    config: DatabaseConfig,
+) : PersistenceUnitInfo {
     @Suppress("UNCHECKED_CAST")
     private val properties: Properties = Properties().apply {
         put("jakarta.persistence.schema-generation.database.action", "none")
@@ -25,10 +25,10 @@ class RadarPersistenceInfo(
             "jakarta.persistence.jdbc.url" to config.url,
             "jakarta.persistence.jdbc.user" to config.user,
             "jakarta.persistence.jdbc.password" to config.password,
-            "hibernate.dialect" to config.dialect
+            "hibernate.dialect" to config.dialect,
         )
             .filter { (_, v) -> v != null }
-            .forEach { (k, v) -> put (k, v) }
+            .forEach { (k, v) -> put(k, v) }
 
         putAll(config.properties)
     }
@@ -77,8 +77,8 @@ class RadarPersistenceInfo(
 
         other as RadarPersistenceInfo
 
-        return properties == other.properties
-                && managedClasses == other.managedClasses
+        return properties == other.properties &&
+            managedClasses == other.managedClasses
     }
 
     override fun hashCode(): Int = Objects.hash(properties, managedClasses)

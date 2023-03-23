@@ -4,20 +4,17 @@ import jakarta.ws.rs.*
 import jakarta.ws.rs.container.AsyncResponse
 import jakarta.ws.rs.container.Suspended
 import jakarta.ws.rs.core.Context
-import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.runBlocking
 import org.radarbase.jersey.coroutines.runAsCoroutine
 import org.radarbase.jersey.exception.HttpNotFoundException
 import org.radarbase.jersey.hibernate.db.ProjectRepository
-import java.util.concurrent.atomic.AtomicInteger
 import kotlin.time.Duration.Companion.seconds
 
 @Path("projects")
 @Consumes("application/json")
 @Produces("application/json")
 class ProjectResource(
-        @Context private val projects: ProjectRepository
+    @Context private val projects: ProjectRepository,
 ) {
     @POST
     @Path("query")

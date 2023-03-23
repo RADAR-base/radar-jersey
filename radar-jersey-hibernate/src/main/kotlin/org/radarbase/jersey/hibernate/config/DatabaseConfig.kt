@@ -2,7 +2,6 @@ package org.radarbase.jersey.hibernate.config
 
 import org.radarbase.jersey.config.ConfigLoader.copyEnv
 
-
 data class DatabaseConfig(
     /** Classes that can be used in Hibernate queries. */
     val managedClasses: List<String> = emptyList(),
@@ -19,7 +18,7 @@ data class DatabaseConfig(
     val properties: Map<String, String> = emptyMap(),
     /** Liquibase initialization configuration. */
     val liquibase: LiquibaseConfig = LiquibaseConfig(),
-    val healthCheckValiditySeconds: Long = 60
+    val healthCheckValiditySeconds: Long = 60,
 ) {
     fun withEnv(): DatabaseConfig = this
         .copyEnv("DATABASE_URL") { copy(url = it) }

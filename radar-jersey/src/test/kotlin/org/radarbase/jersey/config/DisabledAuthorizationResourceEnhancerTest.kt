@@ -4,8 +4,8 @@ import okhttp3.OkHttpClient
 import org.glassfish.grizzly.http.server.HttpServer
 import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory
 import org.hamcrest.MatcherAssert.assertThat
-import org.hamcrest.Matchers.`is`
 import org.hamcrest.Matchers.equalTo
+import org.hamcrest.Matchers.`is`
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -21,7 +21,8 @@ internal class DisabledAuthorizationResourceEnhancerTest {
     @BeforeEach
     fun setUp() {
         val authConfig = AuthConfig(
-                jwtResourceName = "res_jerseyTest")
+            jwtResourceName = "res_jerseyTest",
+        )
 
         val resources = ConfigLoader.loadResources(MockDisabledAuthResourceEnhancerFactory::class.java, authConfig)
 
@@ -36,7 +37,6 @@ internal class DisabledAuthorizationResourceEnhancerTest {
         server.shutdown()
     }
 
-
     @Test
     fun testBasicGet() {
         client.request({
@@ -46,7 +46,6 @@ internal class DisabledAuthorizationResourceEnhancerTest {
             assertThat(response.body?.string(), equalTo("{\"this\":\"that\"}"))
         }
     }
-
 
     @Test
     fun testAuthenticatedGet() {
@@ -59,7 +58,6 @@ internal class DisabledAuthorizationResourceEnhancerTest {
         }
     }
 
-
     @Test
     fun testExistingGet() {
         client.request({
@@ -69,7 +67,6 @@ internal class DisabledAuthorizationResourceEnhancerTest {
             assertThat(response.body?.string(), equalTo("{\"projectId\":\"a\",\"userId\":\"b\"}"))
         }
     }
-
 
     @Test
     fun testNonExistingGet() {

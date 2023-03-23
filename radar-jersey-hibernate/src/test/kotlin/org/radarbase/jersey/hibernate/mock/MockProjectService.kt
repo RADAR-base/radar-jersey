@@ -15,7 +15,7 @@ import org.radarbase.jersey.hibernate.db.ProjectRepository
 import org.radarbase.jersey.service.ProjectService
 
 class MockProjectService(
-    @Context private val projects: ProjectRepository
+    @Context private val projects: ProjectRepository,
 ) : ProjectService {
     override suspend fun ensureOrganization(organizationId: String) {
         if (projects.list().none { it.organization == organizationId }) {

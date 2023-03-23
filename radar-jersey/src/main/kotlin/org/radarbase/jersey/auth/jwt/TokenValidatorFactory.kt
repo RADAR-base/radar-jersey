@@ -59,7 +59,7 @@ class TokenValidatorFactory(
                         val pkcs12Store = KeyStore.getInstance("pkcs12")
                         pkcs12Store.load(
                             Paths.get(config.jwtKeystorePath).inputStream(),
-                            config.jwtKeystorePassword?.toCharArray()
+                            config.jwtKeystorePassword?.toCharArray(),
                         )
                         when (val publicKey = pkcs12Store.getCertificate(config.jwtKeystoreAlias).publicKey) {
                             is ECPublicKey -> publicKey.toAlgorithm()
@@ -68,7 +68,7 @@ class TokenValidatorFactory(
                         }
                     } catch (ex: Exception) {
                         throw IllegalStateException("Failed to initialize JWT ECDSA public key", ex)
-                    }
+                    },
                 )
             }
         }
@@ -81,7 +81,7 @@ class TokenValidatorFactory(
                             withIssuer(it)
                         }
                     }
-                }
+                },
             )
         }
 

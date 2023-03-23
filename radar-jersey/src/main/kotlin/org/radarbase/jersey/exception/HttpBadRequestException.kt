@@ -12,4 +12,4 @@ package org.radarbase.jersey.exception
 import jakarta.ws.rs.core.Response
 
 class HttpBadRequestException(code: String, message: String) :
-        HttpApplicationException(Response.Status.BAD_REQUEST, code, message)
+    HttpApplicationException(Response.Status.BAD_REQUEST, code, message)

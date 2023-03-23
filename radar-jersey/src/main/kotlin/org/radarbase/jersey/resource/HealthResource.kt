@@ -11,7 +11,6 @@ import jakarta.ws.rs.core.Context
 import jakarta.ws.rs.core.MediaType.APPLICATION_JSON
 import org.radarbase.jersey.coroutines.runAsCoroutine
 import org.radarbase.jersey.service.HealthService
-import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
 
 @Path("/health")

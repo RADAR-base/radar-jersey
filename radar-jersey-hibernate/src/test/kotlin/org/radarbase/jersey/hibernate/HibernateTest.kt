@@ -31,12 +31,13 @@ internal class HibernateTest {
     @BeforeEach
     fun setUp() {
         val authConfig = AuthConfig(
-                jwtResourceName = "res_jerseyTest")
+            jwtResourceName = "res_jerseyTest",
+        )
         val databaseConfig = DatabaseConfig(
-                managedClasses = listOf(ProjectDao::class.qualifiedName!!),
-                driver = "org.h2.Driver",
-                url = "jdbc:h2:mem:test",
-                dialect = "org.hibernate.dialect.H2Dialect",
+            managedClasses = listOf(ProjectDao::class.qualifiedName!!),
+            driver = "org.h2.Driver",
+            url = "jdbc:h2:mem:test",
+            dialect = "org.hibernate.dialect.H2Dialect",
         )
 
         val resources = ConfigLoader.loadResources(MockResourceEnhancerFactory::class.java, authConfig, databaseConfig)
@@ -52,7 +53,6 @@ internal class HibernateTest {
         server.shutdown()
     }
 
-
     @Test
     fun testBasicGet() {
         client.call {
@@ -62,7 +62,6 @@ internal class HibernateTest {
             assertThat(response.body?.string(), equalTo("[]"))
         }
     }
-
 
     @Test
     fun testMissingProject() {
@@ -92,18 +91,22 @@ internal class HibernateTest {
     fun testOverload(): Unit = runBlocking {
         client = OkHttpClient.Builder()
             .connectionPool(ConnectionPool(64, 30, TimeUnit.MINUTES))
-            .dispatcher(Dispatcher().apply {
-                maxRequestsPerHost = 64
-            })
+            .dispatcher(
+                Dispatcher().apply {
+                    maxRequestsPerHost = 64
+                },
+            )
             .build()
         (0 until 64)
             .forkJoin { i ->
                 suspendCancellableCoroutine { continuation ->
-                    val call = client.newCall(Request.Builder().run {
-                        post("test".toRequestBody(JSON_TYPE))
-                        url("http://localhost:9091/projects/query")
-                        build()
-                    })
+                    val call = client.newCall(
+                        Request.Builder().run {
+                            post("test".toRequestBody(JSON_TYPE))
+                            url("http://localhost:9091/projects/query")
+                            build()
+                        },
+                    )
 
                     continuation.invokeOnCancellation { call.cancel() }
 
@@ -131,13 +134,14 @@ internal class HibernateTest {
             assertThat(response.body?.string(), equalTo("""{"id":1000,"name":"a","organization":"main"}"""))
         }
 
-        client.newCall(Request.Builder()
+        client.newCall(
+            Request.Builder()
                 .url("http://localhost:9091/projects/1000")
-                .build()).execute().use { response ->
+                .build(),
+        ).execute().use { response ->
             assertThat(response.isSuccessful, `is`(true))
             assertThat(response.body?.string(), equalTo("""{"id":1000,"name":"a","organization":"main"}"""))
         }
-
 
         client.call {
             url("http://localhost:9091/projects")
@@ -177,5 +181,5 @@ internal inline fun OkHttpClient.call(builder: Request.Builder.() -> Unit): Resp
     Request.Builder().run {
         builder()
         build()
-    }
+    },
 ).execute()

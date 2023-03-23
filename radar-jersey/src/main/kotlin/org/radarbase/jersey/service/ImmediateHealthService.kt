@@ -8,16 +8,17 @@ import org.radarbase.kotlin.coroutines.forkAny
 import org.radarbase.kotlin.coroutines.forkJoin
 
 class ImmediateHealthService(
-        @Context healthMetrics: IterableProvider<HealthService.Metric>
-): HealthService {
+    @Context healthMetrics: IterableProvider<HealthService.Metric>,
+) : HealthService {
     @Volatile
     private var allMetrics: List<HealthService.Metric> = healthMetrics.toList()
 
     override suspend fun computeStatus(): HealthService.Status =
         if (allMetrics.forkAny {
-            val status = it.computeStatus()
-            status == HealthService.Status.DOWN
-        }) {
+                val status = it.computeStatus()
+                status == HealthService.Status.DOWN
+            }
+        ) {
             HealthService.Status.DOWN
         } else {
             HealthService.Status.UP

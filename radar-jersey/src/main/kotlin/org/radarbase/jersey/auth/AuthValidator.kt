@@ -22,8 +22,9 @@ interface AuthValidator {
         val authorizationHeader = request.getHeaderString("Authorization")
 
         // Check if the HTTP Authorization header is present and formatted correctly
-        if (authorizationHeader != null
-                && authorizationHeader.startsWith(AuthenticationFilter.BEARER, ignoreCase = true)) {
+        if (authorizationHeader != null &&
+            authorizationHeader.startsWith(AuthenticationFilter.BEARER, ignoreCase = true)
+        ) {
             // Extract the token from the HTTP Authorization header
             return authorizationHeader.substring(AuthenticationFilter.BEARER.length).trim { it <= ' ' }
         }

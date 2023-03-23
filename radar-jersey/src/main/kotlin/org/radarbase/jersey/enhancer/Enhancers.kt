@@ -12,23 +12,30 @@ object Enhancers {
     /** Adds authorization framework, configuration and utilities. */
     fun radar(
         config: AuthConfig,
-        includeMapper: Boolean = true
+        includeMapper: Boolean = true,
     ) = RadarJerseyResourceEnhancer(config, includeMapper = includeMapper)
+
     /** Authorization via ManagementPortal. */
     fun managementPortal(config: AuthConfig) = ManagementPortalResourceEnhancer(config)
+
     /** Disable all authorization. Useful for a public service. */
     val disabledAuthorization = DisabledAuthorizationResourceEnhancer()
+
     /** Handle a generic ECDSA identity provider. */
     val ecdsa = EcdsaResourceEnhancer()
+
     /** Adds a health endpoint. */
     val health = HealthResourceEnhancer()
+
     /**
      * Handles any application exceptions including an appropriate response to client.
      * @see org.radarbase.jersey.exception.HttpApplicationException
      */
     val exception = ExceptionResourceEnhancer()
+
     /** Add ObjectMapper utility. Not needed if radar(includeMapper = true). */
     val mapper = MapperResourceEnhancer()
+
     /**
      * Adds an OpenAPI endpoint to the stack at `/openapi.yaml` and `/openapi.json`.
      * The description is given with [openApi]. Any routes provided in

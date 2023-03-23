@@ -17,8 +17,8 @@ import java.util.function.Supplier
 
 /** Generates radar tokens from the security context. */
 class RadarTokenFactory(
-        @Context private val context: ContainerRequestContext
+    @Context private val context: ContainerRequestContext,
 ) : Supplier<RadarToken> {
     override fun get() = (context.securityContext as? RadarSecurityContext)?.token
-                ?: throw IllegalStateException("Created null wrapper")
+        ?: throw IllegalStateException("Created null wrapper")
 }

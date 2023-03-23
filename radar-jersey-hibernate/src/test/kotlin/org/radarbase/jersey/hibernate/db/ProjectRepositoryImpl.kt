@@ -9,10 +9,10 @@ import org.radarbase.jersey.hibernate.HibernateRepository
 class ProjectRepositoryImpl(
     @Context em: Provider<EntityManager>,
     @Context requestScope: RequestScope,
-): ProjectRepository, HibernateRepository(em, requestScope) {
+) : ProjectRepository, HibernateRepository(em, requestScope) {
     override suspend fun list(): List<ProjectDao> = transact {
         createQuery("SELECT p FROM Project p", ProjectDao::class.java)
-                .resultList
+            .resultList
     }
 
     override suspend fun create(name: String, description: String?, organization: String): ProjectDao = transact {
@@ -26,28 +26,28 @@ class ProjectRepositoryImpl(
 
     override suspend fun update(id: Long, description: String?, organization: String): ProjectDao? = transact {
         createQuery("SELECT p FROM Project p WHERE p.id = :id", ProjectDao::class.java)
-                .apply { setParameter("id", id) }
-                .resultList
-                .firstOrNull()
-                ?.apply {
-                    this.description = description
-                    this.organization = organization
-                    merge(this)
-                }
+            .apply { setParameter("id", id) }
+            .resultList
+            .firstOrNull()
+            ?.apply {
+                this.description = description
+                this.organization = organization
+                merge(this)
+            }
     }
 
     override suspend fun get(id: Long): ProjectDao? = transact {
         createQuery("SELECT p FROM Project p WHERE p.id = :id", ProjectDao::class.java)
-                .apply { setParameter("id", id) }
-                .resultList
-                .firstOrNull()
+            .apply { setParameter("id", id) }
+            .resultList
+            .firstOrNull()
     }
 
     override suspend fun delete(id: Long): Unit = transact {
         createQuery("SELECT p FROM Project p WHERE p.id = :id", ProjectDao::class.java)
-                .apply { setParameter("id", id) }
-                .resultList
-                .firstOrNull()
-                ?.apply { remove(merge(this)) }
+            .apply { setParameter("id", id) }
+            .resultList
+            .firstOrNull()
+            ?.apply { remove(merge(this)) }
     }
 }

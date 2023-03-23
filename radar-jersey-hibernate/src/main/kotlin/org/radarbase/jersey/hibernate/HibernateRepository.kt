@@ -44,7 +44,7 @@ open class HibernateRepository(
                         } finally {
                             storedTransaction.set(null)
                         }
-                    }
+                    },
                 )
             } catch (ex: Throwable) {
                 continuation.resumeWithException(ex)
@@ -71,7 +71,7 @@ open class HibernateRepository(
                 suspendTransaction.abort()
                 throw ex
             }
-        }
+        },
     )
 
     companion object {

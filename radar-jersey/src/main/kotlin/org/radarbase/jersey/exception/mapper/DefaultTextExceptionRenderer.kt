@@ -14,7 +14,7 @@ import org.radarbase.jersey.exception.HttpApplicationException
 /**
  * Render an exception using a Mustache HTML document.
  */
-class DefaultTextExceptionRenderer: ExceptionRenderer {
+class DefaultTextExceptionRenderer : ExceptionRenderer {
     override fun render(exception: HttpApplicationException): String {
         return "[${exception.status}] ${exception.code}: ${exception.detailedMessage ?: "unknown reason"}"
     }

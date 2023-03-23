@@ -11,5 +11,5 @@ package org.radarbase.jersey.exception
 
 import jakarta.ws.rs.core.Response.Status
 
-class HttpBadGatewayException(message: String)
-    : HttpApplicationException(Status.BAD_GATEWAY, "bad_gateway", message)
+class HttpBadGatewayException(message: String) :
+    HttpApplicationException(Status.BAD_GATEWAY, "bad_gateway", message)

@@ -12,4 +12,4 @@ package org.radarbase.jersey.exception
 import jakarta.ws.rs.core.Response
 
 class HttpConflictException(code: String, messageText: String) :
-        HttpApplicationException(Response.Status.CONFLICT, code, messageText)
+    HttpApplicationException(Response.Status.CONFLICT, code, messageText)
