@@ -20,6 +20,8 @@ import org.radarbase.jersey.auth.AuthService
 import org.radarbase.jersey.auth.filter.AuthenticationFilter
 import org.radarbase.jersey.auth.filter.AuthorizationFeature
 import org.radarbase.jersey.auth.jwt.RadarTokenFactory
+import org.radarbase.jersey.service.AsyncCoroutineService
+import org.radarbase.jersey.service.ScopedAsyncCoroutineService
 
 /**
  * Add RADAR auth to a Jersey project. This requires a {@link ProjectService} implementation to be
@@ -53,10 +55,14 @@ class RadarJerseyResourceEnhancer(
             .to(AuthConfig::class.java)
             .`in`(Singleton::class.java)
 
+        bind(ScopedAsyncCoroutineService::class.java)
+            .to(AsyncCoroutineService::class.java)
+            .`in`(Singleton::class.java)
+
         // Bind factories.
         bindFactory(RadarTokenFactory::class.java)
-            .proxy(true)
-            .proxyForSameScope(true)
+            .proxy(false)
+            .proxyForSameScope(false)
             .to(RadarToken::class.java)
             .`in`(RequestScoped::class.java)
 

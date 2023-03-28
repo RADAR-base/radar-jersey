@@ -16,6 +16,7 @@ import jakarta.ws.rs.core.Context
 import jakarta.ws.rs.core.UriInfo
 import org.radarbase.jersey.auth.AuthService
 import org.radarbase.jersey.auth.NeedsPermission
+import org.radarbase.jersey.auth.filter.RadarSecurityContext.Companion.radarSecurityContext
 
 /**
  * Check that the token has given permissions.
@@ -31,6 +32,7 @@ class PermissionFilter(
 
         authService.checkScopeAndPermission(
             permission = annotation.permission,
+            token = requestContext.radarSecurityContext.token,
             location = "${requestContext.method} ${requestContext.uriInfo.path}",
         ) {
             organization = annotation.organizationPathParam.fetchPathParam()

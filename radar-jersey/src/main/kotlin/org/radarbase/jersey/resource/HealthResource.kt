@@ -9,7 +9,7 @@ import jakarta.ws.rs.container.AsyncResponse
 import jakarta.ws.rs.container.Suspended
 import jakarta.ws.rs.core.Context
 import jakarta.ws.rs.core.MediaType.APPLICATION_JSON
-import org.radarbase.jersey.coroutines.runAsCoroutine
+import org.radarbase.jersey.service.AsyncCoroutineService
 import org.radarbase.jersey.service.HealthService
 import kotlin.time.Duration.Companion.seconds
 
@@ -17,11 +17,12 @@ import kotlin.time.Duration.Companion.seconds
 @Resource
 @Singleton
 class HealthResource(
+    @Context private val asyncService: AsyncCoroutineService,
     @Context private val healthService: HealthService,
 ) {
     @GET
     @Produces(APPLICATION_JSON)
-    fun healthStatus(@Suspended asyncResponse: AsyncResponse) = asyncResponse.runAsCoroutine(5.seconds) {
+    fun healthStatus(@Suspended asyncResponse: AsyncResponse) = asyncService.runAsCoroutine(asyncResponse, 5.seconds) {
         healthService.computeMetrics()
     }
 }

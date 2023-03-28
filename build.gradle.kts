@@ -1,7 +1,6 @@
-import org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
+import org.radarbase.gradle.plugin.radarKotlin
 import org.radarbase.gradle.plugin.radarPublishing
 import org.radarbase.gradle.plugin.radarRootProject
-import org.radarbase.gradle.plugin.radarKotlin
 
 plugins {
     id("org.radarbase.radar-root-project") version Versions.radarCommons

@@ -5,9 +5,9 @@ import jakarta.ws.rs.container.AsyncResponse
 import jakarta.ws.rs.container.Suspended
 import jakarta.ws.rs.core.Context
 import kotlinx.coroutines.delay
-import org.radarbase.jersey.coroutines.runAsCoroutine
 import org.radarbase.jersey.exception.HttpNotFoundException
 import org.radarbase.jersey.hibernate.db.ProjectRepository
+import org.radarbase.jersey.service.AsyncCoroutineService
 import kotlin.time.Duration.Companion.seconds
 
 @Path("projects")
@@ -15,25 +15,38 @@ import kotlin.time.Duration.Companion.seconds
 @Produces("application/json")
 class ProjectResource(
     @Context private val projects: ProjectRepository,
+    @Context private val asyncService: AsyncCoroutineService,
 ) {
     @POST
     @Path("query")
-    fun query(@Suspended asyncResponse: AsyncResponse) = asyncResponse.runAsCoroutine {
+    fun query(@Suspended asyncResponse: AsyncResponse) = asyncService.runAsCoroutine(asyncResponse) {
         delay(1.seconds)
         "{\"result\": 1}"
     }
 
     @GET
-    fun projects(@Suspended asyncResponse: AsyncResponse) = asyncResponse.runAsCoroutine {
+    fun projects(@Suspended asyncResponse: AsyncResponse) = asyncService.runAsCoroutine(asyncResponse) {
         projects.list()
     }
+
+    @GET
+    @Path("empty")
+    fun empty() = listOf<String>()
+
+    @GET
+    @Path("empty-suspend")
+    fun emptySuspend(@Suspended asyncResponse: AsyncResponse) = asyncService.runAsCoroutine(asyncResponse) { listOf<String>() }
+
+    @GET
+    @Path("empty-blocking")
+    fun emptyBlocking() = asyncService.runBlocking { listOf<String>() }
 
     @GET
     @Path("{id}")
     fun project(
         @PathParam("id") id: Long,
         @Suspended asyncResponse: AsyncResponse,
-    ) = asyncResponse.runAsCoroutine {
+    ) = asyncService.runAsCoroutine(asyncResponse) {
         projects.get(id)
             ?: throw HttpNotFoundException("project_not_found", "Project with ID $id does not exist")
     }
@@ -44,7 +57,7 @@ class ProjectResource(
         @PathParam("id") id: Long,
         values: Map<String, String>,
         @Suspended asyncResponse: AsyncResponse,
-    ) = asyncResponse.runAsCoroutine {
+    ) = asyncService.runAsCoroutine(asyncResponse) {
         projects.update(id, values["description"], values.getValue("organization"))
             ?: throw HttpNotFoundException("project_not_found", "Project with ID $id does not exist")
     }
@@ -53,7 +66,7 @@ class ProjectResource(
     fun createProject(
         values: Map<String, String>,
         @Suspended asyncResponse: AsyncResponse,
-    ) = asyncResponse.runAsCoroutine {
+    ) = asyncService.runAsCoroutine(asyncResponse) {
         projects.create(values.getValue("name"), values["description"], values.getValue("organization"))
     }
 
@@ -62,5 +75,5 @@ class ProjectResource(
     fun deleteProject(
         @PathParam("id") id: Long,
         @Suspended asyncResponse: AsyncResponse,
-    ) = asyncResponse.runAsCoroutine { projects.delete(id) }
+    ) = asyncService.runAsCoroutine(asyncResponse) { projects.delete(id) }
 }

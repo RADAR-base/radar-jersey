@@ -1,7 +1,9 @@
 package org.radarbase.jersey.hibernate
 
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlinx.coroutines.withContext
 import okhttp3.*
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.RequestBody.Companion.toRequestBody
@@ -23,6 +25,7 @@ import java.time.Duration
 import java.util.concurrent.TimeUnit
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
+import kotlin.time.Duration.Companion.nanoseconds
 
 internal class HibernateTest {
     private lateinit var client: OkHttpClient
@@ -84,6 +87,67 @@ internal class HibernateTest {
                 url("http://localhost:9091/projects/query")
             }
         }
+    }
+
+    @Test
+    fun testTime(): Unit = runBlocking {
+        client = OkHttpClient.Builder()
+            .connectionPool(ConnectionPool(64, 30, TimeUnit.MINUTES))
+            .dispatcher(
+                Dispatcher().apply {
+                    maxRequestsPerHost = 64
+                },
+            )
+            .build()
+
+        val size = 2000
+
+        var startTime = System.nanoTime()
+
+        client.makeCalls(size) {
+            url("http://localhost:9091/projects/empty")
+        }
+
+        var newTime = System.nanoTime()
+        var diff = (newTime - startTime).nanoseconds
+        println("first: $diff")
+        startTime = newTime
+
+        client.makeCalls(size) {
+            url("http://localhost:9091/projects/empty-suspend")
+        }
+
+        newTime = System.nanoTime()
+        diff = (newTime - startTime).nanoseconds
+        println("first: $diff")
+        startTime = newTime
+
+        client.makeCalls(size) {
+            url("http://localhost:9091/projects/empty-blocking")
+        }
+
+        newTime = System.nanoTime()
+        diff = (newTime - startTime).nanoseconds
+        println("first: $diff")
+
+        startTime = newTime
+
+        client.makeCalls(size) {
+            url("http://localhost:9091/projects/empty")
+        }
+
+        newTime = System.nanoTime()
+        diff = (newTime - startTime).nanoseconds
+        println("first: $diff")
+        startTime = newTime
+
+        client.makeCalls(size) {
+            url("http://localhost:9091/projects/empty-suspend")
+        }
+
+        newTime = System.nanoTime()
+        diff = (newTime - startTime).nanoseconds
+        println("first: $diff")
     }
 
     @Test
@@ -176,6 +240,33 @@ internal class HibernateTest {
         val JSON_TYPE = "application/json".toMediaType()
     }
 }
+
+internal suspend fun OkHttpClient.makeCalls(size: Int, requestBuilder: Request.Builder.() -> Unit) {
+    val request = Request.Builder().run {
+        requestBuilder()
+        build()
+    }
+    (0 until size)
+        .forkJoin(Dispatchers.IO) {
+            suspendCancellableCoroutine { continuation ->
+                val call = newCall(request)
+
+                continuation.invokeOnCancellation { call.cancel() }
+
+                call.enqueue(object : Callback {
+                    override fun onFailure(call: Call, e: IOException) {
+                        continuation.resumeWithException(e)
+                    }
+
+                    override fun onResponse(call: Call, response: Response) {
+                        response.close()
+                        continuation.resume(response)
+                    }
+                })
+            }
+        }
+}
+
 
 internal inline fun OkHttpClient.call(builder: Request.Builder.() -> Unit): Response = newCall(
     Request.Builder().run {

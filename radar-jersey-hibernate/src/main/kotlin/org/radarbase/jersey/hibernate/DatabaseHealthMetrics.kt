@@ -5,9 +5,9 @@ import jakarta.persistence.EntityManager
 import jakarta.ws.rs.core.Context
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import org.glassfish.jersey.process.internal.RequestScope
 import org.radarbase.jersey.hibernate.DatabaseInitialization.Companion.useConnection
 import org.radarbase.jersey.hibernate.config.DatabaseConfig
+import org.radarbase.jersey.service.AsyncCoroutineService
 import org.radarbase.jersey.service.HealthService
 import org.radarbase.jersey.service.HealthService.Metric
 import org.radarbase.kotlin.coroutines.CacheConfig
@@ -17,7 +17,7 @@ import kotlin.time.Duration.Companion.seconds
 class DatabaseHealthMetrics(
     @Context private val entityManager: Provider<EntityManager>,
     @Context dbConfig: DatabaseConfig,
-    @Context private val requestScope: RequestScope,
+    @Context private val asyncService: AsyncCoroutineService,
 ) : Metric(name = "db") {
     private val cachedStatus = CachedValue(
         CacheConfig(
@@ -34,7 +34,7 @@ class DatabaseHealthMetrics(
 
     private suspend fun testConnection(): HealthService.Status = withContext(Dispatchers.IO) {
         try {
-            requestScope.runInScope {
+            asyncService.runInRequestScope {
                 entityManager.get().useConnection { it.close() }
             }
             HealthService.Status.UP

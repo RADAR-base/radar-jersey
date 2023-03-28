@@ -3,13 +3,13 @@ package org.radarbase.jersey.hibernate.db
 import jakarta.inject.Provider
 import jakarta.persistence.EntityManager
 import jakarta.ws.rs.core.Context
-import org.glassfish.jersey.process.internal.RequestScope
 import org.radarbase.jersey.hibernate.HibernateRepository
+import org.radarbase.jersey.service.AsyncCoroutineService
 
 class ProjectRepositoryImpl(
     @Context em: Provider<EntityManager>,
-    @Context requestScope: RequestScope,
-) : ProjectRepository, HibernateRepository(em, requestScope) {
+    @Context asyncCoroutineService: AsyncCoroutineService,
+) : ProjectRepository, HibernateRepository(em, asyncCoroutineService) {
     override suspend fun list(): List<ProjectDao> = transact {
         createQuery("SELECT p FROM Project p", ProjectDao::class.java)
             .resultList

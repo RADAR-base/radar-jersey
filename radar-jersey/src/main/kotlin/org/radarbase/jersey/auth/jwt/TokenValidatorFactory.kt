@@ -89,7 +89,7 @@ class TokenValidatorFactory(
             throw TokenValidationException("No verification algorithms given")
         }
 
-        logger.info("Verifying JWTs with ${algorithms.size} algorithms")
+        logger.info("Verifying JWTs with ${tokenVerifierLoaders.size} token verifiers")
 
         return TokenValidator(
             verifierLoaders = tokenVerifierLoaders,

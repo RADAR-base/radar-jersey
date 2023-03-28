@@ -9,6 +9,7 @@
 
 package org.radarbase.jersey.auth.filter
 
+import jakarta.annotation.Priority
 import jakarta.inject.Singleton
 import jakarta.ws.rs.Priorities
 import jakarta.ws.rs.container.DynamicFeature
@@ -19,6 +20,7 @@ import org.radarbase.jersey.auth.NeedsPermission
 
 /** Authorization for different auth tags. */
 @Provider
+@Priority(Priorities.AUTHORIZATION)
 @Singleton
 class AuthorizationFeature : DynamicFeature {
     override fun configure(resourceInfo: ResourceInfo, context: FeatureContext) {

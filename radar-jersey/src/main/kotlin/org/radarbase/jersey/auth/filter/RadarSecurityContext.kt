@@ -9,6 +9,7 @@
 
 package org.radarbase.jersey.auth.filter
 
+import jakarta.ws.rs.container.ContainerRequestContext
 import jakarta.ws.rs.core.SecurityContext
 import org.radarbase.auth.authorization.AuthorityReference
 import org.radarbase.auth.token.RadarToken
@@ -59,5 +60,12 @@ class RadarSecurityContext(
 
     override fun getAuthenticationScheme(): String {
         return "JWT"
+    }
+
+    companion object {
+        val ContainerRequestContext.radarSecurityContext: RadarSecurityContext
+            get() = checkNotNull(securityContext as? RadarSecurityContext) {
+                "RequestContext does not have a RadarSecurityContext"
+            }
     }
 }

@@ -20,13 +20,4 @@ pluginManagement {
             }
         }
     }
-
-    plugins {
-        val radarCommonsVersion = "0.16.0-SNAPSHOT"
-        id("org.radarbase.radar-root-project") version radarCommonsVersion
-        id("org.radarbase.radar-dependency-management") version radarCommonsVersion
-        id("org.radarbase.radar-kotlin") version radarCommonsVersion
-        id("org.radarbase.radar-publishing") version radarCommonsVersion
-
-    }
 }

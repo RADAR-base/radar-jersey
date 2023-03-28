@@ -2,12 +2,13 @@ package org.radarbase.jersey.auth
 
 import jakarta.inject.Provider
 import jakarta.ws.rs.core.Context
-import kotlinx.coroutines.runBlocking
 import org.radarbase.auth.authorization.*
+import org.radarbase.auth.token.DataRadarToken.Companion.copy
 import org.radarbase.auth.token.RadarToken
 import org.radarbase.jersey.exception.HttpForbiddenException
 import org.radarbase.jersey.exception.HttpNotFoundException
 import org.radarbase.jersey.exception.HttpUnauthorizedException
+import org.radarbase.jersey.service.AsyncCoroutineService
 import org.radarbase.jersey.service.ProjectService
 import org.slf4j.LoggerFactory
 
@@ -15,27 +16,30 @@ class AuthService(
     @Context private val oracle: AuthorizationOracle,
     @Context private val tokenProvider: Provider<RadarToken>,
     @Context private val projectService: ProjectService,
+    @Context private val asyncService: AsyncCoroutineService,
 ) {
-    val token: RadarToken
-        get() = try {
-            tokenProvider.get()
+    suspend fun requestScopedToken(): RadarToken = asyncService.runInRequestScope {
+        try {
+            tokenProvider.get().copy()
         } catch (ex: Throwable) {
             throw HttpForbiddenException("unauthorized", "User without authentication does not have permission.")
         }
+    }
 
     /**
      * Check whether given [token] would have the [permission] scope in any of its roles. This doesn't
      * check whether [token] has access to a specific entity or global access.
      * @throws HttpForbiddenException if identity does not have scope
      */
-    fun checkScope(permission: Permission, location: String? = null) {
+    fun checkScope(permission: Permission, token: RadarToken, location: String? = null) {
         if (!oracle.hasScope(token, permission)) {
             throw forbiddenException(
                 permission = permission,
+                token = token,
                 location = location,
             )
         }
-        logAuthorized(permission, location)
+        logAuthorized(permission, token, location)
     }
 
     /**
@@ -46,20 +50,22 @@ class AuthService(
      */
     fun checkScopeAndPermission(
         permission: Permission,
+        token: RadarToken,
         location: String? = null,
         builder: EntityDetails.() -> Unit,
     ): EntityDetails {
         if (!oracle.hasScope(token, permission)) {
             throw forbiddenException(
                 permission = permission,
+                token = token,
                 location = location,
             )
         }
         val entity = EntityDetails().apply(builder)
         if (entity.minimumEntityOrNull() == null) {
-            logAuthorized(permission, location)
+            logAuthorized(permission, token, location)
         } else {
-            checkPermissionBlocking(permission, entity, location, permission.entity)
+            checkPermissionBlocking(permission, entity, token, location, permission.entity)
         }
         return entity
     }
@@ -67,7 +73,8 @@ class AuthService(
     suspend fun hasPermission(
         permission: Permission,
         entity: EntityDetails,
-    ) = oracle.hasPermission(token, permission, entity)
+        token: RadarToken? = null,
+    ) = oracle.hasPermission(token ?: requestScopedToken(), permission, entity)
 
     /**
      * Check whether [token] has permission [permission], regarding given [entity].
@@ -78,13 +85,14 @@ class AuthService(
     fun checkPermissionBlocking(
         permission: Permission,
         entity: EntityDetails,
+        token: RadarToken? = null,
         location: String? = null,
         scope: Permission.Entity = permission.entity,
-    ) = runBlocking {
-        checkPermission(permission, entity, location, scope)
+    ) = asyncService.runBlocking {
+        checkPermission(permission, entity, token, location, scope)
     }
 
-    fun activeParticipantProject(): String? = token.roles
+    suspend fun activeParticipantProject(token: RadarToken? = null): String? = (token ?: requestScopedToken()).roles
         .firstOrNull { it.role == RoleAuthority.PARTICIPANT }
         ?.referent
 
@@ -97,13 +105,15 @@ class AuthService(
     suspend fun checkPermission(
         permission: Permission,
         entity: EntityDetails,
+        token: RadarToken? = null,
         location: String? = null,
         scope: Permission.Entity = permission.entity,
     ) {
         entity.resolve()
+        val actualToken = token ?: requestScopedToken()
         if (
             !oracle.hasPermission(
-                token,
+                actualToken,
                 permission,
                 entity,
                 scope,
@@ -111,6 +121,7 @@ class AuthService(
         ) {
             throw forbiddenException(
                 permission = permission,
+                token = actualToken,
                 location = location,
                 entity,
             )
@@ -118,6 +129,7 @@ class AuthService(
 
         logAuthorized(
             permission = permission,
+            token = actualToken,
             location = location,
             entity = entity,
         )
@@ -145,14 +157,22 @@ class AuthService(
         }
     }
 
+    suspend fun forbiddenException(
+        permission: Permission,
+        location: String? = null,
+        entityDetails: EntityDetails? = null,
+    ) = forbiddenException(permission, requestScopedToken(), location, entityDetails)
+
     fun forbiddenException(
         permission: Permission,
+        token: RadarToken,
         location: String? = null,
         entityDetails: EntityDetails? = null,
     ): HttpForbiddenException {
         val message = logPermission(
             false,
             permission,
+            token,
             location,
             entityDetails,
         )
@@ -167,15 +187,23 @@ class AuthService(
         )
     }
 
-    fun logAuthorized(
+    suspend fun logAuthorized(
         permission: Permission,
         location: String? = null,
+        entityDetails: EntityDetails? = null,
+    ) = logAuthorized(permission, requestScopedToken(), location, entityDetails)
+
+    fun logAuthorized(
+        permission: Permission,
+        token: RadarToken,
+        location: String? = null,
         entity: EntityDetails? = null,
-    ) = logPermission(true, permission, location, entity)
+    ) = logPermission(true, permission, token, location, entity)
 
     private fun logPermission(
         isAuthorized: Boolean,
         permission: Permission,
+        token: RadarToken,
         location: String? = null,
         entity: EntityDetails? = null,
     ): String {
@@ -216,13 +244,8 @@ class AuthService(
         return message
     }
 
-    fun referentsByScope(permission: Permission): AuthorityReferenceSet {
-        val token = try {
-            tokenProvider.get()
-        } catch (ex: Throwable) {
-            return AuthorityReferenceSet()
-        }
-        return oracle.referentsByScope(token, permission)
+    suspend fun referentsByScope(permission: Permission): AuthorityReferenceSet {
+        return oracle.referentsByScope(requestScopedToken(), permission)
     }
 
     fun mayBeGranted(role: RoleAuthority, permission: Permission): Boolean = with(oracle) {
