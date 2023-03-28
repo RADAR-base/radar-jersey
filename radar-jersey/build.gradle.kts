@@ -36,8 +36,6 @@ dependencies {
     // exception template rendering
     implementation("com.github.spullara.mustache.java:compiler:${Versions.mustache}")
 
-    implementation("org.slf4j:slf4j-api:${Versions.slf4j}")
-
     implementation("io.swagger.core.v3:swagger-jaxrs2-jakarta:${Versions.swagger}") {
         exclude(group = "com.fasterxml.jackson.jaxrs", module = "jackson-jaxrs-json-provider")
     }
@@ -52,7 +50,6 @@ dependencies {
     testRuntimeOnly("org.glassfish.grizzly:grizzly-http-server:${Versions.grizzly}")
     testRuntimeOnly("org.glassfish.jersey.containers:jersey-container-grizzly2-servlet:${Versions.jersey}")
 
-    testImplementation("org.junit.jupiter:junit-jupiter:${Versions.junit}")
     testImplementation("org.hamcrest:hamcrest:${Versions.hamcrest}")
 
     testImplementation("org.mockito.kotlin:mockito-kotlin:${Versions.mockitoKotlin}")

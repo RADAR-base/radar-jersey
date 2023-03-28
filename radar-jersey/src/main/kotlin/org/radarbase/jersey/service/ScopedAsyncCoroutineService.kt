@@ -12,7 +12,6 @@ import org.radarbase.jersey.coroutines.CoroutineRequestContext
 import org.radarbase.jersey.coroutines.CoroutineResponseWrapper
 import org.radarbase.kotlin.coroutines.consumeFirst
 import kotlin.time.Duration
-import kotlin.time.Duration.Companion.seconds
 
 class ScopedAsyncCoroutineService(
     @Context private val requestScope: Provider<RequestScope>,

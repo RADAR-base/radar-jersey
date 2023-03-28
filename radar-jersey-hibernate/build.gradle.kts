@@ -19,8 +19,6 @@ dependencies {
 
     runtimeOnly("org.glassfish:jakarta.el:${Versions.glassfishJakartaEl}")
 
-    implementation("org.slf4j:slf4j-api:${Versions.slf4j}")
-
     implementation("org.liquibase:liquibase-core:${Versions.liquibase}")
 
     runtimeOnly("org.postgresql:postgresql:${Versions.postgres}")

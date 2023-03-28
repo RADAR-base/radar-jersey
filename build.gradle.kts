@@ -18,8 +18,11 @@ subprojects {
     apply(plugin = "org.radarbase.radar-publishing")
 
     radarKotlin {
+        javaVersion.set(Versions.java)
+        kotlinVersion.set(Versions.kotlin)
         log4j2Version.set(Versions.log4j2)
         slf4jVersion.set(Versions.slf4j)
+        junitVersion.set(Versions.junit)
     }
 
     radarPublishing {

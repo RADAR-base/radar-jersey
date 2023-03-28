@@ -3,7 +3,6 @@ package org.radarbase.jersey.hibernate
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.suspendCancellableCoroutine
-import kotlinx.coroutines.withContext
 import okhttp3.*
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.RequestBody.Companion.toRequestBody
@@ -100,54 +99,44 @@ internal class HibernateTest {
             )
             .build()
 
-        val size = 2000
+        val size = 20
 
-        var startTime = System.nanoTime()
-
-        client.makeCalls(size) {
-            url("http://localhost:9091/projects/empty")
+        time("blocking 1") {
+            client.makeCalls(size) {
+                url("http://localhost:9091/projects/empty")
+            }
         }
 
-        var newTime = System.nanoTime()
-        var diff = (newTime - startTime).nanoseconds
-        println("first: $diff")
-        startTime = newTime
-
-        client.makeCalls(size) {
-            url("http://localhost:9091/projects/empty-suspend")
+        time("async 1") {
+            client.makeCalls(size) {
+                url("http://localhost:9091/projects/empty-suspend")
+            }
         }
 
-        newTime = System.nanoTime()
-        diff = (newTime - startTime).nanoseconds
-        println("first: $diff")
-        startTime = newTime
-
-        client.makeCalls(size) {
-            url("http://localhost:9091/projects/empty-blocking")
+        time("blocking coroutine") {
+            client.makeCalls(size) {
+                url("http://localhost:9091/projects/empty-blocking")
+            }
         }
 
-        newTime = System.nanoTime()
-        diff = (newTime - startTime).nanoseconds
-        println("first: $diff")
-
-        startTime = newTime
-
-        client.makeCalls(size) {
-            url("http://localhost:9091/projects/empty")
+        time("blocking 2") {
+            client.makeCalls(size) {
+                url("http://localhost:9091/projects/empty")
+            }
         }
 
-        newTime = System.nanoTime()
-        diff = (newTime - startTime).nanoseconds
-        println("first: $diff")
-        startTime = newTime
-
-        client.makeCalls(size) {
-            url("http://localhost:9091/projects/empty-suspend")
+        time("async 2") {
+            client.makeCalls(size) {
+                url("http://localhost:9091/projects/empty-suspend")
+            }
         }
+    }
 
-        newTime = System.nanoTime()
-        diff = (newTime - startTime).nanoseconds
-        println("first: $diff")
+    suspend fun time(label: String, block: suspend () -> Unit) {
+        val startTime = System.nanoTime()
+        block()
+        val diff = (System.nanoTime() - startTime).nanoseconds
+        println("$label: $diff")
     }
 
     @Test
@@ -266,7 +255,6 @@ internal suspend fun OkHttpClient.makeCalls(size: Int, requestBuilder: Request.B
             }
         }
 }
-
 
 internal inline fun OkHttpClient.call(builder: Request.Builder.() -> Unit): Response = newCall(
     Request.Builder().run {
