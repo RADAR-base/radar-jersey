@@ -18,7 +18,7 @@ class CoroutineResponseWrapper(
     val coroutineContext: CoroutineContext
 
     private val requestContext = try {
-        requestScope?.createContext()
+        requestScope?.suspendCurrent()
     } catch (ex: Throwable) {
         logger.debug("Cannot create request scope: {}", ex.toString())
         null

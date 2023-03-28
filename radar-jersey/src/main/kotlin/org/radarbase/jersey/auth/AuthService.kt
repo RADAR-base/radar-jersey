@@ -231,11 +231,11 @@ class AuthService(
                     append(' ')
 
                     buildList(6) {
-                        entity.organization?.let { add("organization: $it") }
-                        entity.project?.let { add("project: $it") }
-                        entity.subject?.let { add("subject: $it") }
-                        entity.source?.let { add("source: $it") }
-                        entity.user?.let { add("user: $it") }
+                        entity.organization?.let { add("org: $it") }
+                        entity.project?.let { add("proj: $it") }
+                        entity.subject?.let { add("subj: $it") }
+                        entity.source?.let { add("src: $it") }
+                        entity.user?.let { add("@$it") }
                     }.joinTo(this, separator = ", ", prefix = "{", postfix = "}")
                 }
             }

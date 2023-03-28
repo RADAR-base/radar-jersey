@@ -28,7 +28,6 @@ import org.radarbase.jersey.service.ScopedAsyncCoroutineService
  * added to the Binder first.
  *
  * @param includeMapper is set, this also instantiates [MapperResourceEnhancer].
- * @param includeHttpClient is set, this also includes [OkHttpResourceEnhancer].
  */
 class RadarJerseyResourceEnhancer(
     private val config: AuthConfig,
@@ -61,8 +60,6 @@ class RadarJerseyResourceEnhancer(
 
         // Bind factories.
         bindFactory(RadarTokenFactory::class.java)
-            .proxy(false)
-            .proxyForSameScope(false)
             .to(RadarToken::class.java)
             .`in`(RequestScoped::class.java)
 
