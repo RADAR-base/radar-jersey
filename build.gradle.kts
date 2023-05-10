@@ -10,7 +10,8 @@ plugins {
 }
 
 radarRootProject {
-    projectVersion.set("0.11.0-SNAPSHOT")
+    projectVersion.set(Versions.project)
+    gradleVersion.set(Versions.wrapper)
 }
 
 subprojects {

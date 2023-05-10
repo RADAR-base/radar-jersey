@@ -25,10 +25,7 @@ class CoroutineResponseWrapper(
     }
 
     init {
-        var context = job +
-            CoroutineName("Request coroutine ${location ?: ""}#${Thread.currentThread().id}") +
-            Dispatchers.Default
-
+        var context = job + contextName(location) + Dispatchers.Default
         if (requestContext != null) {
             context += CoroutineRequestContext(requestContext)
         }
@@ -54,5 +51,10 @@ class CoroutineResponseWrapper(
 
     companion object {
         private val logger = LoggerFactory.getLogger(CoroutineResponseWrapper::class.java)
+
+        @Suppress("DEPRECATION", "KotlinRedundantDiagnosticSuppress")
+        private fun contextName(location: String?) = CoroutineName(
+            "Request coroutine ${location ?: ""}#${Thread.currentThread().id}",
+        )
     }
 }
