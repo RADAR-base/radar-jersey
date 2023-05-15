@@ -17,7 +17,7 @@ jobs:
       - uses: actions/setup-java@v3
         with:
           distribution: temurin
-          java-version: 11
+          java-version: 17
 
       - name: Setup Gradle
         uses: gradle/gradle-build-action@v2
@@ -28,7 +28,7 @@ jobs:
 
       # Upload it to GitHub
       - name: Upload to GitHub
-        uses: AButler/upload-release-assets@v2.0
+        uses: AButler/upload-release-assets@v2.0.2
         with:
           files: 'radar-jersey/build/libs/*;radar-jersey-hibernate/build/libs/*'
           repo-token: ${{ secrets.GITHUB_TOKEN }}
