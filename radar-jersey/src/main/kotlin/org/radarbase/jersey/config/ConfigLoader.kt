@@ -11,7 +11,6 @@ import org.radarbase.jersey.enhancer.JerseyResourceEnhancer
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.io.IOException
-import java.nio.file.OpenOption
 import kotlin.io.path.Path
 import kotlin.io.path.exists
 import kotlin.io.path.inputStream
@@ -72,7 +71,7 @@ object ConfigLoader {
                         enable(KotlinFeature.NullIsSameAsDefault)
                         enable(KotlinFeature.SingletonSupport)
                         enable(KotlinFeature.StrictNullChecks)
-                    }
+                    },
                 )
             }
 
