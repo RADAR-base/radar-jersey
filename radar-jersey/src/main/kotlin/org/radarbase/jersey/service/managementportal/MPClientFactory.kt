@@ -7,7 +7,7 @@ import org.radarbase.ktor.auth.clientCredentials
 import org.radarbase.management.client.MPClient
 import org.radarbase.management.client.mpClient
 import org.slf4j.LoggerFactory
-import java.net.URL
+import java.net.URI
 import java.util.function.Supplier
 
 class MPClientFactory(
@@ -27,7 +27,7 @@ class MPClientFactory(
 
             clientCredentials(
                 authConfig = authConfig,
-                targetHost = URL(url).host,
+                targetHost = URI.create(url).host,
             )
         }
     }
