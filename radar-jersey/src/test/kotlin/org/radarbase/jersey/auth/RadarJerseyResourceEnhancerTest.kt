@@ -34,8 +34,9 @@ internal class RadarJerseyResourceEnhancerTest {
     @BeforeEach
     fun setUp() {
         val authConfig = AuthConfig(
-                managementPortal = MPConfig(url = "http://localhost:8080"),
-                jwtResourceName = "res_ManagementPortal")
+            managementPortal = MPConfig(url = "http://localhost:8080"),
+            jwtResourceName = "res_ManagementPortal",
+        )
 
         val resources = ConfigLoader.loadResources(MockResourceEnhancerFactory::class.java, authConfig)
 
@@ -54,7 +55,7 @@ internal class RadarJerseyResourceEnhancerTest {
     @Test
     fun helperTest() {
         assertThat(oauthHelper, not(nullValue()))
-        val token = oauthHelper.tokenValidator.validateAccessToken(oauthHelper.validEcToken)
+        val token = oauthHelper.tokenValidator.validateBlocking(oauthHelper.validEcToken)
         assertThat(token, not(nullValue()))
     }
 
@@ -79,16 +80,17 @@ internal class RadarJerseyResourceEnhancerTest {
             callback = { response ->
                 assertThat(response.isSuccessful, `is`(true))
                 assertThat(response.body?.string(), equalTo("""{"accessToken":"${oauthHelper.validEcToken}"}"""))
-            }
+            },
         )
     }
 
     @Test
     fun testAuthenticatedGetDetailed() {
-        client.newCall(Request.Builder()
-            .url("http://localhost:9091/user/detailed")
-            .bearerHeader(oauthHelper)
-            .build()
+        client.newCall(
+            Request.Builder()
+                .url("http://localhost:9091/user/detailed")
+                .bearerHeader(oauthHelper)
+                .build(),
         ).execute().use { response ->
             assertThat(response.isSuccessful, `is`(true))
             assertThat(response.body?.string(), equalTo("""{"accessToken":"${oauthHelper.validEcToken}","name":"name","createdAt":"1970-01-01T01:00:00Z"}"""))
@@ -97,11 +99,12 @@ internal class RadarJerseyResourceEnhancerTest {
 
     @Test
     fun testAuthenticatedPostDetailed() {
-        client.newCall(Request.Builder()
-            .url("http://localhost:9091/user")
-            .bearerHeader(oauthHelper)
-            .post("""{"accessToken":"${oauthHelper.validEcToken}","name":"name","createdAt":"1970-01-01T01:00:00Z"}""".toRequestBody("application/json".toMediaType()))
-            .build()
+        client.newCall(
+            Request.Builder()
+                .url("http://localhost:9091/user")
+                .bearerHeader(oauthHelper)
+                .post("""{"accessToken":"${oauthHelper.validEcToken}","name":"name","createdAt":"1970-01-01T01:00:00Z"}""".toRequestBody("application/json".toMediaType()))
+                .build(),
         ).execute().use { response ->
             assertThat(response.isSuccessful, `is`(true))
             assertThat(response.body?.string(), equalTo("""{"accessToken":"${oauthHelper.validEcToken}","name":"name","createdAt":"1970-01-01T01:00:00Z"}"""))
@@ -110,23 +113,24 @@ internal class RadarJerseyResourceEnhancerTest {
 
     @Test
     fun testAuthenticatedPostDetailedBadRequest() {
-        client.newCall(Request.Builder()
-            .url("http://localhost:9091/user")
-            .bearerHeader(oauthHelper)
-            .post("""{}""".toRequestBody("application/json".toMediaType()))
-            .build()
+        client.newCall(
+            Request.Builder()
+                .url("http://localhost:9091/user")
+                .bearerHeader(oauthHelper)
+                .post("""{}""".toRequestBody("application/json".toMediaType()))
+                .build(),
         ).execute().use { response ->
             assertThat(response.code, `is`(400))
         }
     }
 
-
     @Test
     fun testUnauthenticatedGet() {
-        client.newCall(Request.Builder()
-            .url("http://localhost:9091/user")
-            .header("Accept", "application/json")
-            .build()
+        client.newCall(
+            Request.Builder()
+                .url("http://localhost:9091/user")
+                .header("Accept", "application/json")
+                .build(),
         ).execute().use { response ->
             assertThat(response.isSuccessful, `is`(false))
             assertThat(response.code, `is`(401))
@@ -136,10 +140,11 @@ internal class RadarJerseyResourceEnhancerTest {
 
     @Test
     fun testUnauthenticatedGetNoAcceptHeader() {
-        client.newCall(Request.Builder()
-            .url("http://localhost:9091/user")
-            .header("Accept", "*/*")
-            .build()
+        client.newCall(
+            Request.Builder()
+                .url("http://localhost:9091/user")
+                .header("Accept", "*/*")
+                .build(),
         ).execute().use { response ->
             assertThat(response.isSuccessful, `is`(false))
             assertThat(response.code, `is`(401))
@@ -149,11 +154,12 @@ internal class RadarJerseyResourceEnhancerTest {
 
     @Test
     fun testBadAuthenticationGet() {
-        client.newCall(Request.Builder()
-            .url("http://localhost:9091/user")
-            .header("Accept", "application/json")
-            .header("Authorization", "Bearer abcdef")
-            .build()
+        client.newCall(
+            Request.Builder()
+                .url("http://localhost:9091/user")
+                .header("Accept", "application/json")
+                .header("Authorization", "Bearer abcdef")
+                .build(),
         ).execute().use { response ->
             assertThat(response.isSuccessful, `is`(false))
             assertThat(response.code, `is`(401))
@@ -163,10 +169,11 @@ internal class RadarJerseyResourceEnhancerTest {
 
     @Test
     fun testExistingGet() {
-        client.newCall(Request.Builder()
-            .url("http://localhost:9091/projects/a/users/b")
-            .bearerHeader(oauthHelper)
-            .build()
+        client.newCall(
+            Request.Builder()
+                .url("http://localhost:9091/projects/a/users/b")
+                .bearerHeader(oauthHelper)
+                .build(),
         ).execute().use { response ->
 
             assertThat(response.isSuccessful, `is`(true))
@@ -176,11 +183,12 @@ internal class RadarJerseyResourceEnhancerTest {
 
     @Test
     fun testNonExistingGet() {
-        client.newCall(Request.Builder()
-            .url("http://localhost:9091/projects/c/users/b")
-            .bearerHeader(oauthHelper)
-            .header("Accept", "application/json")
-            .build()
+        client.newCall(
+            Request.Builder()
+                .url("http://localhost:9091/projects/c/users/b")
+                .bearerHeader(oauthHelper)
+                .header("Accept", "application/json")
+                .build(),
         ).execute().use { response ->
             assertThat(response.body?.string(), equalTo("{\"error\":\"project_not_found\",\"error_description\":\"Project c not found.\"}"))
             assertThat(response.isSuccessful, `is`(false))
@@ -190,11 +198,12 @@ internal class RadarJerseyResourceEnhancerTest {
 
     @Test
     fun testNonExistingGetHtml() {
-        client.newCall(Request.Builder()
-            .url("http://localhost:9091/projects/c/users/b")
-            .bearerHeader(oauthHelper)
-            .header("Accept", "text/html,application/json")
-            .build()
+        client.newCall(
+            Request.Builder()
+                .url("http://localhost:9091/projects/c/users/b")
+                .bearerHeader(oauthHelper)
+                .header("Accept", "text/html,application/json")
+                .build(),
         ).execute().use { response ->
 
             assertThat(response.isSuccessful, `is`(false))
@@ -206,14 +215,14 @@ internal class RadarJerseyResourceEnhancerTest {
         }
     }
 
-
     @Test
     fun testNonExistingGetBrowser() {
-        client.newCall(Request.Builder()
-            .url("http://localhost:9091/projects/c/users/b")
-            .bearerHeader(oauthHelper)
-            .header("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8")
-            .build()
+        client.newCall(
+            Request.Builder()
+                .url("http://localhost:9091/projects/c/users/b")
+                .bearerHeader(oauthHelper)
+                .header("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8")
+                .build(),
         ).execute().use { response ->
 
             assertThat(response.isSuccessful, `is`(false))
@@ -231,7 +240,7 @@ internal class RadarJerseyResourceEnhancerTest {
             Request.Builder().apply {
                 url("http://localhost:9091/exception")
                 header("Accept", "application/json")
-            }.build()
+            }.build(),
         ).execute().use { response ->
             assertThat(response.code, `is`(500))
             val body = response.body?.string()
@@ -245,7 +254,7 @@ internal class RadarJerseyResourceEnhancerTest {
             Request.Builder().apply {
                 url("http://localhost:9091/badrequest")
                 header("Accept", "application/json")
-            }.build()
+            }.build(),
         ).execute().use { response ->
             assertThat(response.code, `is`(400))
             val body = response.body?.string()
@@ -259,7 +268,7 @@ internal class RadarJerseyResourceEnhancerTest {
             Request.Builder().apply {
                 url("http://localhost:9091/jerseybadrequest")
                 header("Accept", "application/json")
-            }.build()
+            }.build(),
         ).execute().use { response ->
             assertThat(response.code, `is`(400))
             val body = response.body?.string()

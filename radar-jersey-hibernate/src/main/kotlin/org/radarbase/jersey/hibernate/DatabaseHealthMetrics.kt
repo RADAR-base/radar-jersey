@@ -3,36 +3,43 @@ package org.radarbase.jersey.hibernate
 import jakarta.inject.Provider
 import jakarta.persistence.EntityManager
 import jakarta.ws.rs.core.Context
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import org.radarbase.jersey.hibernate.DatabaseInitialization.Companion.useConnection
 import org.radarbase.jersey.hibernate.config.DatabaseConfig
+import org.radarbase.jersey.service.AsyncCoroutineService
 import org.radarbase.jersey.service.HealthService
 import org.radarbase.jersey.service.HealthService.Metric
-import org.radarbase.jersey.util.CacheConfig
-import org.radarbase.jersey.util.CachedValue
-import java.time.Duration
+import org.radarbase.kotlin.coroutines.CacheConfig
+import org.radarbase.kotlin.coroutines.CachedValue
+import kotlin.time.Duration.Companion.seconds
 
 class DatabaseHealthMetrics(
-        @Context private val entityManager: Provider<EntityManager>,
-        @Context dbConfig: DatabaseConfig
-): Metric(name = "db") {
+    @Context private val entityManager: Provider<EntityManager>,
+    @Context dbConfig: DatabaseConfig,
+    @Context private val asyncService: AsyncCoroutineService,
+) : Metric(name = "db") {
     private val cachedStatus = CachedValue(
         CacheConfig(
-            refreshDuration = Duration.ofSeconds(dbConfig.healthCheckValiditySeconds),
-            retryDuration = Duration.ofSeconds(dbConfig.healthCheckValiditySeconds),
+            refreshDuration = dbConfig.healthCheckValiditySeconds.seconds,
+            retryDuration = dbConfig.healthCheckValiditySeconds.seconds,
         ),
         ::testConnection,
     )
 
-    override val status: HealthService.Status
-        get() = cachedStatus.get { it == HealthService.Status.UP }
+    override suspend fun computeStatus(): HealthService.Status =
+        cachedStatus.get { it == HealthService.Status.UP }.value
 
-    override val metrics: Any
-        get() = mapOf("status" to status)
+    override suspend fun computeMetrics(): Map<String, Any> = mapOf("status" to computeStatus())
 
-    private fun testConnection(): HealthService.Status = try {
-        entityManager.get().useConnection { connection -> connection.close() }
-        HealthService.Status.UP
-    } catch (ex: Throwable) {
-        HealthService.Status.DOWN
+    private suspend fun testConnection(): HealthService.Status = withContext(Dispatchers.IO) {
+        try {
+            asyncService.runInRequestScope {
+                entityManager.get().useConnection { it.close() }
+            }
+            HealthService.Status.UP
+        } catch (ex: Throwable) {
+            HealthService.Status.DOWN
+        }
     }
 }

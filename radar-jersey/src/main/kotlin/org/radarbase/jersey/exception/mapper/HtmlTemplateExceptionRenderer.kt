@@ -20,7 +20,7 @@ import java.io.OutputStreamWriter
 /**
  * Render an exception using a Mustache HTML document.
  */
-class HtmlTemplateExceptionRenderer: ExceptionRenderer {
+class HtmlTemplateExceptionRenderer : ExceptionRenderer {
     private val errorTemplates: Map<Int, Mustache>
 
     private val template4xx: Mustache
@@ -31,24 +31,24 @@ class HtmlTemplateExceptionRenderer: ExceptionRenderer {
 
         val loadTemplate = { code: String ->
             javaClass.getResourceAsStream("$code.html")
-                    ?.use { stream ->
-                        try {
-                            stream.bufferedReader().use {
-                                mf.compile(it, "$code.html")
-                            }
-                        } catch (ex: IOException) {
-                            logger.error("Failed to read error template $code.html: {}", ex.toString())
-                            null
+                ?.use { stream ->
+                    try {
+                        stream.bufferedReader().use {
+                            mf.compile(it, "$code.html")
                         }
+                    } catch (ex: IOException) {
+                        logger.error("Failed to read error template $code.html: {}", ex.toString())
+                        null
                     }
+                }
         }
 
         errorTemplates = (400..599)
-                .mapNotNull { code ->
-                    loadTemplate(code.toString())
-                            ?.let { code to it }
-                }
-                .toMap()
+            .mapNotNull { code ->
+                loadTemplate(code.toString())
+                    ?.let { code to it }
+            }
+            .toMap()
 
         template4xx = checkNotNull(loadTemplate("4xx")) { "Missing 4xx.html template" }
         template5xx = checkNotNull(loadTemplate("5xx")) { "Missing 5xx.html template" }

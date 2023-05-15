@@ -15,27 +15,27 @@ import org.radarbase.jersey.service.ProjectService
 class MockProjectService(
     private val projects: Map<String, List<String>>,
 ) : ProjectService {
-    override fun ensureOrganization(organizationId: String) {
+    override suspend fun ensureOrganization(organizationId: String) {
         if (organizationId !in projects) {
             throw HttpNotFoundException("organization_not_found", "Project $organizationId not found.")
         }
     }
 
-    override fun listProjects(organizationId: String): List<String> = projects[organizationId]
+    override suspend fun listProjects(organizationId: String): List<String> = projects[organizationId]
         ?: throw HttpNotFoundException("organization_not_found", "Project $organizationId not found.")
 
-    override fun projectOrganization(projectId: String): String = projects.entries
+    override suspend fun projectOrganization(projectId: String): String = projects.entries
         .firstOrNull { (_, ps) -> projectId in ps }
         ?.key
         ?: throw HttpNotFoundException("project_not_found", "Project $projectId not found.")
 
-    override fun ensureProject(projectId: String) {
+    override suspend fun ensureProject(projectId: String) {
         if (projects.values.none { projectId in it }) {
             throw HttpNotFoundException("project_not_found", "Project $projectId not found.")
         }
     }
 
-    override fun ensureSubject(projectId: String, userId: String) {
+    override suspend fun ensureSubject(projectId: String, userId: String) {
         ensureProject(projectId)
     }
 }

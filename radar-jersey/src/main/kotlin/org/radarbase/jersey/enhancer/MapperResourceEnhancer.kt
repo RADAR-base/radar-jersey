@@ -27,7 +27,7 @@ import org.glassfish.jersey.server.ResourceConfig
  *
  * Do not use this class if [RadarJerseyResourceEnhancer] is already being used.
  */
-class MapperResourceEnhancer: JerseyResourceEnhancer {
+class MapperResourceEnhancer : JerseyResourceEnhancer {
     var mapper: ObjectMapper? = null
 
     private val latestMapper: ObjectMapper
@@ -47,11 +47,13 @@ class MapperResourceEnhancer: JerseyResourceEnhancer {
             disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
             disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
             serializationInclusion(JsonInclude.Include.NON_NULL)
-            addModule(kotlinModule {
-                enable(KotlinFeature.NullToEmptyMap)
-                enable(KotlinFeature.NullToEmptyCollection)
-                enable(KotlinFeature.NullIsSameAsDefault)
-            })
+            addModule(
+                kotlinModule {
+                    enable(KotlinFeature.NullToEmptyMap)
+                    enable(KotlinFeature.NullToEmptyCollection)
+                    enable(KotlinFeature.NullIsSameAsDefault)
+                },
+            )
             addModule(JavaTimeModule())
             addModule(Jdk8Module())
         }

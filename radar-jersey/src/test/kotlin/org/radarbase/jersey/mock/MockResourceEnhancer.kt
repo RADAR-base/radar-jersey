@@ -10,10 +10,12 @@ import org.radarbase.jersey.service.ProjectService
 
 class MockResourceEnhancer : JerseyResourceEnhancer {
     override val classes: Array<Class<*>> = arrayOf(
-            Filters.logResponse)
+        Filters.logResponse,
+    )
 
     override val packages: Array<String> = arrayOf(
-            "org.radarbase.jersey.mock.resource")
+        "org.radarbase.jersey.mock.resource",
+    )
 
     override fun AbstractBinder.enhance() {
         bind(MockProjectService(mapOf("main" to listOf("a", "b"))))

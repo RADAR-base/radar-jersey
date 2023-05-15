@@ -4,16 +4,20 @@ include("radar-jersey")
 include("radar-jersey-hibernate")
 
 pluginManagement {
-    val kotlinVersion: String by settings
-    val dokkaVersion: String by settings
-
     repositories {
         gradlePluginPortal()
         mavenCentral()
-    }
-
-    plugins {
-        kotlin("jvm") version kotlinVersion
-        id("org.jetbrains.dokka") version dokkaVersion
+        maven(url = "https://maven.pkg.github.com/radar-base/radar-commons") {
+            credentials {
+                username = System.getenv("GITHUB_ACTOR")
+                    ?: extra.properties["gpr.user"] as? String
+                    ?: extra.properties["public.gpr.user"] as? String
+                password = System.getenv("GITHUB_TOKEN")
+                    ?: extra.properties["gpr.token"] as? String
+                    ?: (extra.properties["public.gpr.token"] as? String)?.let {
+                        java.util.Base64.getDecoder().decode(it).decodeToString()
+                    }
+            }
+        }
     }
 }

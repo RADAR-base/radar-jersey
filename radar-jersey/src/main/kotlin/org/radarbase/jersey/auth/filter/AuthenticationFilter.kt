@@ -35,11 +35,11 @@ class AuthenticationFilter(
 
     override fun filter(requestContext: ContainerRequestContext) {
         val rawToken = validator.getToken(requestContext)
-                ?: throw HttpUnauthorizedException(
-                    code = "token_missing",
-                    detailedMessage = "No bearer token is provided in the request.",
-                    wwwAuthenticateHeader = wwwAuthenticateHeader(),
-                )
+            ?: throw HttpUnauthorizedException(
+                code = "token_missing",
+                detailedMessage = "No bearer token is provided in the request.",
+                wwwAuthenticateHeader = wwwAuthenticateHeader(),
+            )
 
         val radarToken = try {
             validator.verify(rawToken, requestContext)
@@ -59,7 +59,6 @@ class AuthenticationFilter(
     }
 
     companion object {
-        const val BEARER_REALM: String = "Bearer realm=\"RADAR-base\""
         const val BEARER = "Bearer "
     }
 }

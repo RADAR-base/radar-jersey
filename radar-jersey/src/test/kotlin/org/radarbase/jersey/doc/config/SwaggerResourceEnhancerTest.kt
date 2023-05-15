@@ -21,7 +21,8 @@ class SwaggerResourceEnhancerTest {
     @BeforeEach
     fun setUp() {
         val authConfig = AuthConfig(
-            jwtResourceName = "res_jerseyTest")
+            jwtResourceName = "res_jerseyTest",
+        )
 
         val resources = ConfigLoader.loadResources(MockSwaggerResourceEnhancerFactory::class.java, authConfig)
 
@@ -35,7 +36,6 @@ class SwaggerResourceEnhancerTest {
     fun tearDown() {
         server.shutdown()
     }
-
 
     @Test
     fun retrieveOpenApiJson() {

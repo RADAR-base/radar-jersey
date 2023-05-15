@@ -4,11 +4,11 @@ import jakarta.persistence.EntityManager
 import jakarta.persistence.EntityManagerFactory
 import jakarta.ws.rs.core.Context
 import jakarta.ws.rs.ext.Provider
-import liquibase.Contexts
-import liquibase.Liquibase
+import liquibase.command.CommandScope
+import liquibase.command.core.UpdateCommandStep
+import liquibase.command.core.helpers.DbUrlConnectionCommandStep.DATABASE_ARG
 import liquibase.database.DatabaseFactory
 import liquibase.database.jvm.JdbcConnection
-import liquibase.resource.ClassLoaderResourceAccessor
 import org.glassfish.jersey.server.monitoring.ApplicationEvent
 import org.glassfish.jersey.server.monitoring.ApplicationEventListener
 import org.glassfish.jersey.server.monitoring.RequestEvent
@@ -46,11 +46,14 @@ class DatabaseInitialization(
         val database = DatabaseFactory.getInstance()
             .findCorrectDatabaseImplementation(JdbcConnection(connection))
 
-        Liquibase(
-            dbConfig.liquibase.changelogs,
-            ClassLoaderResourceAccessor(),
-            database,
-        ).use { it.update(Contexts(dbConfig.liquibase.contexts)) }
+        CommandScope(UpdateCommandStep.COMMAND_NAME[0]).run {
+            addArgumentValue(UpdateCommandStep.CHANGELOG_FILE_ARG, dbConfig.liquibase.changelogs)
+            dbConfig.liquibase.contexts.forEach { context ->
+                addArgumentValue(UpdateCommandStep.CONTEXTS_ARG, context)
+            }
+            addArgumentValue(DATABASE_ARG, database)
+            execute()
+        }
     }
 
     override fun onRequest(requestEvent: RequestEvent?): RequestEventListener? = null

@@ -1,15 +1,17 @@
 package org.radarbase.jersey.service
 
 interface HealthService {
-    val status: Status
-    val metrics: Map<String, Any>
-
     fun add(metric: Metric)
     fun remove(metric: Metric)
 
-    abstract class Metric(val name: String) {
-        abstract val metrics: Any
-        open val status: Status? = null
+    suspend fun computeStatus(): Status
+    suspend fun computeMetrics(): Map<String, Any>
+
+    abstract class Metric(
+        val name: String,
+    ) {
+        abstract suspend fun computeStatus(): Status?
+        abstract suspend fun computeMetrics(): Map<String, Any>
 
         override fun equals(other: Any?): Boolean {
             if (other === this) return true

@@ -28,12 +28,11 @@ class HttpApplicationExceptionMapper(
 ) : ExceptionMapper<HttpApplicationException> {
     override fun toResponse(exception: HttpApplicationException): Response {
         logger.error(
-            "[{}] {} {} - {}: {}",
+            "[{}] {} {} - {}",
             exception.status,
             requestContext.method,
             uriInfo.path,
-            exception.code,
-            exception.detailedMessage
+            exception.codeMessage,
         )
 
         return renderers.render(exception).build()

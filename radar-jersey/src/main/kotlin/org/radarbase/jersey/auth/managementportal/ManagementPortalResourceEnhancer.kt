@@ -12,8 +12,11 @@ package org.radarbase.jersey.auth.managementportal
 import jakarta.inject.Singleton
 import org.glassfish.jersey.internal.inject.AbstractBinder
 import org.radarbase.auth.authentication.TokenValidator
+import org.radarbase.auth.authorization.AuthorizationOracle
 import org.radarbase.jersey.auth.AuthConfig
 import org.radarbase.jersey.auth.AuthValidator
+import org.radarbase.jersey.auth.jwt.AuthorizationOracleFactory
+import org.radarbase.jersey.auth.jwt.TokenValidatorFactory
 import org.radarbase.jersey.enhancer.JerseyResourceEnhancer
 import org.radarbase.jersey.service.ProjectService
 import org.radarbase.jersey.service.managementportal.MPClientFactory
@@ -35,6 +38,10 @@ class ManagementPortalResourceEnhancer(private val config: AuthConfig) : JerseyR
 
         bind(ManagementPortalTokenValidator::class.java)
             .to(AuthValidator::class.java)
+            .`in`(Singleton::class.java)
+
+        bindFactory(AuthorizationOracleFactory::class.java)
+            .to(AuthorizationOracle::class.java)
             .`in`(Singleton::class.java)
 
         if (config.managementPortal.clientId != null) {

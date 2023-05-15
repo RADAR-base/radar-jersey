@@ -11,5 +11,5 @@ package org.radarbase.jersey.exception
 
 import jakarta.ws.rs.core.Response.Status
 
-class HttpGatewayTimeoutException(message: String)
-    : HttpApplicationException(Status.GATEWAY_TIMEOUT, "gateway_timeout", message)
+class HttpGatewayTimeoutException(message: String) :
+    HttpApplicationException(Status.GATEWAY_TIMEOUT, "gateway_timeout", message)

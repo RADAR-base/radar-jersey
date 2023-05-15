@@ -11,6 +11,8 @@ package org.radarbase.jersey.auth.jwt
 
 import jakarta.inject.Singleton
 import org.glassfish.jersey.internal.inject.AbstractBinder
+import org.radarbase.auth.authentication.TokenValidator
+import org.radarbase.auth.authorization.AuthorizationOracle
 import org.radarbase.jersey.auth.AuthValidator
 import org.radarbase.jersey.enhancer.JerseyResourceEnhancer
 
@@ -23,8 +25,16 @@ import org.radarbase.jersey.enhancer.JerseyResourceEnhancer
  */
 class EcdsaResourceEnhancer : JerseyResourceEnhancer {
     override fun AbstractBinder.enhance() {
+        bindFactory(TokenValidatorFactory::class.java)
+            .to(TokenValidator::class.java)
+            .`in`(Singleton::class.java)
+
         bind(EcdsaJwtTokenValidator::class.java)
             .to(AuthValidator::class.java)
+            .`in`(Singleton::class.java)
+
+        bindFactory(AuthorizationOracleFactory::class.java)
+            .to(AuthorizationOracle::class.java)
             .`in`(Singleton::class.java)
     }
 }

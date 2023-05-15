@@ -25,13 +25,13 @@ class HttpUnauthorizedException(
             add("WWW-Authenticate" to wwwAuthenticateHeader)
         }
         addAll(additionalHeaders)
-    }
+    },
 ) {
     companion object {
         fun wwwAuthenticateHeader(
             error: String? = null,
             errorDescription: String? = null,
-            scope: String? = null
+            scope: String? = null,
         ): String {
             return if (error == null && errorDescription == null && scope == null) {
                 "Bearer realm=\"RADAR-base\""

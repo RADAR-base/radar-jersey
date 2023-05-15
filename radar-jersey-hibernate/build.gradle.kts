@@ -5,43 +5,29 @@ plugins {
 description = "Library for Jersey with Hibernate with the RADAR platform"
 
 dependencies {
-    val kotlinVersion: String by project
-    implementation(kotlin("reflect", version=kotlinVersion))
-    api(kotlin("stdlib-jdk8", version=kotlinVersion))
+    implementation(kotlin("reflect", version = Versions.kotlin))
+    api(kotlin("stdlib-jdk8", version = Versions.kotlin))
 
     api(project(":radar-jersey"))
-    val hibernateVersion: String by project
-    api("org.hibernate:hibernate-core:$hibernateVersion")
-    runtimeOnly("org.hibernate:hibernate-c3p0:$hibernateVersion")
+    api("org.hibernate:hibernate-core:${Versions.hibernate}")
+    runtimeOnly("org.hibernate:hibernate-hikaricp:${Versions.hibernate}")
 
-    val jakartaValidationVersion: String by project
-    runtimeOnly("jakarta.validation:jakarta.validation-api:$jakartaValidationVersion")
-    val hibernateValidatorVersion: String by project
-    runtimeOnly("org.hibernate.validator:hibernate-validator:$hibernateValidatorVersion")
-    val glassfishJakartaElVersion: String by project
-    runtimeOnly("org.glassfish:jakarta.el:$glassfishJakartaElVersion")
+    implementation("org.radarbase:radar-commons-kotlin:${Versions.radarCommons}")
 
-    val slf4jVersion: String by project
-    implementation("org.slf4j:slf4j-api:$slf4jVersion")
+    runtimeOnly("jakarta.validation:jakarta.validation-api:${Versions.jakartaValidation}")
+    runtimeOnly("org.hibernate.validator:hibernate-validator:${Versions.hibernateValidator}")
 
-    val liquibaseVersion: String by project
-    implementation("org.liquibase:liquibase-core:$liquibaseVersion")
+    runtimeOnly("org.glassfish:jakarta.el:${Versions.glassfishJakartaEl}")
 
-    val postgresVersion: String by project
-    runtimeOnly("org.postgresql:postgresql:$postgresVersion")
+    implementation("org.liquibase:liquibase-core:${Versions.liquibase}")
 
-    val grizzlyVersion: String by project
-    testRuntimeOnly("org.glassfish.grizzly:grizzly-http-server:$grizzlyVersion")
-    val jerseyVersion: String by project
-    testRuntimeOnly("org.glassfish.jersey.containers:jersey-container-grizzly2-servlet:$jerseyVersion")
+    runtimeOnly("org.postgresql:postgresql:${Versions.postgres}")
 
-    val h2Version: String by project
-    testImplementation("com.h2database:h2:$h2Version")
+    testRuntimeOnly("org.glassfish.grizzly:grizzly-http-server:${Versions.grizzly}")
+    testRuntimeOnly("org.glassfish.jersey.containers:jersey-container-grizzly2-servlet:${Versions.jersey}")
 
-    val junitVersion: String by project
-    testImplementation("org.junit.jupiter:junit-jupiter:$junitVersion")
-    val hamcrestVersion: String by project
-    testImplementation("org.hamcrest:hamcrest:$hamcrestVersion")
-    val okhttpVersion: String by project
-    testImplementation("com.squareup.okhttp3:okhttp:$okhttpVersion")
+    testImplementation("com.h2database:h2:${Versions.h2}")
+
+    testImplementation("org.hamcrest:hamcrest:${Versions.hamcrest}")
+    testImplementation("com.squareup.okhttp3:okhttp:${Versions.okhttp}")
 }

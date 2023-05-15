@@ -14,29 +14,29 @@ import org.glassfish.jersey.internal.inject.AbstractBinder
 import org.glassfish.jersey.jackson.JacksonFeature
 import org.glassfish.jersey.process.internal.RequestScoped
 import org.glassfish.jersey.server.ResourceConfig
-import org.radarbase.jersey.auth.Auth
+import org.radarbase.auth.token.RadarToken
 import org.radarbase.jersey.auth.AuthConfig
+import org.radarbase.jersey.auth.AuthService
 import org.radarbase.jersey.auth.filter.AuthenticationFilter
 import org.radarbase.jersey.auth.filter.AuthorizationFeature
-import org.radarbase.jersey.auth.jwt.AuthFactory
+import org.radarbase.jersey.auth.jwt.RadarTokenFactory
+import org.radarbase.jersey.service.AsyncCoroutineService
+import org.radarbase.jersey.service.ScopedAsyncCoroutineService
 
 /**
  * Add RADAR auth to a Jersey project. This requires a {@link ProjectService} implementation to be
  * added to the Binder first.
  *
  * @param includeMapper is set, this also instantiates [MapperResourceEnhancer].
- * @param includeHttpClient is set, this also includes [OkHttpResourceEnhancer].
  */
 class RadarJerseyResourceEnhancer(
     private val config: AuthConfig,
     includeMapper: Boolean = true,
-    includeHttpClient: Boolean = true,
-): JerseyResourceEnhancer {
+) : JerseyResourceEnhancer {
     /**
      * Utilities. Set to `null` to avoid injection. Modify utility mapper or client to inject
      * a different mapper or client.
      */
-    private val okHttpResourceEnhancer: OkHttpResourceEnhancer? = if (includeHttpClient) OkHttpResourceEnhancer() else null
     private val mapperResourceEnhancer: MapperResourceEnhancer? = if (includeMapper) MapperResourceEnhancer() else null
 
     override val classes = arrayOf(
@@ -46,7 +46,6 @@ class RadarJerseyResourceEnhancer(
 
     override fun ResourceConfig.enhance() {
         register(JacksonFeature.withoutExceptionMappers())
-        okHttpResourceEnhancer?.enhanceResources(this)
         mapperResourceEnhancer?.enhanceResources(this)
     }
 
@@ -55,14 +54,19 @@ class RadarJerseyResourceEnhancer(
             .to(AuthConfig::class.java)
             .`in`(Singleton::class.java)
 
+        bind(ScopedAsyncCoroutineService::class.java)
+            .to(AsyncCoroutineService::class.java)
+            .`in`(Singleton::class.java)
+
         // Bind factories.
-        bindFactory(AuthFactory::class.java)
-            .proxy(true)
-            .proxyForSameScope(true)
-            .to(Auth::class.java)
+        bindFactory(RadarTokenFactory::class.java)
+            .to(RadarToken::class.java)
             .`in`(RequestScoped::class.java)
 
-        okHttpResourceEnhancer?.enhanceBinder(this)
+        bind(AuthService::class.java)
+            .to(AuthService::class.java)
+            .`in`(Singleton::class.java)
+
         mapperResourceEnhancer?.enhanceBinder(this)
     }
 }

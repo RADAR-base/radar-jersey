@@ -5,75 +5,54 @@ plugins {
 description = "Library for Jersey authorization, exception handling and configuration with the RADAR platform"
 
 dependencies {
-    val kotlinVersion: String by project
-    implementation(kotlin("reflect", version=kotlinVersion))
-    api(kotlin("stdlib-jdk8", version=kotlinVersion))
+    implementation(kotlin("reflect", version = Versions.kotlin))
+    api(kotlin("stdlib-jdk8", version = Versions.kotlin))
 
-    val managementPortalVersion: String by project
-    api("org.radarbase:radar-auth:$managementPortalVersion")
-    api("org.radarbase:managementportal-client:$managementPortalVersion")
+    api("org.radarbase:radar-auth:${Versions.managementPortal}")
+    api("org.radarbase:managementportal-client:${Versions.managementPortal}")
 
-    val javaJwtVersion: String by project
-    implementation("com.auth0:java-jwt:$javaJwtVersion")
+    implementation("org.radarbase:radar-commons-kotlin:${Versions.radarCommons}")
 
-    val jakartaWsRsVersion: String by project
-    api("jakarta.ws.rs:jakarta.ws.rs-api:$jakartaWsRsVersion")
-    val jakartaAnnotationVersion: String by project
-    api("jakarta.annotation:jakarta.annotation-api:$jakartaAnnotationVersion")
-    val hk2Version: String by project
-    api("org.glassfish.hk2:hk2:$hk2Version")
+    implementation("com.auth0:java-jwt:${Versions.javaJwt}")
 
-    val jerseyVersion: String by project
-    api("org.glassfish.jersey.inject:jersey-hk2:$jerseyVersion")
-    api("org.glassfish.jersey.core:jersey-server:$jerseyVersion")
-    implementation("org.glassfish.jersey.media:jersey-media-json-jackson:$jerseyVersion")
+    api("jakarta.ws.rs:jakarta.ws.rs-api:${Versions.jakartaWsRs}")
+    api("jakarta.annotation:jakarta.annotation-api:${Versions.jakartaAnnotation}")
+    api("org.glassfish.hk2:hk2:${Versions.hk2}")
 
-    val jacksonVersion: String by project
-    api(platform("com.fasterxml.jackson:jackson-bom:$jacksonVersion"))
+    api("org.glassfish.jersey.inject:jersey-hk2:${Versions.jersey}")
+    api("org.glassfish.jersey.core:jersey-server:${Versions.jersey}")
+    implementation("org.glassfish.jersey.media:jersey-media-json-jackson:${Versions.jersey}")
+
+    api(platform("com.fasterxml.jackson:jackson-bom:${Versions.jackson}"))
     api("com.fasterxml.jackson.core:jackson-databind")
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jdk8")
     implementation("com.fasterxml.jackson.jakarta.rs:jackson-jakarta-rs-json-provider")
 
-    val okhttpVersion: String by project
-    implementation("com.squareup.okhttp3:okhttp:$okhttpVersion")
-
-    implementation("org.glassfish.jersey.containers:jersey-container-grizzly2-http:$jerseyVersion")
+    implementation("org.glassfish.jersey.containers:jersey-container-grizzly2-http:${Versions.jersey}")
     implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml")
 
     // exception template rendering
-    val mustacheVersion: String by project
-    implementation("com.github.spullara.mustache.java:compiler:$mustacheVersion")
+    implementation("com.github.spullara.mustache.java:compiler:${Versions.mustache}")
 
-    val slf4jVersion: String by project
-    implementation("org.slf4j:slf4j-api:$slf4jVersion")
-
-    val swaggerVersion: String by project
-    implementation("io.swagger.core.v3:swagger-jaxrs2-jakarta:$swaggerVersion") {
+    implementation("io.swagger.core.v3:swagger-jaxrs2-jakarta:${Versions.swagger}") {
         exclude(group = "com.fasterxml.jackson.jaxrs", module = "jackson-jaxrs-json-provider")
     }
 
-    val jakartaXmlBindVersion: String by project
-    val jakartaJaxbCoreVersion: String by project
-    val jakartaJaxbRuntimeVersion: String by project
-    val jakartaActivation: String by project
-    runtimeOnly("jakarta.xml.bind:jakarta.xml.bind-api:$jakartaXmlBindVersion")
-    runtimeOnly("org.glassfish.jaxb:jaxb-core:$jakartaJaxbCoreVersion")
-    runtimeOnly("org.glassfish.jaxb:jaxb-runtime:$jakartaJaxbRuntimeVersion")
-    runtimeOnly("jakarta.activation:jakarta.activation-api:$jakartaActivation")
+    runtimeOnly("jakarta.xml.bind:jakarta.xml.bind-api:${Versions.jakartaXmlBind}")
+    runtimeOnly("org.glassfish.jaxb:jaxb-core:${Versions.jakartaJaxbCore}")
+    runtimeOnly("org.glassfish.jaxb:jaxb-runtime:${Versions.jakartaJaxbRuntime}")
+    runtimeOnly("jakarta.activation:jakarta.activation-api:${Versions.jakartaActivation}")
 
-    val grizzlyVersion: String by project
-    testRuntimeOnly("org.glassfish.grizzly:grizzly-http-server:$grizzlyVersion")
-    testRuntimeOnly("org.glassfish.jersey.containers:jersey-container-grizzly2-servlet:$jerseyVersion")
+    testImplementation("com.squareup.okhttp3:okhttp:${Versions.okhttp}")
 
-    val junitVersion: String by project
-    testImplementation("org.junit.jupiter:junit-jupiter:$junitVersion")
-    val hamcrestVersion: String by project
-    testImplementation("org.hamcrest:hamcrest:$hamcrestVersion")
+    testRuntimeOnly("org.glassfish.grizzly:grizzly-http-server:${Versions.grizzly}")
+    testRuntimeOnly("org.glassfish.jersey.containers:jersey-container-grizzly2-servlet:${Versions.jersey}")
 
-    val mockitoKotlinVersion: String by project
-    testImplementation("org.mockito.kotlin:mockito-kotlin:$mockitoKotlinVersion")
+    testImplementation("org.hamcrest:hamcrest:${Versions.hamcrest}")
+
+    testImplementation("org.mockito.kotlin:mockito-kotlin:${Versions.mockitoKotlin}")
 }
 
 tasks.processResources {

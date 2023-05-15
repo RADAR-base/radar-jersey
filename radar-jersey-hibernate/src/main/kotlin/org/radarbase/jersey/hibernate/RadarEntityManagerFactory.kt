@@ -7,7 +7,7 @@ import org.glassfish.jersey.internal.inject.DisposableSupplier
 import org.slf4j.LoggerFactory
 
 class RadarEntityManagerFactory(
-        @Context private val emf: EntityManagerFactory
+    @Context private val emf: EntityManagerFactory,
 ) : DisposableSupplier<EntityManager> {
 
     override fun get(): EntityManager {

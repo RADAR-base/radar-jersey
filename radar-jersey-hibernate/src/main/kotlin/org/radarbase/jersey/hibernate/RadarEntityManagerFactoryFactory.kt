@@ -15,7 +15,7 @@ import java.util.*
  * Liquibase is used to initialize the database, if so configured.
  */
 class RadarEntityManagerFactoryFactory(
-        @Context config: DatabaseConfig
+    @Context config: DatabaseConfig,
 ) : DisposableSupplier<EntityManagerFactory> {
     private val persistenceInfo = RadarPersistenceInfo(config)
     private val persistenceProvider = HibernatePersistenceProvider()
@@ -49,4 +49,3 @@ class RadarEntityManagerFactoryFactory(
         }
     }
 }
-
