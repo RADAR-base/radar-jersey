@@ -26,7 +26,7 @@ class MPClientFactory(
             logger.info(
                 "Configuring MPClient with URL {} and client ID {}",
                 authConfig.tokenUrl,
-                authConfig.clientId
+                authConfig.clientId,
             )
 
             clientCredentials(
