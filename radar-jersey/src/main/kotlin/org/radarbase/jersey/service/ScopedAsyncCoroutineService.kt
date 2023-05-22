@@ -9,7 +9,7 @@ import jakarta.ws.rs.core.UriInfo
 import kotlinx.coroutines.*
 import org.glassfish.jersey.process.internal.RequestScope
 import org.radarbase.jersey.coroutines.CoroutineRequestContext
-import org.radarbase.jersey.coroutines.CoroutineResponseWrapper
+import org.radarbase.jersey.coroutines.CoroutineRequestWrapper
 import org.radarbase.kotlin.coroutines.consumeFirst
 import kotlin.time.Duration
 
@@ -32,7 +32,7 @@ class ScopedAsyncCoroutineService(
         block: suspend () -> T,
     ) {
         with(
-            CoroutineResponseWrapper(
+            CoroutineRequestWrapper(
                 timeout,
                 requestScope.get(),
                 "${requestContext.get().method} ${uriInfo.get().path}",
@@ -63,7 +63,7 @@ class ScopedAsyncCoroutineService(
         block: suspend () -> T,
     ): T {
         return with(
-            CoroutineResponseWrapper(
+            CoroutineRequestWrapper(
                 timeout,
                 requestScope.get(),
                 "${requestContext.get().method} ${uriInfo.get().path}",

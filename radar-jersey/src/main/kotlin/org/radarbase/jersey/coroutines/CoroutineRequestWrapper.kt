@@ -8,7 +8,7 @@ import kotlin.coroutines.CoroutineContext
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
 
-class CoroutineResponseWrapper(
+class CoroutineRequestWrapper(
     private val timeout: Duration? = 30.seconds,
     requestScope: RequestScope? = null,
     location: String? = null,
@@ -18,7 +18,12 @@ class CoroutineResponseWrapper(
     val coroutineContext: CoroutineContext
 
     private val requestContext = try {
-        requestScope?.suspendCurrent()
+        if (requestScope != null) {
+            requestScope.suspendCurrent()
+                ?: requestScope.createContext()
+        } else {
+            null
+        }
     } catch (ex: Throwable) {
         logger.debug("Cannot create request scope: {}", ex.toString())
         null
@@ -50,7 +55,7 @@ class CoroutineResponseWrapper(
     }
 
     companion object {
-        private val logger = LoggerFactory.getLogger(CoroutineResponseWrapper::class.java)
+        private val logger = LoggerFactory.getLogger(CoroutineRequestWrapper::class.java)
 
         @Suppress("DEPRECATION", "KotlinRedundantDiagnosticSuppress")
         private fun contextName(location: String?) = CoroutineName(

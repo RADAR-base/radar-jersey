@@ -23,11 +23,15 @@ class MPClientFactory(
                 clientSecret = authConfig.managementPortal.clientSecret,
             ).copyWithEnv()
 
-            logger.info("Configuring MPClient with {}", authConfig)
+            logger.info(
+                "Configuring MPClient with URL {} and client ID {}",
+                authConfig.tokenUrl,
+                authConfig.clientId
+            )
 
             clientCredentials(
                 authConfig = authConfig,
-                targetHost = URI.create(url).host,
+                targetHost = URI.create(url!!).host,
             )
         }
     }
