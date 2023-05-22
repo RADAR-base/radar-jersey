@@ -2,6 +2,8 @@ package org.radarbase.jersey.auth
 
 import jakarta.inject.Provider
 import jakarta.ws.rs.core.Context
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
 import org.radarbase.auth.authorization.*
 import org.radarbase.auth.token.DataRadarToken.Companion.copy
 import org.radarbase.auth.token.RadarToken
@@ -18,7 +20,7 @@ class AuthService(
     @Context private val projectService: ProjectService,
     @Context private val asyncService: AsyncCoroutineService,
 ) {
-    suspend fun requestScopedToken(): RadarToken = asyncService.runInRequestScope {
+    private suspend fun requestScopedToken(): RadarToken = asyncService.runInRequestScope {
         try {
             tokenProvider.get().copy()
         } catch (ex: Throwable) {
@@ -133,6 +135,33 @@ class AuthService(
             location = location,
             entity = entity,
         )
+    }
+
+    /**
+     * Run [block] if [token] has permission [permission], regarding given [entity].
+     * The permission check is run concurrently with the block. The block is cancelled if the
+     * permission check fails. If the block costs significant resources, consider running
+     * [checkPermission] before the block instead.
+     * The permission is checked both for its
+     * own entity scope and for the [EntityDetails.minimumEntityOrNull] entity scope.
+     * @throws HttpForbiddenException if identity does not have permission
+     */
+    suspend inline fun <T> withPermission(
+        permission: Permission,
+        entity: EntityDetails,
+        token: RadarToken? = null,
+        location: String? = null,
+        scope: Permission.Entity = permission.entity,
+        crossinline block: suspend () -> T,
+    ) = coroutineScope {
+        val checkPermissionJob = async {
+            checkPermission(permission, entity, token, location, scope)
+        }
+        val resultJob = async {
+            block()
+        }
+        checkPermissionJob.await()
+        resultJob.await()
     }
 
     private suspend fun EntityDetails.resolve() {
