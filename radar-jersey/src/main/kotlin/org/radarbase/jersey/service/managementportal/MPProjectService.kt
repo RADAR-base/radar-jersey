@@ -69,9 +69,11 @@ class MPProjectService(
     }
 
     override suspend fun userProjects(permission: Permission): List<MPProject> {
-        return projects.get().values
+        val authService = authService.get()
+        return projects.get()
+            .values
             .filter {
-                authService.get().hasPermission(
+                authService.hasPermission(
                     permission,
                     EntityDetails(
                         organization = it.organization?.id,
