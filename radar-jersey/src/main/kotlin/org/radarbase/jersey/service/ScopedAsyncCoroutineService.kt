@@ -19,13 +19,6 @@ class ScopedAsyncCoroutineService(
     @Context private val uriInfo: Provider<UriInfo>,
 ) : AsyncCoroutineService {
 
-    /**
-     * Run an AsyncResponse as a coroutine. The result of [block] will be used as the response. If
-     * [block] throws any exception, that exception will be used to resume instead. If the connection
-     * is cancelled by the client, the underlying job is also cancelled. If [timeout] is not null,
-     * after the timeout has expired a 503 Server Unavailable exception will be thrown and the coroutine
-     * will be cancelled.
-     */
     override fun <T> runAsCoroutine(
         asyncResponse: AsyncResponse,
         timeout: Duration,
