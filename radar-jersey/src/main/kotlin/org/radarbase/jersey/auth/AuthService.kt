@@ -300,15 +300,18 @@ class AuthService(
             get() = methodName.isAuthMethodName || declaringClass.isAuthClass
 
         private val String.isAuthMethodName: Boolean
-            get() = startsWith("logPermission") ||
+            get() =
+                startsWith("logAuthorized") ||
+                startsWith("logPermission") ||
                 startsWith("checkPermission") ||
                 startsWith("invoke") ||
                 startsWith("internal")
 
         private val Class<*>.isAuthClass: Boolean
-            get() = isInstance(AuthService::class.java) ||
+            get() = this == AuthService::class.java ||
                 isAnonymousClass ||
                 isLocalClass ||
+                name.contains("AuthService") ||
                 simpleName == "ReflectionHelper"
     }
 }
