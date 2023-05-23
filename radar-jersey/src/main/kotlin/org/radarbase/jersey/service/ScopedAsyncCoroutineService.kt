@@ -24,28 +24,22 @@ class ScopedAsyncCoroutineService(
         timeout: Duration,
         block: suspend () -> T,
     ) {
-        with(
-            CoroutineRequestWrapper(
-                timeout,
-                requestScope.get(),
-                "${requestContext.get().method} ${uriInfo.get().path}",
-            ),
-        ) {
-            asyncResponse.register(ConnectionCallback { cancel() })
+        withWrapper(timeout) {
+            asyncResponse.register(ConnectionCallback { cancelRequest() })
 
             CoroutineScope(coroutineContext).launch {
                 timeoutHandler {
                     asyncResponse.resume(it)
-                    this@with.cancel()
+                    cancelRequest()
                 }
                 try {
                     asyncResponse.resume(block())
                 } catch (ex: CancellationException) {
-                    // do nothing
+                    // do nothing, cancel request in finally
                 } catch (ex: Throwable) {
                     asyncResponse.resume(ex)
                 } finally {
-                    this@with.cancel()
+                    cancelRequest()
                 }
             }
         }
@@ -54,32 +48,33 @@ class ScopedAsyncCoroutineService(
     override fun <T> runBlocking(
         timeout: Duration,
         block: suspend () -> T,
-    ): T {
-        return with(
-            CoroutineRequestWrapper(
-                timeout,
-                requestScope.get(),
-                "${requestContext.get().method} ${uriInfo.get().path}",
-            ),
-        ) {
-            try {
-                runBlocking(coroutineContext) {
-                    consumeFirst<Result<T>> { emit ->
-                        timeoutHandler { emit(Result.failure(it)) }
-                        try {
-                            val result = block()
-                            emit(Result.success(result))
-                        } catch (ex: CancellationException) {
-                            throw ex
-                        } catch (ex: Throwable) {
-                            emit(Result.failure(ex))
-                        }
-                    }.getOrThrow()
-                }
-            } finally {
-                this@with.cancel()
+    ): T = withWrapper(timeout) {
+        try {
+            runBlocking(coroutineContext) {
+                consumeFirst<Result<T>> { emit ->
+                    timeoutHandler { emit(Result.failure(it)) }
+                    try {
+                        val result = block()
+                        emit(Result.success(result))
+                    } catch (ex: CancellationException) {
+                        throw ex
+                    } catch (ex: Throwable) {
+                        emit(Result.failure(ex))
+                    }
+                }.getOrThrow()
             }
+        } finally {
+            cancelRequest()
         }
+    }
+
+    private inline fun <V> withWrapper(timeout: Duration, block: CoroutineRequestWrapper.() -> V): V {
+        val wrapper = CoroutineRequestWrapper(
+            timeout,
+            requestScope.get(),
+            "${requestContext.get().method} ${uriInfo.get().path}",
+        )
+        return wrapper.block()
     }
 
     override suspend fun <T> runInRequestScope(block: () -> T): T {

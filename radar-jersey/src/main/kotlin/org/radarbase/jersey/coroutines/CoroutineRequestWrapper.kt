@@ -37,7 +37,7 @@ class CoroutineRequestWrapper(
         coroutineContext = context
     }
 
-    fun cancel() {
+    fun cancelRequest() {
         try {
             requestContext?.release()
         } catch (ex: Throwable) {
