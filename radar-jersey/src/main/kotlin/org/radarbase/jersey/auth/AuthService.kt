@@ -277,8 +277,18 @@ class AuthService(
         return oracle.referentsByScope(requestScopedToken(), permission)
     }
 
-    fun mayBeGranted(role: RoleAuthority, permission: Permission): Boolean = with(oracle) {
+    fun mayBeGranted(
+        role: RoleAuthority,
+        permission: Permission,
+    ): Boolean = with(oracle) {
         role.mayBeGranted(permission)
+    }
+
+    fun mayBeGranted(
+        roles: Collection<RoleAuthority>,
+        permission: Permission,
+    ): Boolean = with(oracle) {
+        roles.mayBeGranted(permission)
     }
 
     companion object {
