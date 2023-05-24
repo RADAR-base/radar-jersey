@@ -5,7 +5,7 @@ import jakarta.ws.rs.core.Context
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import org.radarbase.auth.authorization.*
-import org.radarbase.auth.token.DataRadarToken.Companion.copy
+import org.radarbase.auth.token.DataRadarToken
 import org.radarbase.auth.token.RadarToken
 import org.radarbase.jersey.exception.HttpForbiddenException
 import org.radarbase.jersey.exception.HttpNotFoundException
@@ -20,9 +20,9 @@ class AuthService(
     @Context private val projectService: ProjectService,
     @Context private val asyncService: AsyncCoroutineService,
 ) {
-    private suspend fun requestScopedToken(): RadarToken = asyncService.runInRequestScope {
+    suspend fun requestScopedToken(): RadarToken = asyncService.runInRequestScope {
         try {
-            tokenProvider.get().copy()
+            DataRadarToken(tokenProvider.get())
         } catch (ex: Throwable) {
             throw HttpForbiddenException("unauthorized", "User without authentication does not have permission.")
         }
@@ -300,8 +300,7 @@ class AuthService(
             get() = methodName.isAuthMethodName || declaringClass.isAuthClass
 
         private val String.isAuthMethodName: Boolean
-            get() =
-                startsWith("logAuthorized") ||
+            get() = startsWith("logAuthorized") ||
                 startsWith("logPermission") ||
                 startsWith("checkPermission") ||
                 startsWith("invoke") ||
