@@ -24,13 +24,13 @@ jobs:
 
       # Compile code
       - name: Compile code
-        run: ./gradlew assemble
+        run: ./gradlew assemble collectLicenses
 
       # Upload it to GitHub
       - name: Upload to GitHub
         uses: AButler/upload-release-assets@v2.0.2
         with:
-          files: 'radar-jersey/build/libs/*;radar-jersey-hibernate/build/libs/*'
+          files: 'radar-jersey/build/libs/*;radar-jersey-hibernate/build/libs/*;radar-jersey*/build/reports/*.tar.gz'
           repo-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Install gpg secret key
