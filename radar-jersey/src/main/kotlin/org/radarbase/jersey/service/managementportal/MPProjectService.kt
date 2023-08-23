@@ -16,6 +16,7 @@
 
 package org.radarbase.jersey.service.managementportal
 
+import io.ktor.http.*
 import jakarta.inject.Provider
 import jakarta.ws.rs.core.Context
 import org.radarbase.auth.authorization.EntityDetails
@@ -25,12 +26,12 @@ import org.radarbase.jersey.auth.AuthService
 import org.radarbase.jersey.exception.HttpNotFoundException
 import org.radarbase.kotlin.coroutines.CacheConfig
 import org.radarbase.kotlin.coroutines.CachedMap
+import org.radarbase.management.client.HttpStatusException
 import org.radarbase.management.client.MPClient
 import org.radarbase.management.client.MPOrganization
 import org.radarbase.management.client.MPProject
 import org.radarbase.management.client.MPSubject
 import org.slf4j.LoggerFactory
-import java.io.IOException
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.ConcurrentMap
 import kotlin.time.Duration.Companion.minutes
@@ -61,8 +62,8 @@ class MPProjectService(
                 mpClient.requestOrganizations()
                     .associateBy { it.id }
                     .also { logger.debug("Fetched organizations {}", it) }
-            } catch (ex: IOException) {
-                if (ex.message?.contains("404 Not Found") == true) {
+            } catch (ex: HttpStatusException) {
+                if (ex.code == HttpStatusCode.NotFound) {
                     logger.warn("Target ManagementPortal does not support organizations. Using default organization main.")
                     mapOf("main" to defaultOrganization)
                 } else {
