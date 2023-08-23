@@ -30,6 +30,7 @@ import org.radarbase.management.client.MPOrganization
 import org.radarbase.management.client.MPProject
 import org.radarbase.management.client.MPSubject
 import org.slf4j.LoggerFactory
+import java.io.IOException
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.ConcurrentMap
 import kotlin.time.Duration.Companion.minutes
@@ -56,13 +57,29 @@ class MPProjectService(
         )
 
         organizations = CachedMap(cacheConfig) {
-            mpClient.requestOrganizations()
-                .associateBy { it.id }
-                .also { logger.debug("Fetched organizations {}", it) }
+            try {
+                mpClient.requestOrganizations()
+                    .associateBy { it.id }
+                    .also { logger.debug("Fetched organizations {}", it) }
+            } catch (ex: IOException) {
+                if (ex.message?.contains("404 Not Found") == true) {
+                    logger.warn("Target ManagementPortal does not support organizations. Using default organization main.")
+                    mapOf("main" to defaultOrganization)
+                } else {
+                    throw ex
+                }
+            }
         }
 
         projects = CachedMap(cacheConfig) {
             mpClient.requestProjects()
+                .map { project ->
+                    if (project.organization == null) {
+                        project.copy(organization = defaultOrganization)
+                    } else {
+                        project
+                    }
+                }
                 .associateBy { it.id }
                 .also { logger.debug("Fetched projects {}", it) }
         }
@@ -133,5 +150,6 @@ class MPProjectService(
     companion object {
         private val RETRY_INTERVAL = 1.minutes
         private val logger = LoggerFactory.getLogger(MPProjectService::class.java)
+        private val defaultOrganization = MPOrganization("main")
     }
 }
