@@ -1,6 +1,11 @@
 package org.radarbase.jersey.coroutines
 
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineName
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import org.glassfish.jersey.process.internal.RequestScope
 import org.radarbase.jersey.exception.HttpServerUnavailableException
 import org.slf4j.LoggerFactory

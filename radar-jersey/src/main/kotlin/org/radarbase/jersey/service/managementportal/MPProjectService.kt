@@ -16,7 +16,7 @@
 
 package org.radarbase.jersey.service.managementportal
 
-import io.ktor.http.*
+import io.ktor.http.HttpStatusCode
 import jakarta.inject.Provider
 import jakarta.ws.rs.core.Context
 import org.radarbase.auth.authorization.EntityDetails

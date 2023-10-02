@@ -1,6 +1,10 @@
 package org.radarbase.jersey.auth.disabled
 
-import org.radarbase.auth.authorization.*
+import org.radarbase.auth.authorization.AuthorityReferenceSet
+import org.radarbase.auth.authorization.AuthorizationOracle
+import org.radarbase.auth.authorization.EntityDetails
+import org.radarbase.auth.authorization.Permission
+import org.radarbase.auth.authorization.RoleAuthority
 import org.radarbase.auth.token.RadarToken
 
 class DisabledAuthorizationOracle : AuthorizationOracle {

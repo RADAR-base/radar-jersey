@@ -3,7 +3,8 @@ package org.radarbase.jersey.hibernate
 import jakarta.inject.Provider
 import jakarta.persistence.EntityManager
 import jakarta.persistence.EntityTransaction
-import kotlinx.coroutines.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import org.hibernate.Session
 import org.radarbase.jersey.exception.HttpInternalServerException
 import org.radarbase.jersey.hibernate.config.CloseableTransaction
@@ -24,7 +25,9 @@ open class HibernateRepository(
     /**
      * Run a transaction and commit it. If an exception occurs, the transaction is rolled back.
      */
-    suspend fun <T> transact(transactionOperation: EntityManager.() -> T): T = withContext(Dispatchers.IO) {
+    suspend fun <T> transact(
+        transactionOperation: EntityManager.() -> T,
+    ): T = withContext(Dispatchers.IO) {
         createTransaction(
             block = { transaction ->
                 try {

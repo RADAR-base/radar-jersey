@@ -4,7 +4,11 @@ import jakarta.inject.Provider
 import jakarta.ws.rs.core.Context
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
-import org.radarbase.auth.authorization.*
+import org.radarbase.auth.authorization.AuthorityReferenceSet
+import org.radarbase.auth.authorization.AuthorizationOracle
+import org.radarbase.auth.authorization.EntityDetails
+import org.radarbase.auth.authorization.Permission
+import org.radarbase.auth.authorization.RoleAuthority
 import org.radarbase.auth.token.DataRadarToken
 import org.radarbase.auth.token.RadarToken
 import org.radarbase.jersey.exception.HttpForbiddenException

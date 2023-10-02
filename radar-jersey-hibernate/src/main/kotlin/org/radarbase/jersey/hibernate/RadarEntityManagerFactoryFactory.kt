@@ -8,7 +8,7 @@ import org.hibernate.jpa.HibernatePersistenceProvider
 import org.radarbase.jersey.hibernate.config.DatabaseConfig
 import org.radarbase.jersey.hibernate.config.RadarPersistenceInfo
 import org.slf4j.LoggerFactory
-import java.util.*
+import java.util.Properties
 
 /**
  * Creates EntityManagerFactory using Hibernate. When an [EntityManagerFactory] is created,

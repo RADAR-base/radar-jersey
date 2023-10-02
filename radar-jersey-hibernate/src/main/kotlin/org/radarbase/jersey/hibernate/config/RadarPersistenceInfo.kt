@@ -7,7 +7,8 @@ import jakarta.persistence.spi.PersistenceUnitInfo
 import jakarta.persistence.spi.PersistenceUnitTransactionType
 import org.hibernate.jpa.HibernatePersistenceProvider
 import java.net.URL
-import java.util.*
+import java.util.Objects
+import java.util.Properties
 import javax.sql.DataSource
 
 class RadarPersistenceInfo(

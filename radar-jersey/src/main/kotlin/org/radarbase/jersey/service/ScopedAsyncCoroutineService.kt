@@ -6,7 +6,13 @@ import jakarta.ws.rs.container.ConnectionCallback
 import jakarta.ws.rs.container.ContainerRequestContext
 import jakarta.ws.rs.core.Context
 import jakarta.ws.rs.core.UriInfo
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CancellableContinuation
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.currentCoroutineContext
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.suspendCancellableCoroutine
 import org.glassfish.jersey.process.internal.RequestScope
 import org.radarbase.jersey.coroutines.CoroutineRequestContext
 import org.radarbase.jersey.coroutines.CoroutineRequestWrapper
