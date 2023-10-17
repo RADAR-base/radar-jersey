@@ -7,7 +7,7 @@ import org.radarbase.jersey.auth.AuthConfig
 import org.radarbase.jersey.enhancer.EnhancerFactory
 import org.radarbase.jersey.enhancer.Enhancers
 import org.radarbase.jersey.enhancer.JerseyResourceEnhancer
-import java.util.*
+import java.util.Properties
 
 class MockSwaggerResourceEnhancerFactory(private val config: AuthConfig) : EnhancerFactory {
     override fun createEnhancers(): List<JerseyResourceEnhancer> {
@@ -18,17 +18,20 @@ class MockSwaggerResourceEnhancerFactory(private val config: AuthConfig) : Enhan
             MockResourceEnhancer(),
             Enhancers.radar(config),
             Enhancers.disabledAuthorization,
-            Enhancers.swagger(OpenAPI().apply {
-                info = Info().apply {
-                    version = properties.getProperty("version")
-                    description = "MockProject"
-                    license = License().apply {
-                        name = "Apache-2.0"
+            Enhancers.swagger(
+                OpenAPI().apply {
+                    info = Info().apply {
+                        version = properties.getProperty("version")
+                        description = "MockProject"
+                        license = License().apply {
+                            name = "Apache-2.0"
+                        }
                     }
-                }
-            }, setOf(
-                "/health",
-            )),
+                },
+                setOf(
+                    "/health",
+                ),
+            ),
         )
     }
 }

@@ -24,14 +24,16 @@ internal class MapperResourceEnhancerTest {
         val enhancer = MapperResourceEnhancer()
         val resourceConfig = mock<ResourceConfig>()
         enhancer.enhanceResources(resourceConfig)
-        verify(resourceConfig).register(check<Any> { obj ->
-            val context = obj as ContextResolver<*>
-            val mapper = context.getContext(ObjectMapper::class.java) as ObjectMapper
-            assertThat(mapper.writeValueAsString(InstantWrapper()), equalTo("""{"date":"1970-01-01T01:00:00Z"}"""))
-        })
+        verify(resourceConfig).register(
+            check<Any> { obj ->
+                val context = obj as ContextResolver<*>
+                val mapper = context.getContext(ObjectMapper::class.java) as ObjectMapper
+                assertThat(mapper.writeValueAsString(InstantWrapper()), equalTo("""{"date":"1970-01-01T01:00:00Z"}"""))
+            },
+        )
     }
 
     data class InstantWrapper(
-        val date: Instant = Instant.ofEpochSecond(3600)
+        val date: Instant = Instant.ofEpochSecond(3600),
     )
 }

@@ -57,8 +57,12 @@ class GrizzlyServer(
         try {
             server.start()
 
-            logger.info(String.format("Jersey app started on %s.\nPress Ctrl+C to exit...",
-                    baseUri))
+            logger.info(
+                String.format(
+                    "Jersey app started on %s.\nPress Ctrl+C to exit...",
+                    baseUri,
+                ),
+            )
             Thread.currentThread().join()
         } catch (e: Exception) {
             logger.error("Error starting server: {}", e.toString())

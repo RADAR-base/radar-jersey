@@ -7,9 +7,9 @@ import org.radarbase.jersey.enhancer.JerseyResourceEnhancer
 
 class MockDisabledAuthResourceEnhancerFactory(private val config: AuthConfig) : EnhancerFactory {
     override fun createEnhancers(): List<JerseyResourceEnhancer> = listOf(
-            MockResourceEnhancer(),
-            Enhancers.radar(config),
-            Enhancers.disabledAuthorization,
-            Enhancers.exception,
+        MockResourceEnhancer(),
+        Enhancers.radar(config),
+        Enhancers.disabledAuthorization,
+        Enhancers.exception,
     )
 }

@@ -15,7 +15,7 @@ import org.radarbase.jersey.exception.HttpApplicationException
 /**
  * Render an exception using a Mustache HTML document.
  */
-class DefaultJsonExceptionRenderer: ExceptionRenderer {
+class DefaultJsonExceptionRenderer : ExceptionRenderer {
     override fun render(exception: HttpApplicationException): String {
         val stringEncoder = JsonStringEncoder.getInstance()
         val quotedError = stringEncoder.quoteAsUTF8(exception.code).toString(Charsets.UTF_8)

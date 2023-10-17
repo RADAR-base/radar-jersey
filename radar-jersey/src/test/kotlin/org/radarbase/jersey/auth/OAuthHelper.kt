@@ -3,16 +3,16 @@ package org.radarbase.jersey.auth
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
 import okhttp3.Request
+import org.radarbase.auth.authentication.StaticTokenVerifierLoader
 import org.radarbase.auth.authentication.TokenValidator
 import org.radarbase.auth.authorization.Permission
-import org.radarbase.auth.config.TokenValidatorConfig
-import java.net.URI
+import org.radarbase.auth.jwks.JwksTokenVerifierLoader.Companion.toTokenVerifier
 import java.security.KeyStore
 import java.security.interfaces.ECPrivateKey
 import java.security.interfaces.ECPublicKey
 import java.time.Duration
 import java.time.Instant
-import java.util.*
+import java.util.Date
 
 /**
  * Created by dverbeec on 29/06/2017.
@@ -29,43 +29,40 @@ class OAuthHelper {
         }
 
         // get the EC keypair for signing
-        val privateKey = ks.getKey(TEST_SIGNKEY_ALIAS,
-                TEST_KEYSTORE_PASSWORD.toCharArray()) as ECPrivateKey
+        val privateKey = ks.getKey(
+            TEST_SIGNKEY_ALIAS,
+            TEST_KEYSTORE_PASSWORD.toCharArray(),
+        ) as ECPrivateKey
         val cert = ks.getCertificate(TEST_SIGNKEY_ALIAS)
         val publicKey = cert.publicKey as ECPublicKey
 
         val ecdsa = Algorithm.ECDSA256(publicKey, privateKey)
         validEcToken = createValidToken(ecdsa)
 
-        tokenValidator = TokenValidator.Builder()
-            .verifiers(listOf(JWT.require(ecdsa).withIssuer(ISS).build()))
-            .config(object : TokenValidatorConfig {
-                override fun getPublicKeyEndpoints(): List<URI> = emptyList()
-
-                override fun getResourceName(): String = ISS
-            })
-            .build()
+        tokenValidator = TokenValidator(
+            listOf(StaticTokenVerifierLoader(listOf(ecdsa.toTokenVerifier("res_ManagementPortal")))),
+        )
     }
 
     private fun createValidToken(algorithm: Algorithm): String {
         val now = Instant.now()
         val exp = now.plus(Duration.ofMinutes(30))
         return JWT.create()
-                .withIssuer(ISS)
-                .withIssuedAt(Date.from(now))
-                .withExpiresAt(Date.from(exp))
-                .withAudience("res_ManagementPortal")
-                .withSubject(USER)
-                .withArrayClaim("scope", SCOPES)
-                .withArrayClaim("authorities", AUTHORITIES)
-                .withArrayClaim("roles", ROLES)
-                .withArrayClaim("sources", SOURCES)
-                .withArrayClaim("aud", AUD)
-                .withClaim("client_id", CLIENT)
-                .withClaim("user_name", USER)
-                .withClaim("jti", JTI)
-                .withClaim("grant_type", "password")
-                .sign(algorithm)
+            .withIssuer(ISS)
+            .withIssuedAt(Date.from(now))
+            .withExpiresAt(Date.from(exp))
+            .withAudience("res_ManagementPortal")
+            .withSubject(USER)
+            .withArrayClaim("scope", SCOPES)
+            .withArrayClaim("authorities", AUTHORITIES)
+            .withArrayClaim("roles", ROLES)
+            .withArrayClaim("sources", SOURCES)
+            .withArrayClaim("aud", AUD)
+            .withClaim("client_id", CLIENT)
+            .withClaim("user_name", USER)
+            .withClaim("jti", JTI)
+            .withClaim("grant_type", "password")
+            .sign(algorithm)
     }
 
     companion object {
@@ -82,7 +79,8 @@ class OAuthHelper {
         private const val JTI = "some-jwt-id"
 
         fun Request.Builder.bearerHeader(oauth: OAuthHelper) = header(
-                "Authorization", "Bearer ${oauth.validEcToken}")
+            "Authorization",
+            "Bearer ${oauth.validEcToken}",
+        )
     }
 }
-

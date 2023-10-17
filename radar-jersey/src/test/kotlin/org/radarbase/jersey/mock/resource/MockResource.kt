@@ -13,11 +13,17 @@ import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
 import jakarta.annotation.Resource
-import jakarta.ws.rs.*
+import jakarta.ws.rs.BadRequestException
+import jakarta.ws.rs.Consumes
+import jakarta.ws.rs.GET
+import jakarta.ws.rs.POST
+import jakarta.ws.rs.Path
+import jakarta.ws.rs.PathParam
+import jakarta.ws.rs.Produces
 import jakarta.ws.rs.core.Context
 import jakarta.ws.rs.core.MediaType
 import org.radarbase.auth.authorization.Permission
-import org.radarbase.jersey.auth.Auth
+import org.radarbase.auth.token.RadarToken
 import org.radarbase.jersey.auth.Authenticated
 import org.radarbase.jersey.auth.NeedsPermission
 import org.radarbase.jersey.exception.HttpBadRequestException
@@ -37,15 +43,15 @@ class MockResource {
     @Authenticated
     @GET
     @Path("user")
-    fun someUser(@Context auth: Auth): Map<String, String> {
-        return mapOf("accessToken" to auth.token.token)
+    fun someUser(@Context radarToken: RadarToken): Map<String, String> {
+        return mapOf("accessToken" to (radarToken.token ?: ""))
     }
 
     @Authenticated
     @GET
     @Path("user/detailed")
-    fun someUserDetailed(@Context auth: Auth): DetailedUser {
-        return DetailedUser(auth.token.token, "name")
+    fun someUserDetailed(@Context radarToken: RadarToken): DetailedUser {
+        return DetailedUser((radarToken.token ?: ""), "name")
     }
 
     @Authenticated
@@ -53,12 +59,15 @@ class MockResource {
     @Path("projects/{projectId}/users/{subjectId}")
     @NeedsPermission(Permission.SUBJECT_READ, projectPathParam = "projectId", userPathParam = "subjectId")
     @Operation(description = "Get user that is subject in given project")
-    @ApiResponses(value = [
-        ApiResponse(description = "User")
-    ])
+    @ApiResponses(
+        value = [
+            ApiResponse(description = "User"),
+        ],
+    )
     fun mySubject(
-            @PathParam("projectId") projectId: String,
-            @PathParam("subjectId") userId: String): Map<String, String> {
+        @PathParam("projectId") projectId: String,
+        @PathParam("subjectId") userId: String,
+    ): Map<String, String> {
         return mapOf("projectId" to projectId, "userId" to userId)
     }
 

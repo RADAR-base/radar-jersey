@@ -17,10 +17,6 @@ jobs:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v3
 
-      - name: Has SNAPSHOT version
-        id: is-snapshot
-        run: grep 'version = ".*-SNAPSHOT"' build.gradle.kts
-
       - uses: actions/setup-java@v3
         with:
           distribution: temurin
@@ -28,6 +24,11 @@ jobs:
 
       - name: Setup Gradle
         uses: gradle/gradle-build-action@v2
+
+      - name: Has SNAPSHOT version
+        id: is-snapshot
+        run: |
+          ./gradlew properties | grep 'version: .*-SNAPSHOT'
 
       - name: Install gpg secret key
         run: |

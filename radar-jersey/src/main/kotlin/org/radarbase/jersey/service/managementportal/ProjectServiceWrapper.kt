@@ -22,24 +22,24 @@ import org.radarbase.jersey.exception.HttpNotFoundException
 import org.radarbase.jersey.service.ProjectService
 
 class ProjectServiceWrapper(
-    @Context private val radarProjectService: Provider<RadarProjectService>
+    @Context private val radarProjectService: Provider<RadarProjectService>,
 ) : ProjectService {
-    override fun ensureOrganization(organizationId: String) =
+    override suspend fun ensureOrganization(organizationId: String) =
         radarProjectService.get().ensureOrganization(organizationId)
 
-    override fun listProjects(organizationId: String): List<String> =
+    override suspend fun listProjects(organizationId: String): List<String> =
         radarProjectService.get().listProjects(organizationId)
 
-    override fun projectOrganization(projectId: String): String =
+    override suspend fun projectOrganization(projectId: String): String =
         radarProjectService.get().projectOrganization(projectId)
 
     /**
      * Ensures that [projectId] exists in RADAR project service.
      * @throws HttpNotFoundException if the project does not exist.
      */
-    override fun ensureProject(projectId: String) = radarProjectService.get().ensureProject(projectId)
+    override suspend fun ensureProject(projectId: String) = radarProjectService.get().ensureProject(projectId)
 
-    override fun ensureSubject(projectId: String, userId: String) {
+    override suspend fun ensureSubject(projectId: String, userId: String) {
         radarProjectService.get().ensureSubject(projectId, userId)
     }
 }

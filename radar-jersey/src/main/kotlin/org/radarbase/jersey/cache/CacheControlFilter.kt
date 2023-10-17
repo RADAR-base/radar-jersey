@@ -16,12 +16,12 @@ import java.io.IOException
 @Priority(Priorities.HEADER_DECORATOR)
 class CacheControlFilter(
     private val cacheControl: CacheControl,
-    private val vary: Array<String>
+    private val vary: Array<String>,
 ) : ContainerResponseFilter {
     @Throws(IOException::class)
     override fun filter(
         requestContext: ContainerRequestContext,
-        responseContext: ContainerResponseContext
+        responseContext: ContainerResponseContext,
     ) {
         if (responseContext.status != 200) return
 

@@ -8,14 +8,14 @@ import org.hibernate.jpa.HibernatePersistenceProvider
 import org.radarbase.jersey.hibernate.config.DatabaseConfig
 import org.radarbase.jersey.hibernate.config.RadarPersistenceInfo
 import org.slf4j.LoggerFactory
-import java.util.*
+import java.util.Properties
 
 /**
  * Creates EntityManagerFactory using Hibernate. When an [EntityManagerFactory] is created,
  * Liquibase is used to initialize the database, if so configured.
  */
 class RadarEntityManagerFactoryFactory(
-        @Context config: DatabaseConfig
+    @Context config: DatabaseConfig,
 ) : DisposableSupplier<EntityManagerFactory> {
     private val persistenceInfo = RadarPersistenceInfo(config)
     private val persistenceProvider = HibernatePersistenceProvider()
@@ -49,4 +49,3 @@ class RadarEntityManagerFactoryFactory(
         }
     }
 }
-

@@ -11,7 +11,7 @@ repositories {
 }
 
 dependencies {
-    api("org.radarbase:radar-jersey:0.10.0")
+    api("org.radarbase:radar-jersey:0.11.0")
 }
 ```
 
@@ -21,27 +21,62 @@ Any path or resource that should be authenticated against the ManagementPortal, 
 @Path("/projects")
 @Authenticated
 class Users(
-    @Context projectService: MyProjectService
+    @Context private val projectService: MyProjectService,
+    @Context private val asyncService: AsyncCoroutineService,
+    @Context private val authService: AuthService,
 ) {
+    // Most services can be run as coroutines with
+    // asynchronous handling
     @GET
     @NeedsPermission(Permission.PROJECT_READ)
-    fun getProjects(@Context auth: Auth): List<Project> {
-        return projectService.read()
-            .filter { auth.token.hasPermissionOnProject(PROJECT_READ, it.name) }
+    fun getProjects(
+        @Suspended asyncResponse: AsyncResponse,
+    ) = asyncService.runAsCoroutine(asyncResponse) {
+        projectService.read()
+            .filter { authService.hasPermission(PROJECT_READ, entityDetails { project(it.name) }) }
     }
 
     @POST
     @Path("/{projectId}")
     @NeedsPermission(Permission.PROJECT_UPDATE, "projectId")
-    fun updateProject(@PathParam("projectId") projectId: String, project: Project) {
-        return projectService.update(projectId, project)
+    fun updateProject(
+        @PathParam("projectId") projectId: String,
+        project: Project,
+        @Suspended asyncResponse: AsyncResponse,
+    ) = asyncService.runAsCoroutine(asyncResponse) {
+        projectService.update(projectId, project)
     }
 
     @GET
     @Path("/{projectId}/users/{userId}")
     @NeedsPermission(Permission.SUBJECT_READ, "projectId", "userId")
-    fun getUsers(@PathParam("projectId") projectId: String, @PathParam("userId") userId: String) {
-        return projectService.readUser(projectId, userId)
+    fun getUsers(
+        @PathParam("projectId") projectId: String,
+        @PathParam("userId") userId: String,
+        @Suspended asyncResponse: AsyncResponse,
+    ) = asyncService.runAsCoroutine(asyncResponse) {
+        projectService.readUser(projectId, userId)
+    }
+
+    // Simple responses can be handled without context switches
+    @GET
+    @Path("/{projectId}/settings")
+    @NeedsPermission(Permission.PROJECT_READ, "projectId")
+    fun getProjectSettings(
+        @PathParam("projectId") projectId: String,
+    ): ProjectSettingsDto {
+        return ProjectSettingsDto(projectId = projectId)
+    }
+
+    // Simple coroutine responses can also handled without context switches
+    @GET
+    @Path("/{projectId}/users/{userId}/settings")
+    @NeedsPermission(Permission.SUBJECT_READ, "projectId", "userId")
+    fun getProjectSettings(
+        @PathParam("projectId") projectId: String,
+        @PathParam("userId") userId: String,
+    ) = asyncService.runBlocking {
+        UserSettingsDto(projectId = projectId, userId = userId)
     }
 }
 ```
