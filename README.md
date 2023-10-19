@@ -104,12 +104,14 @@ class MyEnhancerFactory(private val config: MyConfigClass): EnhancerFactory {
     }
 
     class MyResourceEnhancer: JerseyResourceEnhancer {
+        // only classes used directly by Jersey, cannot inject them in user code
         override val classes: Array<Class<*>> = arrayOf(
             Filters.logResponse,
             Filters.cors,
             Filters.cache,
         )
 
+        // only classes used directly by Jersey, cannot inject them in user code
         override val packages = arrayOf(
             "com.example.app.resources",
         )
@@ -118,7 +120,10 @@ class MyEnhancerFactory(private val config: MyConfigClass): EnhancerFactory {
             bind(config)
                 .to(MyConfigClass::class.java)
             bind(MyService::class.java)
-                .to(MyService::class.java)
+                .to(MyServiceInterface::class.java)
+                .`in`(Singleton::class.java)
+            bindFactory(OtherServiceFactory::class.java)
+                .to(OtherServiceInterface::class.java)
                 .`in`(Singleton::class.java)
         }
     }

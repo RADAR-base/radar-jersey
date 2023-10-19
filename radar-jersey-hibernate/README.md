@@ -6,10 +6,6 @@ Database extensions for radar-jersey. Includes support for [Hibernate](https://h
 
 Add this library to your project using the following Gradle configuration:
 ```kotlin
-repositories {
-    maven(url = "https://dl.bintray.com/radar-base/org.radarbase")
-}
-
 dependencies {
     implementation("org.radarbase:radar-jersey-hibernate:<version>")
 }
@@ -23,9 +19,10 @@ Example repository code:
 
 ```kotlin
 class ProjectRepositoryImpl(
-        @Context em: Provider<EntityManager>
-): ProjectRepository, HibernateRepository(em) {
-    fun list(): List<ProjectDao> = transact {
+    @Context em: Provider<EntityManager>,
+    @Context asyncService: AsyncCoroutineService,
+    ): ProjectRepository, HibernateRepository(em, asyncService) {
+    suspend fun list(): List<ProjectDao> = transact {
         createQuery("SELECT p FROM Project p", ProjectDao::class.java)
                 .resultList
     }
