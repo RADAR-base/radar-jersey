@@ -33,19 +33,16 @@ class RadarEntityManagerFactoryFactory(
 
     companion object {
         private val logger = LoggerFactory.getLogger(RadarEntityManagerFactoryFactory::class.java)
+    }
+}
 
-        /**
-         * Use an EntityManager for the duration of [method]. No reference of the passed
-         * [EntityManager] should be returned, either directly or indirectly.
-         */
-        @Suppress("unused")
-        inline fun <T> EntityManagerFactory.useEntityManager(method: (EntityManager) -> T): T {
-            val entityManager = createEntityManager()
-            return try {
-                method(entityManager)
-            } finally {
-                entityManager.close()
-            }
-        }
+/**
+ * Use an EntityManager for the duration of [method]. No reference of the passed
+ * [EntityManager] should be returned, either directly or indirectly.
+ */
+@Suppress("unused")
+inline fun <T> EntityManagerFactory.useEntityManager(method: (EntityManager) -> T): T {
+    return createEntityManager().use { entityManager ->
+        method(entityManager)
     }
 }
