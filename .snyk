@@ -8,3 +8,4 @@ ignore:
         expires: 2023-14-30T10:58:31.820Z
         created: 2022-10-31T10:58:31.828Z
 patch: {}
+severityThreshold: high
