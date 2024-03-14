@@ -31,3 +31,8 @@ dependencies {
     testImplementation("org.hamcrest:hamcrest:${Versions.hamcrest}")
     testImplementation("com.squareup.okhttp3:okhttp:${Versions.okhttp}")
 }
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+}

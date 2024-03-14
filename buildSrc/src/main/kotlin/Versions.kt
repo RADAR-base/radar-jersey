@@ -13,7 +13,7 @@ object Versions {
 
     const val hk2 = "3.0.5"
     const val managementPortal = "2.1.0"
-    const val radarCommons = "1.1.1"
+    const val radarCommons = "1.1.2"
     const val javaJwt = "4.4.0"
     const val jakartaWsRs = "3.1.0"
     const val jakartaAnnotation = "2.1.1"
@@ -32,7 +32,7 @@ object Versions {
 
     const val hibernate = "6.4.2.Final"
     const val liquibase = "4.25.1"
-    const val postgres = "42.7.1"
+    const val postgres = "42.7.2"
     const val h2 = "2.2.224"
 
     const val wrapper = "8.4"

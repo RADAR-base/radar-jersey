@@ -55,6 +55,11 @@ dependencies {
     testImplementation("org.mockito.kotlin:mockito-kotlin:${Versions.mockitoKotlin}")
 }
 
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+}
+
 tasks.processResources {
     val properties = mapOf("version" to project.version)
     inputs.properties(properties)
