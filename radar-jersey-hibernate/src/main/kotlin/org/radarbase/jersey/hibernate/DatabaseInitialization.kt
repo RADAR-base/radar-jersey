@@ -4,19 +4,21 @@ import jakarta.persistence.EntityManager
 import jakarta.persistence.EntityManagerFactory
 import jakarta.ws.rs.core.Context
 import jakarta.ws.rs.ext.Provider
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import liquibase.command.CommandScope
 import liquibase.command.core.UpdateCommandStep
 import liquibase.command.core.helpers.DbUrlConnectionCommandStep.DATABASE_ARG
 import liquibase.database.DatabaseFactory
 import liquibase.database.jvm.JdbcConnection
 import org.glassfish.jersey.server.monitoring.ApplicationEvent
-import org.glassfish.jersey.server.monitoring.ApplicationEventListener
 import org.glassfish.jersey.server.monitoring.RequestEvent
 import org.glassfish.jersey.server.monitoring.RequestEventListener
 import org.hibernate.HibernateException
 import org.hibernate.Session
-import org.radarbase.jersey.hibernate.RadarEntityManagerFactoryFactory.Companion.useEntityManager
+import org.radarbase.jersey.coroutines.AsyncApplicationEventListener
 import org.radarbase.jersey.hibernate.config.DatabaseConfig
+import org.radarbase.jersey.service.AsyncCoroutineService
 import org.slf4j.LoggerFactory
 import java.sql.Connection
 
@@ -24,14 +26,17 @@ import java.sql.Connection
 class DatabaseInitialization(
     @Context private val entityManagerFactory: jakarta.inject.Provider<EntityManagerFactory>,
     @Context private val dbConfig: DatabaseConfig,
-) : ApplicationEventListener {
+    @Context private val asyncCoroutineService: AsyncCoroutineService,
+) : AsyncApplicationEventListener(asyncCoroutineService) {
 
-    override fun onEvent(event: ApplicationEvent) {
+    override suspend fun process(event: ApplicationEvent) {
         if (event.type != ApplicationEvent.Type.INITIALIZATION_APP_FINISHED) return
+        if (!dbConfig.liquibase.enable) return
+
         try {
-            entityManagerFactory.get().useEntityManager { em ->
-                em.useConnection { connection ->
-                    if (dbConfig.liquibase.enable) {
+            withContext(Dispatchers.IO) {
+                entityManagerFactory.get().useEntityManager { em ->
+                    em.useConnection { connection ->
                         initializeLiquibase(connection)
                     }
                 }

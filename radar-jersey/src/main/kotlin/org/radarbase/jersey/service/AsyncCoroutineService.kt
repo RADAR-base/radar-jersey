@@ -6,6 +6,11 @@ import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
 
 interface AsyncCoroutineService {
+    /**
+     * Run a block with the async coroutine service contexts. If no request scope was created yet,
+     * this will create one within the coroutine. It can be accessed via [runInRequestScope].
+     */
+    suspend fun <T> withContext(name: String = "AsyncCoroutineService.withContext", block: suspend () -> T): T
 
     /**
      * Run an AsyncResponse as a coroutine. The result of [block] will be used as the response. If

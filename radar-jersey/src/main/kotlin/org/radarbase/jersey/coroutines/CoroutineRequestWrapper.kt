@@ -6,6 +6,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import org.glassfish.jersey.process.internal.RequestContext
 import org.glassfish.jersey.process.internal.RequestScope
 import org.radarbase.jersey.exception.HttpServerUnavailableException
 import org.slf4j.LoggerFactory
@@ -14,28 +15,16 @@ import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
 
 class CoroutineRequestWrapper(
-    private val timeout: Duration? = 30.seconds,
-    requestScope: RequestScope? = null,
-    location: String? = null,
+    private val requestContext: RequestContext?,
+    config: CoroutineRequestConfig,
 ) {
     private val job = Job()
+    private val timeout = config.timeout
 
     val coroutineContext: CoroutineContext
 
-    private val requestContext = try {
-        if (requestScope != null) {
-            requestScope.suspendCurrent()
-                ?: requestScope.createContext()
-        } else {
-            null
-        }
-    } catch (ex: Throwable) {
-        logger.debug("Cannot create request scope: {}", ex.toString())
-        null
-    }
-
     init {
-        var context = job + contextName(location) + Dispatchers.Default
+        var context = job + contextName(config.location) + Dispatchers.Default
         if (requestContext != null) {
             context += CoroutineRequestContext(requestContext)
         }
@@ -60,7 +49,6 @@ class CoroutineRequestWrapper(
     }
 
     companion object {
-        private val logger = LoggerFactory.getLogger(CoroutineRequestWrapper::class.java)
 
         @Suppress("DEPRECATION", "KotlinRedundantDiagnosticSuppress")
         private fun contextName(location: String?) = CoroutineName(
@@ -68,3 +56,36 @@ class CoroutineRequestWrapper(
         )
     }
 }
+
+data class CoroutineRequestConfig(
+    var timeout: Duration? = 30.seconds,
+    var requestScope: RequestScope? = null,
+    var location: String? = null,
+)
+
+fun CoroutineRequestWrapper(requestScope: RequestScope? = null, block: CoroutineRequestConfig.(hasExistingScope: Boolean) -> Unit): CoroutineRequestWrapper {
+    var newlyCreated = false
+    val requestContext = try {
+        if (requestScope != null) {
+            requestScope.suspendCurrent() ?: run {
+                newlyCreated = true
+                requestScope.createContext()
+            }
+        } else {
+            null
+        }
+    } catch (ex: Throwable) {
+        logger.debug("Cannot create request scope: {}", ex.toString())
+        null
+    }
+    val config = CoroutineRequestConfig().apply {
+        if (requestScope != null && requestContext != null) {
+            requestScope.runInScope(requestContext) { block(!newlyCreated) }
+        } else {
+            block(!newlyCreated)
+        }
+    }
+    return CoroutineRequestWrapper(requestContext, config)
+}
+
+private val logger = LoggerFactory.getLogger(CoroutineRequestWrapper::class.java)
