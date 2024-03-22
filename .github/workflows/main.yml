@@ -4,9 +4,9 @@ name: CI
 # Run in master and dev branches and in all pull requests to those branches
 on:
   push:
-    branches: [ master, dev, release-0.9.2 ]
+    branches: [ master, dev, v0.9 ]
   pull_request:
-    branches: [ master, dev, release-0.9.2 ]
+    branches: [ master, dev, v0.9 ]
 
 jobs:
   # Build and test the code
