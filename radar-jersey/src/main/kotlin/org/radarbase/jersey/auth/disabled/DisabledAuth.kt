@@ -30,6 +30,7 @@ class DisabledAuth(
         override fun getGrantType(): String = "none"
 
         override fun getSubject(): String = "anonymous"
+        override fun getUsername(): String = "anonymous"
 
         override fun getIssuedAt(): Date = Date()
 
