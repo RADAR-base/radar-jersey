@@ -4,9 +4,9 @@ name: CI
 # Run in master and dev branches and in all pull requests to those branches
 on:
   push:
-    branches: [ master, dev ]
+    branches: [ master, dev, v0.9 ]
   pull_request:
-    branches: [ master, dev ]
+    branches: [ master, dev, v0.9 ]
 
 jobs:
   # Build and test the code
@@ -22,7 +22,7 @@ jobs:
       - uses: actions/setup-java@v3
         with:
           distribution: temurin
-          java-version: 11
+          java-version: 17
 
       - name: Setup Gradle
         uses: gradle/gradle-build-action@v2

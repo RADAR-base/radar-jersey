@@ -13,7 +13,7 @@ plugins {
 
 allprojects {
     group = "org.radarbase"
-    version = "0.9.2"
+    version = "0.9.3"
 }
 
 subprojects {
@@ -76,14 +76,14 @@ subprojects {
     }
 
     tasks.withType<JavaCompile> {
-        options.release.set(11)
+        options.release.set(17)
     }
 
     tasks.withType<KotlinCompile> {
         kotlinOptions {
-            jvmTarget = "11"
-            apiVersion = "1.7"
-            languageVersion = "1.7"
+            jvmTarget = "17"
+            apiVersion = "1.9"
+            languageVersion = "1.9"
         }
     }
 
@@ -212,5 +212,5 @@ nexusPublishing {
 }
 
 tasks.wrapper {
-    gradleVersion = "7.6"
+    gradleVersion = "8.3"
 }
