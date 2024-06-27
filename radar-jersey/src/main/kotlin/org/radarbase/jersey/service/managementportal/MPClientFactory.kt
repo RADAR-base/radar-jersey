@@ -14,7 +14,7 @@ class MPClientFactory(
 ) : Supplier<MPClient> {
     override fun get(): MPClient = MPClient(
         serverConfig = MPClient.MPServerConfig(
-            url = requireNotNull(authConfig.managementPortal.httpUrl) { "ManagementPortal client needs a URL" }.toString(),
+            url = requireNotNull(authConfig.managementPortal.url) { "ManagementPortal client needs a URL" }.toString(),
             clientId = requireNotNull(authConfig.managementPortal.clientId) { "ManagementPortal client needs a client ID" },
             clientSecret = requireNotNull(authConfig.managementPortal.clientSecret) { "ManagementPortal client needs a client secret" },
         ),
