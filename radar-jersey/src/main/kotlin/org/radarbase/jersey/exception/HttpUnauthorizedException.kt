@@ -48,7 +48,7 @@ class HttpUnauthorizedException(
         private val headerFieldIllegalCharacters = "[^\\x20-\\x21\\x23-\\x5B\\x5D-\\x7E]".toRegex()
         private fun StringBuilder.appendHeaderField(name: String, value: String?) {
             value ?: return
-            append(' ')
+            append(", ")
             append(name)
             append("=\"")
             append(value.replace(headerFieldIllegalCharacters, "?"))
