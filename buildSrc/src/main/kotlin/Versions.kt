@@ -1,6 +1,6 @@
 @Suppress("ConstPropertyName")
 object Versions {
-    const val project = "0.11.2-SNAPSHOT"
+    const val project = "0.11.2"
     const val kotlin = "1.9.22"
 
     const val java: Int = 17
