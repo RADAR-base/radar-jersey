@@ -1,3 +1,5 @@
+REMOVE ME
+
 # radar-jersey
 
 Library to facilitate using with a Jersey-based REST API. This includes OAuth 2.0 integration, exception handling and resource configuration.
