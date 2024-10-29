@@ -31,9 +31,8 @@ object ConfigLoader {
         factoryClass: Class<out EnhancerFactory>,
         vararg parameters: Any,
     ): ResourceConfig {
-        val enhancerFactory = factoryClass
-            .getConstructor(*parameters.map { it.javaClass }.toTypedArray())
-            .newInstance(*parameters)
+        val enhancerFactory =
+            factoryClass.getConstructor(*parameters.map { it.javaClass }.toTypedArray()).newInstance(*parameters)
         return createResourceConfig(enhancerFactory.createEnhancers())
     }
 
@@ -57,8 +56,7 @@ object ConfigLoader {
             exitProcess(0)
         }
 
-        val configFile = args.firstOrNull()?.let { Path(it) }
-            ?: fileNames.map { Path(it) }.firstOrNull { it.exists() }
+        val configFile = args.firstOrNull()?.let { Path(it) } ?: fileNames.map { Path(it) }.firstOrNull { it.exists() }
         requireNotNull(configFile) { "Configuration not provided." }
 
         logger.info("Reading configuration from {}", configFile.toAbsolutePath())
@@ -113,21 +111,20 @@ object ConfigLoader {
      * Create a resourceConfig based on the provided resource enhancers. This method also disables
      * the WADL since it may be identified as a security risk.
      */
-    fun createResourceConfig(enhancers: List<JerseyResourceEnhancer>): ResourceConfig =
-        ResourceConfig().apply {
-            property("jersey.config.server.wadl.disableWadl", true)
-            enhancers.forEach { enhancer ->
-                packages(*enhancer.packages)
-                registerClasses(*enhancer.classes)
-                enhancer.enhanceResources(this@apply)
-            }
-
-            register(object : AbstractBinder() {
-                override fun configure() {
-                    enhancers.forEach { it.enhanceBinder(this) }
-                }
-            })
+    fun createResourceConfig(enhancers: List<JerseyResourceEnhancer>): ResourceConfig = ResourceConfig().apply {
+        property("jersey.config.server.wadl.disableWadl", true)
+        enhancers.forEach { enhancer ->
+            packages(*enhancer.packages)
+            registerClasses(*enhancer.classes)
+            enhancer.enhanceResources(this@apply)
         }
+
+        register(object : AbstractBinder() {
+            override fun configure() {
+                enhancers.forEach { it.enhanceBinder(this) }
+            }
+        })
+    }
 
     val logger: Logger = LoggerFactory.getLogger(ConfigLoader::class.java)
 
@@ -137,12 +134,16 @@ object ConfigLoader {
      */
     inline fun <T> T.copyEnv(
         key: String,
-        doCopy: T.(String?) -> T,
-    ): T = copyOnChange<T, String?>(
-        original = null,
-        modification = { System.getenv(key) },
-        doCopy = doCopy,
-    )
+        envVarAccessor: (String?) -> String? = System::getenv,
+        doCopy: T.(String) -> T,
+    ): T {
+        val newValue = envVarAccessor(key)
+        return if (newValue != null) {
+            doCopy(newValue)
+        } else {
+            this
+        }
+    }
 
     /**
      * Perform copy if the [modification] function makes any change to an [original] value.
