@@ -1,6 +1,6 @@
 @Suppress("ConstPropertyName")
 object Versions {
-    const val project = "0.12.0"
+    const val project = "0.12.1"
     const val kotlin = "1.9.22"
 
     const val java: Int = 17
@@ -12,7 +12,7 @@ object Versions {
     const val mockitoKotlin = "5.2.1"
 
     const val hk2 = "3.0.5"
-    const val managementPortal = "2.1.6"
+    const val managementPortal = "2.1.7"
     const val radarCommons = "1.1.2"
     const val javaJwt = "4.4.0"
     const val jakartaWsRs = "3.1.0"
