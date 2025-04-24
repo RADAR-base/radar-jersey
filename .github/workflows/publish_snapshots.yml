@@ -5,6 +5,8 @@ name: Publish snapshots
 on:
   push:
     branches: [ dev ]
+  pull_request:
+    branches: [ dev ]
 
 jobs:
   # Build and test the code
