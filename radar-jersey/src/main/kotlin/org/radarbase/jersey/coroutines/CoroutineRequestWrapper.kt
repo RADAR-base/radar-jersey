@@ -44,7 +44,12 @@ class CoroutineRequestWrapper(
         timeout ?: return
         launch {
             delay(timeout)
-            emit(HttpServerUnavailableException())
+            emit(
+                HttpServerUnavailableException(
+                    "The co-routine that handles the request exceeded the max duration of " +
+                        "$timeout. The request timeout can be configured as parameter to the runAsCoroutine() or runBlocking() function.",
+                ),
+            )
         }
     }
 
@@ -63,7 +68,10 @@ data class CoroutineRequestConfig(
     var location: String? = null,
 )
 
-fun CoroutineRequestWrapper(requestScope: RequestScope? = null, block: CoroutineRequestConfig.(hasExistingScope: Boolean) -> Unit): CoroutineRequestWrapper {
+fun CoroutineRequestWrapper(
+    requestScope: RequestScope? = null,
+    block: CoroutineRequestConfig.(hasExistingScope: Boolean) -> Unit,
+): CoroutineRequestWrapper {
     var newlyCreated = false
     val requestContext = try {
         if (requestScope != null) {

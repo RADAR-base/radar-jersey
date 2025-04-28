@@ -1,2 +1,3 @@
 config:
-  test: a
+  requiredArg: a
+  optionalArg: b
