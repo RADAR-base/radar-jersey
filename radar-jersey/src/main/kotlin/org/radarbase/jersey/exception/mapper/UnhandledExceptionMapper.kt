@@ -16,6 +16,7 @@ import jakarta.ws.rs.core.Response
 import jakarta.ws.rs.core.UriInfo
 import jakarta.ws.rs.ext.ExceptionMapper
 import jakarta.ws.rs.ext.Provider
+import org.radarbase.jersey.exception.entity.ErrorResponse
 import org.slf4j.LoggerFactory
 
 /** Handle exceptions without a specific mapper. */
@@ -27,10 +28,16 @@ class UnhandledExceptionMapper(
 ) : ExceptionMapper<Throwable> {
 
     override fun toResponse(exception: Throwable): Response {
-        logger.error("[500] {} {}", requestContext.method, uriInfo.path, exception)
+        logger.error("[500] {} {} → {}", requestContext.method, uriInfo.path, exception.message, exception)
+
+        val errorResponse = ErrorResponse(
+            error = "internal_server_error",
+            description = exception.message ?: "An unexpected error occurred.",
+        )
+
         return Response.serverError()
             .header("Content-Type", "application/json; charset=utf-8")
-            .entity("""{"error":"unknown","error_description":"Unknown exception."}""")
+            .entity(errorResponse)
             .build()
     }
 
