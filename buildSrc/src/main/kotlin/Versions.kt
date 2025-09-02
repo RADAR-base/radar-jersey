@@ -35,5 +35,5 @@ object Versions {
     const val postgres = "42.7.2"
     const val h2 = "2.2.224"
 
-    const val wrapper = "8.4"
+    const val wrapper = "8.13"
 }
