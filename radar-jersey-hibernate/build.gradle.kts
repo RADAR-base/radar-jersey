@@ -5,6 +5,12 @@ plugins {
 description = "Library for Jersey with Hibernate with the RADAR platform"
 
 dependencies {
+
+    /* The entries in the block below are added here to force the version of
+     * transitive dependencies and mitigate reported vulnerabilities
+     */
+    implementation("org.apache.commons:commons-lang3:3.18.0")
+
     implementation(kotlin("reflect", version = Versions.kotlin))
     api(kotlin("stdlib-jdk8", version = Versions.kotlin))
 
