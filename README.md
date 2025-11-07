@@ -11,7 +11,7 @@ repositories {
 }
 
 dependencies {
-    api("org.radarbase:radar-jersey:0.11.3-SNAPSHOT")
+    api("org.radarbase:radar-jersey:0.12.4")
 }
 ```
 
