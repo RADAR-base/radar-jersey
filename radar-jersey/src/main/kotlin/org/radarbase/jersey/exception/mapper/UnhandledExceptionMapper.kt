@@ -30,14 +30,9 @@ class UnhandledExceptionMapper(
     override fun toResponse(exception: Throwable): Response {
         logger.error("[500] {} {} → {}", requestContext.method, uriInfo.path, exception.message, exception)
 
-        val errorResponse = ErrorResponse(
-            error = "internal_server_error",
-            description = exception.message ?: "An unexpected error occurred.",
-        )
-
         return Response.serverError()
             .header("Content-Type", "application/json; charset=utf-8")
-            .entity(errorResponse)
+            .entity("""{"error":"unknown","error_description":"Unknown exception."}""")
             .build()
     }
 

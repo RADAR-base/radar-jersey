@@ -248,7 +248,7 @@ internal class RadarJerseyResourceEnhancerTest {
         ).execute().use { response ->
             assertThat(response.code, `is`(500))
             val body = response.body?.string()
-            assertThat(body, equalTo("""{"error":"internal_server_error","error_description":"Test"}"""))
+            assertThat(body, equalTo("""{"error":"unknown","error_description":"Unknown exception."}"""))
         }
     }
 
