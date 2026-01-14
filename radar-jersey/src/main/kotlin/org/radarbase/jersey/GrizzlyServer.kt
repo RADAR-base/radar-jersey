@@ -40,24 +40,18 @@ class GrizzlyServer(
      */
     workerMaxPoolSize: Int? = null,
 ) {
-    private val server = GrizzlyHttpServerFactory
-        .createHttpServer(baseUri, resources)
-        .also { httpServer ->
-            httpServer.serverConfiguration.isJmxEnabled = enableJmx
+    private val server = GrizzlyHttpServerFactory.createHttpServer(baseUri, resources).apply {
+        serverConfiguration.isJmxEnabled = enableJmx
 
-            if (workerCorePoolSize != null || workerMaxPoolSize != null) {
-                httpServer.listeners.forEach { listener ->
-                    val workerConfig = ThreadPoolConfig.defaultConfig()
-                    workerCorePoolSize?.let { core ->
-                        workerConfig.setCorePoolSize(core)
-                    }
-                    workerMaxPoolSize?.let { max ->
-                        workerConfig.setMaxPoolSize(max)
-                    }
-                    listener.transport.workerThreadPoolConfig = workerConfig
+        if (workerCorePoolSize != null || workerMaxPoolSize != null) {
+            listeners.forEach { listener ->
+                listener.transport.workerThreadPoolConfig = ThreadPoolConfig.defaultConfig().apply {
+                    workerCorePoolSize?.let(::setCorePoolSize)
+                    workerMaxPoolSize?.let(::setMaxPoolSize)
                 }
             }
         }
+    }
 
     private val shutdownHook = Thread(
         {
