@@ -9,6 +9,7 @@
 
 package org.radarbase.jersey
 
+import org.glassfish.grizzly.threadpool.ThreadPoolConfig
 import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory
 import org.glassfish.jersey.server.ResourceConfig
 import org.slf4j.LoggerFactory
@@ -28,9 +29,29 @@ class GrizzlyServer(
      * are imported.
      */
     enableJmx: Boolean = false,
+    /**
+     * Optional number of worker threads in the main Grizzly thread pool.
+     * If null, Grizzly's default configuration is used.
+     */
+    workerCorePoolSize: Int? = null,
+    /**
+     * Optional maximum number of worker threads in the main Grizzly thread pool.
+     * If null, Grizzly's default configuration is used.
+     */
+    workerMaxPoolSize: Int? = null,
 ) {
-    private val server = GrizzlyHttpServerFactory.createHttpServer(baseUri, resources)
-        .also { it.serverConfiguration.isJmxEnabled = enableJmx }
+    private val server = GrizzlyHttpServerFactory.createHttpServer(baseUri, resources).apply {
+        serverConfiguration.isJmxEnabled = enableJmx
+
+        if (workerCorePoolSize != null || workerMaxPoolSize != null) {
+            listeners.forEach { listener ->
+                listener.transport.workerThreadPoolConfig = ThreadPoolConfig.defaultConfig().apply {
+                    workerCorePoolSize?.let(::setCorePoolSize)
+                    workerMaxPoolSize?.let(::setMaxPoolSize)
+                }
+            }
+        }
+    }
 
     private val shutdownHook = Thread(
         {
