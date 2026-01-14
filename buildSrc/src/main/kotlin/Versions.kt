@@ -4,7 +4,7 @@ object Versions {
     const val kotlin = "1.9.22"
 
     const val java: Int = 17
-    const val jersey = "3.1.5"
+    const val jersey = "3.1.10"
     const val grizzly = "4.0.2"
     const val okhttp = "4.12.0"
     const val junit = "5.10.1"
