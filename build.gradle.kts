@@ -3,27 +3,38 @@ import org.radarbase.gradle.plugin.radarPublishing
 import org.radarbase.gradle.plugin.radarRootProject
 
 plugins {
-    id("org.radarbase.radar-root-project") version Versions.radarCommons
-    id("org.radarbase.radar-dependency-management") version Versions.radarCommons
-    id("org.radarbase.radar-kotlin") version Versions.radarCommons apply false
-    id("org.radarbase.radar-publishing") version Versions.radarCommons apply false
+    alias(libs.plugins.radar.root.project)
+    alias(libs.plugins.radar.dependency.management)
+}
+
+repositories {
+    mavenCentral()
 }
 
 radarRootProject {
-    projectVersion.set(Versions.project)
-    gradleVersion.set(Versions.wrapper)
+    projectVersion.set(libs.versions.project)
+    gradleVersion.set(libs.versions.gradle)
 }
 
 subprojects {
     apply(plugin = "org.radarbase.radar-kotlin")
     apply(plugin = "org.radarbase.radar-publishing")
 
+    dependencies {
+        plugins.withType<JavaPlugin> {
+            constraints {
+                add("implementation", rootProject.libs.jackson.bom) {
+                    because("Force safe version of Jackson across all modules")
+                }
+            }
+        }
+    }
+
     radarKotlin {
-        javaVersion.set(Versions.java)
-        kotlinVersion.set(Versions.kotlin)
+        javaVersion.set(libs.versions.java.get().toInt())
+        kotlinVersion.set(rootProject.libs.versions.kotlin)
         log4j2Version.set(Versions.log4j2)
         slf4jVersion.set(Versions.slf4j)
-        junitVersion.set(Versions.junit)
     }
 
     radarPublishing {
