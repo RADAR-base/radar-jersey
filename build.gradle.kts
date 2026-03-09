@@ -42,16 +42,22 @@ subprojects {
         githubUrl.set("https://github.com/$githubRepoName.git")
         developers {
             developer {
-                id.set("blootsvoets")
-                name.set("Joris Borgdorff")
-                email.set("joris@thehyve.nl")
+                id.set("pvannierop")
+                name.set("Pim van Nierop")
+                email.set("pim@thehyve.nl")
                 organization.set("The Hyve")
             }
             developer {
-                id.set("nivemaham")
-                name.set("Nivethika Mahasivam")
-                email.set("nivethika@thehyve.nl")
-                organization.set("The Hyve")
+                id.set("mpgxvii")
+                name.set("Pauline Conde")
+                email.set("mpgxvii@gmail.com")
+                organization.set("King's College London")
+            }
+            developer {
+                id.set("this-Aditya")
+                name.set("Adithya Mishra")
+                email.set("aditya.mishra@kcl.ac.uk")
+                organization.set("King's College London")
             }
         }
     }
