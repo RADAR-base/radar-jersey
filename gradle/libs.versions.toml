@@ -10,7 +10,8 @@ hamcrest = "2.2"
 hibernate = "6.4.2.Final"
 hibernateValidator = "8.0.1.Final"
 hk2 = "3.0.5"
-jackson = "2.18.0"
+# @pin Upgrade to 2.21.x requires kotlin v2 minimum
+jackson = "2.20.2"
 jakartaActivation = "2.1.2"
 jakartaAnnotation = "2.1.1"
 jakartaJaxbCore = "4.0.4"
@@ -27,7 +28,8 @@ mockitoKotlin = "5.2.1"
 mustache = "0.9.11"
 okhttp = "4.12.0"
 postgres = "42.7.2"
-radarCommons = "1.2.4"
+# FIXME
+radarCommons = "1.2.5-SNAPSHOT"
 swagger = "2.2.35"
 
 [libraries]
@@ -41,6 +43,7 @@ hibernate-hikaricp = { module = "org.hibernate:hibernate-hikaricp", version.ref 
 hibernate-validator = { module = "org.hibernate.validator:hibernate-validator", version.ref = "hibernateValidator" }
 hk2 = { module = "org.glassfish.hk2:hk2", version.ref = "hk2" }
 jackson-bom = { module = "com.fasterxml.jackson:jackson-bom", version.ref = "jackson" }
+jackson-core = { module = "com.fasterxml.jackson.core:jackson-core", version.ref = "jackson" }
 jackson-databind = { module = "com.fasterxml.jackson.core:jackson-databind" }
 jackson-dataformat-yaml = { module = "com.fasterxml.jackson.dataformat:jackson-dataformat-yaml" }
 jackson-datatype-jdk8 = { module = "com.fasterxml.jackson.datatype:jackson-datatype-jdk8" }
@@ -72,12 +75,19 @@ radar-commons-kotlin = { module = "org.radarbase:radar-commons-kotlin", version.
 radar-mp-client = { module = "org.radarbase:managementportal-client", version.ref = "managementPortal" }
 swagger-jaxrs2 = { module = "io.swagger.core.v3:swagger-jaxrs2-jakarta", version.ref = "swagger" }
 
+[plugins]
+radar-root-project = { id = "org.radarbase.radar-root-project", version.ref = "radarCommons" }
+radar-dependency-management = { id = "org.radarbase.radar-dependency-management", version.ref = "radarCommons" }
+radar-kotlin = { id = "org.radarbase.radar-kotlin", version.ref = "radarCommons" }
+radar-publishing = { id = "org.radarbase.radar-publishing", version.ref = "radarCommons" }
+
 [bundles]
 database-impl = [
     "hibernate-core",
     "liquibase-core",
 ]
 jackson = [
+    "jackson-core",
     "jackson-databind",
     "jackson-dataformat-yaml",
     "jackson-datatype-jdk8",
