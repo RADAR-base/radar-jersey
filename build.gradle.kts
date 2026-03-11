@@ -36,10 +36,10 @@ subprojects {
     // --- Vulnerability fixes end ---
 
     radarKotlin {
-        javaVersion.set(libs.versions.java.get().toInt())
+        javaVersion.set(rootProject.libs.versions.java.get().toInt())
         kotlinVersion.set(rootProject.libs.versions.kotlin)
-        log4j2Version.set(Versions.log4j2)
-        slf4jVersion.set(Versions.slf4j)
+        log4j2Version.set(rootProject.libs.versions.log4j2)
+        slf4jVersion.set(rootProject.libs.versions.slf4j)
     }
 
     radarPublishing {

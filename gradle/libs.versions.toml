@@ -23,6 +23,7 @@ javaJwt = "4.4.0"
 jersey = "3.1.5"
 kotlin = "1.9.24"
 liquibase = "4.33.0"
+log4j2 = "2.20.0"
 managementPortal = "2.1.13"
 mockitoKotlin = "5.2.1"
 mustache = "0.9.11"
@@ -30,6 +31,7 @@ okhttp = "4.12.0"
 postgres = "42.7.2"
 # FIXME
 radarCommons = "1.2.5-SNAPSHOT"
+slf4j = "2.0.9"
 swagger = "2.2.35"
 
 [libraries]
