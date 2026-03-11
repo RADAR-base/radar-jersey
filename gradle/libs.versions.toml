@@ -1,5 +1,5 @@
 [versions]
-project = "0.12.6-SNAPSHOT"
+project = "0.12.7"
 java = "17"
 gradle = "8.14"
 commonsLang3 = "3.18.0"
