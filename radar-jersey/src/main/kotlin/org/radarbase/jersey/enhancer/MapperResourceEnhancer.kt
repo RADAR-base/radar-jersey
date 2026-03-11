@@ -46,7 +46,10 @@ class MapperResourceEnhancer : JerseyResourceEnhancer {
         fun createDefaultMapper(): ObjectMapper = jsonMapper {
             disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
             disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
-            serializationInclusion(JsonInclude.Include.NON_NULL)
+            defaultPropertyInclusion(
+                JsonInclude.Value.construct(JsonInclude.Include.NON_NULL,
+                    JsonInclude.Include.ALWAYS),
+            )
             addModule(
                 kotlinModule {
                     enable(KotlinFeature.NullToEmptyMap)
