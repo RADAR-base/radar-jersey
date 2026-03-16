@@ -18,6 +18,7 @@ jakartaJaxbRuntime = "4.0.4"
 jakartaValidation = "3.0.2"
 jakartaWsRs = "3.1.0"
 jakartaXmlBind = "4.0.1"
+jakarataServlet = "6.0.0"
 javaJwt = "4.4.0"
 jersey = "3.1.5"
 kotlin = "1.9.24"
@@ -74,7 +75,10 @@ postgresql = { module = "org.postgresql:postgresql", version.ref = "postgres" }
 radar-auth = { module = "org.radarbase:radar-auth", version.ref = "managementPortal" }
 radar-commons-kotlin = { module = "org.radarbase:radar-commons-kotlin", version.ref = "radarCommons" }
 radar-mp-client = { module = "org.radarbase:managementportal-client", version.ref = "managementPortal" }
+swagger-annotations = { module = "io.swagger.core.v3:swagger-annotations-jakarta", version.ref = "swagger" }
 swagger-jaxrs2 = { module = "io.swagger.core.v3:swagger-jaxrs2-jakarta", version.ref = "swagger" }
+swagger-models = { module = "io.swagger.core.v3:swagger-models-jakarta", version.ref = "swagger" }
+jakarta-servlet-api = { module = "jakarta.servlet:jakarta.servlet-api", version.ref = "jakarataServlet" }
 
 [plugins]
 radar-root-project = { id = "org.radarbase.radar-root-project", version.ref = "radarCommons" }
