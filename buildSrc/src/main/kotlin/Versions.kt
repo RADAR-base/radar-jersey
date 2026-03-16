@@ -27,6 +27,7 @@ object Versions {
     const val hibernateValidator = "8.0.1.Final"
     const val glassfishJakartaEl = "4.0.2"
     const val jakartaActivation = "2.1.2"
+    const val jakartaServlet = "6.0.0"
     const val swagger = "2.2.35"
     const val mustache = "0.9.11"
 

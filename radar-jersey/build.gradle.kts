@@ -36,9 +36,12 @@ dependencies {
     // exception template rendering
     implementation("com.github.spullara.mustache.java:compiler:${Versions.mustache}")
 
+    api("io.swagger.core.v3:swagger-annotations-jakarta:${Versions.swagger}")
+    api("io.swagger.core.v3:swagger-models-jakarta:${Versions.swagger}")
     implementation("io.swagger.core.v3:swagger-jaxrs2-jakarta:${Versions.swagger}") {
         exclude(group = "com.fasterxml.jackson.jaxrs", module = "jackson-jaxrs-json-provider")
     }
+    runtimeOnly("jakarta.servlet:jakarta.servlet-api:${Versions.jakartaServlet}")
 
     runtimeOnly("jakarta.xml.bind:jakarta.xml.bind-api:${Versions.jakartaXmlBind}")
     runtimeOnly("org.glassfish.jaxb:jaxb-core:${Versions.jakartaJaxbCore}")
