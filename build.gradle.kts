@@ -3,27 +3,40 @@ import org.radarbase.gradle.plugin.radarPublishing
 import org.radarbase.gradle.plugin.radarRootProject
 
 plugins {
-    id("org.radarbase.radar-root-project") version Versions.radarCommons
-    id("org.radarbase.radar-dependency-management") version Versions.radarCommons
-    id("org.radarbase.radar-kotlin") version Versions.radarCommons apply false
-    id("org.radarbase.radar-publishing") version Versions.radarCommons apply false
+    alias(libs.plugins.radar.root.project)
+    alias(libs.plugins.radar.dependency.management)
+}
+
+repositories {
+    mavenCentral()
 }
 
 radarRootProject {
-    projectVersion.set(Versions.project)
-    gradleVersion.set(Versions.wrapper)
+    projectVersion.set(libs.versions.project)
+    gradleVersion.set(libs.versions.gradle)
 }
 
 subprojects {
     apply(plugin = "org.radarbase.radar-kotlin")
     apply(plugin = "org.radarbase.radar-publishing")
 
+    // --- Vulnerability fixes start ---
+    dependencies {
+        plugins.withType<JavaPlugin> {
+            constraints {
+                add("implementation", rootProject.libs.jackson.bom) {
+                    because("Force safe version of Jackson across all modules")
+                }
+                add("implementation", rootProject.libs.jackson.core) {
+                    because("Force safe version of Jackson across all modules")
+                }
+            }
+        }
+    }
+    // --- Vulnerability fixes end ---
+
     radarKotlin {
-        javaVersion.set(Versions.java)
-        kotlinVersion.set(Versions.kotlin)
-        log4j2Version.set(Versions.log4j2)
-        slf4jVersion.set(Versions.slf4j)
-        junitVersion.set(Versions.junit)
+        log4j2Version.set(rootProject.libs.versions.log4j2)
     }
 
     radarPublishing {
@@ -31,16 +44,22 @@ subprojects {
         githubUrl.set("https://github.com/$githubRepoName.git")
         developers {
             developer {
-                id.set("blootsvoets")
-                name.set("Joris Borgdorff")
-                email.set("joris@thehyve.nl")
+                id.set("pvannierop")
+                name.set("Pim van Nierop")
+                email.set("pim@thehyve.nl")
                 organization.set("The Hyve")
             }
             developer {
-                id.set("nivemaham")
-                name.set("Nivethika Mahasivam")
-                email.set("nivethika@thehyve.nl")
-                organization.set("The Hyve")
+                id.set("mpgxvii")
+                name.set("Pauline Conde")
+                email.set("mpgxvii@gmail.com")
+                organization.set("King's College London")
+            }
+            developer {
+                id.set("this-Aditya")
+                name.set("Adithya Mishra")
+                email.set("aditya.mishra@kcl.ac.uk")
+                organization.set("King's College London")
             }
         }
     }

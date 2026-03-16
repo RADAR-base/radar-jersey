@@ -8,7 +8,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import liquibase.command.CommandScope
 import liquibase.command.core.UpdateCommandStep
-import liquibase.command.core.helpers.DbUrlConnectionCommandStep.DATABASE_ARG
+import liquibase.command.core.helpers.DbUrlConnectionArgumentsCommandStep.DATABASE_ARG
 import liquibase.database.DatabaseFactory
 import liquibase.database.jvm.JdbcConnection
 import org.glassfish.jersey.server.monitoring.ApplicationEvent

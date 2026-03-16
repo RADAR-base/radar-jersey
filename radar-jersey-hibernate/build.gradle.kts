@@ -5,37 +5,29 @@ plugins {
 description = "Library for Jersey with Hibernate with the RADAR platform"
 
 dependencies {
+    implementation(libs.commons.lang3)
 
-    /* The entries in the block below are added here to force the version of
-     * transitive dependencies and mitigate reported vulnerabilities
-     */
-    implementation("org.apache.commons:commons-lang3:3.18.0")
-
-    implementation(kotlin("reflect", version = Versions.kotlin))
-    api(kotlin("stdlib-jdk8", version = Versions.kotlin))
+    implementation(libs.kotlin.reflect)
+    api(libs.kotlin.stdlib)
 
     api(project(":radar-jersey"))
-    api("org.hibernate:hibernate-core:${Versions.hibernate}")
-    runtimeOnly("org.hibernate:hibernate-hikaricp:${Versions.hibernate}")
 
-    implementation("org.radarbase:radar-commons-kotlin:${Versions.radarCommons}")
+    api(libs.hibernate.core)
+    runtimeOnly(libs.hibernate.hikaricp)
+    implementation(libs.radar.commons.kotlin)
 
-    runtimeOnly("jakarta.validation:jakarta.validation-api:${Versions.jakartaValidation}")
-    runtimeOnly("org.hibernate.validator:hibernate-validator:${Versions.hibernateValidator}")
+    runtimeOnly(libs.jakarta.validation.api)
+    runtimeOnly(libs.hibernate.validator)
+    runtimeOnly(libs.glassfish.jakarta.el)
 
-    runtimeOnly("org.glassfish:jakarta.el:${Versions.glassfishJakartaEl}")
+    implementation(libs.liquibase.core)
+    runtimeOnly(libs.postgresql)
 
-    implementation("org.liquibase:liquibase-core:${Versions.liquibase}")
-
-    runtimeOnly("org.postgresql:postgresql:${Versions.postgres}")
-
-    testRuntimeOnly("org.glassfish.grizzly:grizzly-http-server:${Versions.grizzly}")
-    testRuntimeOnly("org.glassfish.jersey.containers:jersey-container-grizzly2-servlet:${Versions.jersey}")
-
-    testImplementation("com.h2database:h2:${Versions.h2}")
-
-    testImplementation("org.hamcrest:hamcrest:${Versions.hamcrest}")
-    testImplementation("com.squareup.okhttp3:okhttp:${Versions.okhttp}")
+    testRuntimeOnly(libs.grizzly.http.server)
+    testRuntimeOnly(libs.jersey.test.container.grizzly)
+    testImplementation(libs.h2)
+    testImplementation(libs.hamcrest)
+    testImplementation(libs.okhttp)
 }
 
 java {
