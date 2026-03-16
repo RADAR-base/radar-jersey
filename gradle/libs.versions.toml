@@ -29,7 +29,8 @@ mockitoKotlin = "5.2.1"
 mustache = "0.9.11"
 okhttp = "4.12.0"
 postgres = "42.7.2"
-# FIXME
+# Because of circular dependencies between radar-commons -> radar-jersey -> radar-schemas we use
+# a prelease of commons, so that we can make the radar-schemas -> radar-commons final releases.
 radarCommons = "1.2.5-SNAPSHOT"
 slf4j = "2.0.9"
 swagger = "2.2.35"
