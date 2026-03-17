@@ -68,7 +68,7 @@ object ConfigLoader {
                         enable(KotlinFeature.NullToEmptyCollection)
                         enable(KotlinFeature.NullIsSameAsDefault)
                         enable(KotlinFeature.SingletonSupport)
-                        enable(KotlinFeature.StrictNullChecks)
+                        enable(KotlinFeature.NewStrictNullChecks)
                     },
                 )
             }
