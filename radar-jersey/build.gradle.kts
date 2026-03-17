@@ -5,54 +5,46 @@ plugins {
 description = "Library for Jersey authorization, exception handling and configuration with the RADAR platform"
 
 dependencies {
-    implementation(kotlin("reflect", version = Versions.kotlin))
-    api(kotlin("stdlib-jdk8", version = Versions.kotlin))
+    implementation(libs.kotlin.reflect)
+    api(libs.kotlin.stdlib)
 
-    api("org.radarbase:radar-auth:${Versions.managementPortal}")
-    api("org.radarbase:managementportal-client:${Versions.managementPortal}")
+    api(libs.radar.auth)
+    api(libs.radar.mp.client)
+    implementation(libs.radar.commons.kotlin)
 
-    implementation("org.radarbase:radar-commons-kotlin:${Versions.radarCommons}")
+    implementation(libs.java.jwt)
 
-    implementation("com.auth0:java-jwt:${Versions.javaJwt}")
+    api(libs.jakarta.ws.rs.api)
+    api(libs.jakarta.annotation.api)
+    api(libs.hk2)
 
-    api("jakarta.ws.rs:jakarta.ws.rs-api:${Versions.jakartaWsRs}")
-    api("jakarta.annotation:jakarta.annotation-api:${Versions.jakartaAnnotation}")
-    api("org.glassfish.hk2:hk2:${Versions.hk2}")
+    api(libs.jersey.hk2.inject)
+    api(libs.jersey.server)
+    implementation(libs.jersey.media.json)
 
-    api("org.glassfish.jersey.inject:jersey-hk2:${Versions.jersey}")
-    api("org.glassfish.jersey.core:jersey-server:${Versions.jersey}")
-    implementation("org.glassfish.jersey.media:jersey-media-json-jackson:${Versions.jersey}")
+    // Using the BOM and the Bundle
+    api(platform(libs.jackson.bom))
+    implementation(libs.bundles.jackson)
 
-    api(platform("com.fasterxml.jackson:jackson-bom:${Versions.jackson}"))
-    api("com.fasterxml.jackson.core:jackson-databind")
-    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
-    implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
-    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jdk8")
-    implementation("com.fasterxml.jackson.jakarta.rs:jackson-jakarta-rs-json-provider")
+    implementation(libs.jersey.container.grizzly)
+    implementation(libs.mustache)
 
-    implementation("org.glassfish.jersey.containers:jersey-container-grizzly2-http:${Versions.jersey}")
-    implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml")
-
-    // exception template rendering
-    implementation("com.github.spullara.mustache.java:compiler:${Versions.mustache}")
-
-    implementation("io.swagger.core.v3:swagger-jaxrs2-jakarta:${Versions.swagger}") {
+    api(libs.swagger.annotations)
+    api(libs.swagger.models)
+    implementation(libs.swagger.jaxrs2) {
         exclude(group = "com.fasterxml.jackson.jaxrs", module = "jackson-jaxrs-json-provider")
     }
+    runtimeOnly(libs.jakarta.servlet.api)
 
-    runtimeOnly("jakarta.xml.bind:jakarta.xml.bind-api:${Versions.jakartaXmlBind}")
-    runtimeOnly("org.glassfish.jaxb:jaxb-core:${Versions.jakartaJaxbCore}")
-    runtimeOnly("org.glassfish.jaxb:jaxb-runtime:${Versions.jakartaJaxbRuntime}")
-    runtimeOnly("jakarta.activation:jakarta.activation-api:${Versions.jakartaActivation}")
+    runtimeOnly(libs.jakarta.xml.bind.api)
+    runtimeOnly(libs.bundles.jaxb.runtime)
+    runtimeOnly(libs.jakarta.activation.api)
 
-    testImplementation("com.squareup.okhttp3:okhttp:${Versions.okhttp}")
-
-    testRuntimeOnly("org.glassfish.grizzly:grizzly-http-server:${Versions.grizzly}")
-    testRuntimeOnly("org.glassfish.jersey.containers:jersey-container-grizzly2-servlet:${Versions.jersey}")
-
-    testImplementation("org.hamcrest:hamcrest:${Versions.hamcrest}")
-
-    testImplementation("org.mockito.kotlin:mockito-kotlin:${Versions.mockitoKotlin}")
+    testImplementation(libs.okhttp)
+    testRuntimeOnly(libs.grizzly.http.server)
+    testRuntimeOnly(libs.jersey.test.container.grizzly)
+    testImplementation(libs.hamcrest)
+    testImplementation(libs.mockito.kotlin)
 }
 
 java {

@@ -1,0 +1,106 @@
+[versions]
+project = "0.12.7"
+gradle = "8.14"
+commonsLang3 = "3.18.0"
+glassfishJakartaEl = "4.0.2"
+grizzly = "4.0.2"
+h2 = "2.2.224"
+hamcrest = "2.2"
+hibernate = "6.4.2.Final"
+hibernateValidator = "8.0.1.Final"
+hk2 = "3.0.5"
+# @pin Upgrade to 2.21.x requires kotlin v2 minimum
+jackson = "2.20.2"
+jakartaActivation = "2.1.2"
+jakartaAnnotation = "2.1.1"
+jakartaJaxbCore = "4.0.4"
+jakartaJaxbRuntime = "4.0.4"
+jakartaValidation = "3.0.2"
+jakartaWsRs = "3.1.0"
+jakartaXmlBind = "4.0.1"
+jakarataServlet = "6.0.0"
+javaJwt = "4.4.0"
+jersey = "3.1.10"
+kotlin = "1.9.24"
+liquibase = "4.33.0"
+log4j2 = "2.20.0"
+managementPortal = "2.1.13"
+mockitoKotlin = "5.2.1"
+mustache = "0.9.11"
+okhttp = "4.12.0"
+postgres = "42.7.2"
+# Because of the circular dependencies between radar-commons -> radar-jersey -> radar-schemas we use
+# a prelease of commons, so that we can make the radar-schemas -> radar-commons final releases.
+radarCommons = "1.2.5-SNAPSHOT"
+swagger = "2.2.35"
+
+[libraries]
+commons-lang3 = { module = "org.apache.commons:commons-lang3", version.ref = "commonsLang3" }
+glassfish-jakarta-el = { module = "org.glassfish:jakarta.el", version.ref = "glassfishJakartaEl" }
+grizzly-http-server = { module = "org.glassfish.grizzly:grizzly-http-server", version.ref = "grizzly" }
+h2 = { module = "com.h2database:h2", version.ref = "h2" }
+hamcrest = { module = "org.hamcrest:hamcrest", version.ref = "hamcrest" }
+hibernate-core = { module = "org.hibernate:hibernate-core", version.ref = "hibernate" }
+hibernate-hikaricp = { module = "org.hibernate:hibernate-hikaricp", version.ref = "hibernate" }
+hibernate-validator = { module = "org.hibernate.validator:hibernate-validator", version.ref = "hibernateValidator" }
+hk2 = { module = "org.glassfish.hk2:hk2", version.ref = "hk2" }
+jackson-bom = { module = "com.fasterxml.jackson:jackson-bom", version.ref = "jackson" }
+jackson-core = { module = "com.fasterxml.jackson.core:jackson-core", version.ref = "jackson" }
+jackson-databind = { module = "com.fasterxml.jackson.core:jackson-databind" }
+jackson-dataformat-yaml = { module = "com.fasterxml.jackson.dataformat:jackson-dataformat-yaml" }
+jackson-datatype-jdk8 = { module = "com.fasterxml.jackson.datatype:jackson-datatype-jdk8" }
+jackson-datatype-jsr310 = { module = "com.fasterxml.jackson.datatype:jackson-datatype-jsr310" }
+jackson-jakarta-rs-json = { module = "com.fasterxml.jackson.jakarta.rs:jackson-jakarta-rs-json-provider" }
+jackson-module-kotlin = { module = "com.fasterxml.jackson.module:jackson-module-kotlin" }
+jakarta-activation-api = { module = "jakarta.activation:jakarta.activation-api", version.ref = "jakartaActivation" }
+jakarta-annotation-api = { module = "jakarta.annotation:jakarta.annotation-api", version.ref = "jakartaAnnotation" }
+jakarta-validation-api = { module = "jakarta.validation:jakarta.validation-api", version.ref = "jakartaValidation" }
+jakarta-ws-rs-api = { module = "jakarta.ws.rs:jakarta.ws.rs-api", version.ref = "jakartaWsRs" }
+jakarta-xml-bind-api = { module = "jakarta.xml.bind:jakarta.xml.bind-api", version.ref = "jakartaXmlBind" }
+java-jwt = { module = "com.auth0:java-jwt", version.ref = "javaJwt" }
+jaxb-core = { module = "org.glassfish.jaxb:jaxb-core", version.ref = "jakartaJaxbCore" }
+jaxb-runtime = { module = "org.glassfish.jaxb:jaxb-runtime", version.ref = "jakartaJaxbRuntime" }
+jersey-container-grizzly = { module = "org.glassfish.jersey.containers:jersey-container-grizzly2-http", version.ref = "jersey" }
+jersey-hk2-inject = { module = "org.glassfish.jersey.inject:jersey-hk2", version.ref = "jersey" }
+jersey-media-json = { module = "org.glassfish.jersey.media:jersey-media-json-jackson", version.ref = "jersey" }
+jersey-server = { module = "org.glassfish.jersey.core:jersey-server", version.ref = "jersey" }
+jersey-test-container-grizzly = { module = "org.glassfish.jersey.containers:jersey-container-grizzly2-servlet", version.ref = "jersey" }
+kotlin-reflect = { module = "org.jetbrains.kotlin:kotlin-reflect", version.ref = "kotlin" }
+kotlin-stdlib = { module = "org.jetbrains.kotlin:kotlin-stdlib", version.ref = "kotlin" }
+liquibase-core = { module = "org.liquibase:liquibase-core", version.ref = "liquibase" }
+mockito-kotlin = { module = "org.mockito.kotlin:mockito-kotlin", version.ref = "mockitoKotlin" }
+mustache = { module = "com.github.spullara.mustache.java:compiler", version.ref = "mustache" }
+okhttp = { module = "com.squareup.okhttp3:okhttp", version.ref = "okhttp" }
+postgresql = { module = "org.postgresql:postgresql", version.ref = "postgres" }
+radar-auth = { module = "org.radarbase:radar-auth", version.ref = "managementPortal" }
+radar-commons-kotlin = { module = "org.radarbase:radar-commons-kotlin", version.ref = "radarCommons" }
+radar-mp-client = { module = "org.radarbase:managementportal-client", version.ref = "managementPortal" }
+swagger-annotations = { module = "io.swagger.core.v3:swagger-annotations-jakarta", version.ref = "swagger" }
+swagger-jaxrs2 = { module = "io.swagger.core.v3:swagger-jaxrs2-jakarta", version.ref = "swagger" }
+swagger-models = { module = "io.swagger.core.v3:swagger-models-jakarta", version.ref = "swagger" }
+jakarta-servlet-api = { module = "jakarta.servlet:jakarta.servlet-api", version.ref = "jakarataServlet" }
+
+[plugins]
+radar-root-project = { id = "org.radarbase.radar-root-project", version.ref = "radarCommons" }
+radar-dependency-management = { id = "org.radarbase.radar-dependency-management", version.ref = "radarCommons" }
+radar-kotlin = { id = "org.radarbase.radar-kotlin", version.ref = "radarCommons" }
+radar-publishing = { id = "org.radarbase.radar-publishing", version.ref = "radarCommons" }
+
+[bundles]
+database-impl = [
+    "hibernate-core",
+    "liquibase-core",
+]
+jackson = [
+    "jackson-core",
+    "jackson-databind",
+    "jackson-dataformat-yaml",
+    "jackson-datatype-jdk8",
+    "jackson-datatype-jsr310",
+    "jackson-jakarta-rs-json",
+    "jackson-module-kotlin",
+]
+jaxb-runtime = [
+    "jaxb-core",
+    "jaxb-runtime",
+]
