@@ -9,6 +9,7 @@ plugins {
     alias(libs.plugins.radar.publishing) apply false
 }
 
+// Repository declaration used by Version Catalog Plugin.
 repositories {
     mavenCentral()
 }
