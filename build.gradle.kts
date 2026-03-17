@@ -5,6 +5,8 @@ import org.radarbase.gradle.plugin.radarRootProject
 plugins {
     alias(libs.plugins.radar.root.project)
     alias(libs.plugins.radar.dependency.management)
+    alias(libs.plugins.radar.kotlin) apply false
+    alias(libs.plugins.radar.publishing) apply false
 }
 
 repositories {
