@@ -29,9 +29,12 @@ dependencies {
     implementation(libs.jersey.container.grizzly)
     implementation(libs.mustache)
 
+    api(libs.swagger.annotations)
+    api(libs.swagger.models)
     implementation(libs.swagger.jaxrs2) {
         exclude(group = "com.fasterxml.jackson.jaxrs", module = "jackson-jaxrs-json-provider")
     }
+    runtimeOnly(libs.jakarta.servlet.api)
 
     runtimeOnly(libs.jakarta.xml.bind.api)
     runtimeOnly(libs.bundles.jaxb.runtime)

@@ -57,7 +57,7 @@ subprojects {
             }
             developer {
                 id.set("this-Aditya")
-                name.set("Adithya Mishra")
+                name.set("Aditya Mishra")
                 email.set("aditya.mishra@kcl.ac.uk")
                 organization.set("King's College London")
             }

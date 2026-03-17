@@ -212,4 +212,28 @@ Client side caching is enabled by the `Filters.cache` filter. When this is enabl
 
 ### OpenAPI / Swagger
 
-To automatically create a OpenAPI / Swagger endpoint for your API, add the `Enhancers.openapi` resource enhancer. Provide it with a general description of your API as specified by an `OpenAPI` object.
+To add OpenAPI spec endpoints and an interactive Swagger UI, add the `Enhancers.swagger` enhancer with an `OpenAPI` description:
+
+```kotlin
+Enhancers.swagger(
+    OpenAPI().apply {
+        info = Info().apply {
+            title = "My Service"
+            description = "Description of my service"
+            version = "1.0.0"
+        }
+    }
+)
+```
+
+This provides:
+- `/openapi.yaml` and `/openapi.json` — raw OpenAPI spec
+- `/swagger` — interactive Swagger UI (title is read from the `OpenAPI` info provided to enhancer)
+
+Resource classes can be grouped in the Swagger UI using `@Tag`:
+
+```kotlin
+@Path("/projects")
+@Tag(name = "Projects")
+class ProjectResource { ... }
+```
