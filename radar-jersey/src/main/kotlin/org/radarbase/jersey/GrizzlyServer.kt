@@ -9,6 +9,7 @@
 
 package org.radarbase.jersey
 
+import org.glassfish.grizzly.threadpool.GrizzlyExecutorService
 import org.glassfish.grizzly.threadpool.ThreadPoolConfig
 import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory
 import org.glassfish.jersey.server.ResourceConfig
@@ -45,10 +46,13 @@ class GrizzlyServer(
 
         if (workerCorePoolSize != null || workerMaxPoolSize != null) {
             listeners.forEach { listener ->
-                listener.transport.workerThreadPoolConfig = ThreadPoolConfig.defaultConfig().apply {
-                    workerCorePoolSize?.let(::setCorePoolSize)
-                    workerMaxPoolSize?.let(::setMaxPoolSize)
-                }
+                listener.transport.workerThreadPool = GrizzlyExecutorService.createInstance(
+                    ThreadPoolConfig.defaultConfig().apply {
+                        workerCorePoolSize?.let(::setCorePoolSize)
+                        workerMaxPoolSize?.let(::setMaxPoolSize)
+                        setPoolName("grizzly-http-server")
+                    },
+                )
             }
         }
     }
