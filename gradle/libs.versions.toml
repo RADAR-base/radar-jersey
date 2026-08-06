@@ -1,5 +1,5 @@
 [versions]
-project = "0.12.7"
+project = "0.12.8-SNAPSHOT"
 gradle = "8.14"
 commonsLang3 = "3.18.0"
 glassfishJakartaEl = "4.0.2"
@@ -29,9 +29,11 @@ mockitoKotlin = "5.2.1"
 mustache = "0.9.11"
 okhttp = "4.12.0"
 postgres = "42.7.2"
-# Because of circular dependencies between radar-commons -> radar-jersey -> radar-schemas we use
-# a prelease of commons, so that we can make the radar-schemas -> radar-commons final releases.
-radarCommons = "1.2.5-SNAPSHOT"
+# Because of the circular dependencies between radar-commons -> radar-jersey -> radar-schemas, we make
+# two almost identical releases of radar-commons, say A and B (i.e. 1.2.5 and 1.2.6). radar-jersey
+# and radar-schemas use release A. radar-commons is then upgraded to B while referencing the new
+# radar-jersey and radar-commons releases. All other radar-base repos will use radar-commons B release.
+radarCommons = "1.2.5"
 swagger = "2.2.35"
 
 [libraries]
