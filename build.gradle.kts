@@ -33,6 +33,9 @@ subprojects {
                 add("implementation", rootProject.libs.jackson.core) {
                     because("Force safe version of Jackson across all modules")
                 }
+                add("implementation", rootProject.libs.jackson.databind) {
+                    because("Force safe version of Jackson JSON databind across all modules")
+                }
             }
         }
     }
