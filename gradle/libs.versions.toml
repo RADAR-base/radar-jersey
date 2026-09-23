@@ -9,8 +9,7 @@ hamcrest = "2.2"
 hibernate = "6.4.2.Final"
 hibernateValidator = "8.0.1.Final"
 hk2 = "3.0.5"
-# @pin Upgrade to 2.21.x requires kotlin v2 minimum
-jackson = "2.20.2"
+jackson = "2.21.4"
 jakartaActivation = "2.1.2"
 jakartaAnnotation = "2.1.1"
 jakartaJaxbCore = "4.0.4"
@@ -28,7 +27,7 @@ managementPortal = "2.1.13"
 mockitoKotlin = "5.2.1"
 mustache = "0.9.11"
 okhttp = "4.12.0"
-postgres = "42.7.2"
+postgres = "42.7.12"
 # Because of the circular dependencies between radar-commons -> radar-jersey -> radar-schemas, we make
 # two almost identical releases of radar-commons, say A and B (i.e. 1.2.5 and 1.2.6). radar-jersey
 # and radar-schemas use release A. radar-commons is then upgraded to B while referencing the new
