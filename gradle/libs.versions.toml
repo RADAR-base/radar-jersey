@@ -1,6 +1,6 @@
 [versions]
 project = "0.12.8"
-gradle = "8.14"
+gradle = "9.6.0"
 commonsLang3 = "3.18.0"
 glassfishJakartaEl = "4.0.2"
 grizzly = "4.0.2"
