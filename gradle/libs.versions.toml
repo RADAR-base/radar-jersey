@@ -1,6 +1,6 @@
 [versions]
-project = "0.12.8"
-gradle = "8.14"
+project = "0.12.9"
+gradle = "9.6.0"
 commonsLang3 = "3.18.0"
 glassfishJakartaEl = "4.0.2"
 grizzly = "4.0.2"
@@ -9,8 +9,7 @@ hamcrest = "2.2"
 hibernate = "6.4.2.Final"
 hibernateValidator = "8.0.1.Final"
 hk2 = "3.0.5"
-# @pin Upgrade to 2.21.x requires kotlin v2 minimum
-jackson = "2.20.2"
+jackson = "2.21.7"
 jakartaActivation = "2.1.2"
 jakartaAnnotation = "2.1.1"
 jakartaJaxbCore = "4.0.4"
@@ -21,19 +20,19 @@ jakartaXmlBind = "4.0.1"
 jakarataServlet = "6.0.0"
 javaJwt = "4.4.0"
 jersey = "3.1.10"
-kotlin = "1.9.24"
+kotlin = "2.3.20"
 liquibase = "4.33.0"
 log4j2 = "2.20.0"
-managementPortal = "2.1.13"
+managementPortal = "3.0.1"
 mockitoKotlin = "5.2.1"
 mustache = "0.9.11"
 okhttp = "4.12.0"
-postgres = "42.7.2"
+postgres = "42.7.12"
 # Because of the circular dependencies between radar-commons -> radar-jersey -> radar-schemas, we make
 # two almost identical releases of radar-commons, say A and B (i.e. 1.2.5 and 1.2.6). radar-jersey
 # and radar-schemas use release A. radar-commons is then upgraded to B while referencing the new
 # radar-jersey and radar-commons releases. All other radar-base repos will use radar-commons B release.
-radarCommons = "1.2.5"
+radarCommons = "1.2.7"
 swagger = "2.2.35"
 
 [libraries]
